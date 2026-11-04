@@ -1,0 +1,1 @@
+palette di colori, tipografia e la funzione @Composable FitSlotTheme
