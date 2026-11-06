@@ -7,7 +7,6 @@ import androidx.navigation.NavController
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
@@ -42,6 +41,12 @@ fun HomeScreen (navController: NavController) {
             Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
                 Text("Go to test screen")
             }
+        // Apre la schermata di creazione della sala.
+        Button(
+            onClick = { navController.navigate(Screens.CreazioneSala) }
+        ) {
+            Text("Crea sala")
+        }
             AnimatedVisibility(showContent) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
