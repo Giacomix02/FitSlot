@@ -18,7 +18,8 @@ kotlin {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation(libs.androidx.room3.runtime)
+            // Espone Room ai moduli che utilizzano AppDatabase.
+            api(libs.androidx.room3.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }
         commonTest.dependencies {

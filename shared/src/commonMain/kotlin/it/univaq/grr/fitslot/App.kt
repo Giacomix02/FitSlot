@@ -1,49 +1,37 @@
 package it.univaq.grr.fitslot
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.painterResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import it.univaq.grr.fitslot.domain.repository.SalaRepository
+import it.univaq.grr.fitslot.ui.screens.creazionesala.CreazioneSalaScreen
+import it.univaq.grr.fitslot.ui.screens.creazionesala.CreazioneSalaViewModel
 
-import fitslot.shared.generated.resources.Res
-import fitslot.shared.generated.resources.compose_multiplatform
+/** Collega la schermata di creazione della sala al suo ViewModel.
+ * Il repository viene fornito dal punto di avvio dell'app. */
 
 @Composable
-@Preview
-fun App() {
+fun App(salaRepository: SalaRepository) {
+    val creazioneSalaViewModel = viewModel<CreazioneSalaViewModel> {
+        CreazioneSalaViewModel(salaRepository)
+    }
+
+    // Le modifiche dello stato aggiornano automaticamente la schermata.
+    val stato by creazioneSalaViewModel.uiState.collectAsStateWithLifecycle()
+
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
+        Surface(modifier = Modifier.fillMaxSize()) {
+            CreazioneSalaScreen(
+                stato = stato,
+                onNomeModificato = creazioneSalaViewModel::aggiornaNome,
+                onCapienzaModificata = creazioneSalaViewModel::aggiornaCapienza,
+                onSalva = creazioneSalaViewModel::salva
+            )
         }
     }
 }
