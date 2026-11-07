@@ -4,6 +4,7 @@ import androidx.room3.ConstructedBy
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import androidx.room3.Database
+import it.univaq.grr.fitslot.data.local.dao.UserDao
 import it.univaq.grr.fitslot.data.local.entity.UserEntity
 
 @Database(
@@ -16,7 +17,7 @@ import it.univaq.grr.fitslot.data.local.entity.UserEntity
 //@ColumnTypeConverters(NomeConverter::class) //Inserire solo se si hanno dei converter personalizzati, altrimenti non serve
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
-    // Definire qui i DAO come abstract fun
+    abstract fun userDao(): UserDao
 }
 
 // Room genera l'implementazione "actual" su ogni piattaforma
