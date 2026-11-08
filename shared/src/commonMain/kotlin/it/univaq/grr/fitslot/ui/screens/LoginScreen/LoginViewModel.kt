@@ -32,6 +32,11 @@ class LoginViewModel(
     }
 
     fun onLoginClick(onSuccess: () -> Unit) {
+        if(emailInput.isEmpty() || passwordInput.isEmpty()) {
+            loginError = true
+            return
+        }
+
         viewModelScope.launch {     //avvia una coroutine per eseguire il login in background in modo tale che l'azione non sia bloccante
             val user = userRepository.userLogin(
                 email = emailInput,

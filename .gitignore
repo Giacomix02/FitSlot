@@ -18,3 +18,8 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+/shared/schemas/
+/desktopApp/fitslot.db
+/desktopApp/fitslot.db-wal
+/desktopApp/fitslot.db-shm
+/desktopApp/fitslot.db.lck
