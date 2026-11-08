@@ -5,10 +5,11 @@ import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
 import androidx.room3.Database
 import it.univaq.grr.fitslot.data.local.entity.UserEntity
+import it.univaq.grr.fitslot.data.local.dao.SalaDao
 
 @Database(
     //dichiarare le entità che fanno parte del database
-    entities = [UserEntity::class],
+    entities = [UserEntity::class, SalaEntity::class],
     version = 1,
     exportSchema = true
 )
@@ -17,6 +18,7 @@ import it.univaq.grr.fitslot.data.local.entity.UserEntity
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     // Definire qui i DAO come abstract fun
+    abstract fun salaDao(): SalaDao
 }
 
 // Room genera l'implementazione "actual" su ogni piattaforma
