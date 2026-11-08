@@ -1,6 +1,6 @@
 package it.univaq.grr.fitslot.domain.models
 
-data class Sala(val id: Long=0, var name: String, var capienza: Int) {
+data class Sala(val id: Long=0, var nome: String, var capienza: Int) {
     fun isAlreadyOccupiedAtFasciaOraria(fasciaOraria: FasciaOraria): Boolean {
         if (corsoInFasciaOraria(this, fasciaOraria) != null) return true //TODO metodo vero e proprio nel futuro gestore del calendario
 
@@ -12,5 +12,5 @@ data class Sala(val id: Long=0, var name: String, var capienza: Int) {
  * Funzione temporanea //TODO rimuovere dopo implementazione vera funzione
  */
 fun corsoInFasciaOraria(sala: Sala, fasciaOraria: FasciaOraria): Corso {
-    return Corso("Pilates", sala, fasciaOraria)
+    return Corso(0, "Pilates", sala, fasciaOraria)
 }

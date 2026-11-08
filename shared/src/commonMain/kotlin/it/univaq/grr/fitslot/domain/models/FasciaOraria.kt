@@ -2,7 +2,11 @@ package it.univaq.grr.fitslot.domain.models
 
 import java.time.LocalDateTime
 
-data class FasciaOraria(var orarioInizio: LocalDateTime, var orarioFine: LocalDateTime) {
+data class FasciaOraria(
+    val id: Long,
+    var orarioInizio: LocalDateTime,
+    var orarioFine: LocalDateTime
+) {
     var durata: Int = orarioFine.hour.minus(orarioInizio.hour)
 
     init {
