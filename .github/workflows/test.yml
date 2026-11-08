@@ -1,3 +1,15 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096M -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+
 jobs:
   test:
     name: Run tests
@@ -18,11 +30,6 @@ jobs:
           name: test-reports
           path: "**/build/reports/tests/"
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 #on:
 #  push:
