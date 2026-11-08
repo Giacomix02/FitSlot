@@ -16,11 +16,14 @@ fun LoginScreen(viewModel: LoginViewModel, onSuccess: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(viewModel.emailInput, viewModel::onEmailInputChange,
-            label = { Text("Email") }, singleLine = true)
+            label = { Text("Email") }, singleLine = true, enabled = !viewModel.loginInCorso)
         OutlinedTextField(viewModel.passwordInput, viewModel::onPasswordInputChange,
             label = { Text("Password") }, singleLine = true,
-            visualTransformation = PasswordVisualTransformation())
-        Button(onClick = { viewModel.onLoginClick(onSuccess) }) { Text("Login") }
+            visualTransformation = PasswordVisualTransformation(), enabled = !viewModel.loginInCorso)
+        Button(onClick = { viewModel.onLoginClick(onSuccess) }, enabled = !viewModel.loginInCorso) {
+            Text(if (viewModel.loginInCorso) "Accesso in corso..." else "Login")
+        }
         if (viewModel.loginError) Text("Email o password non validi")
+        viewModel.erroreSistema?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     }
 }

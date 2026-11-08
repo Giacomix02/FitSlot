@@ -7,8 +7,10 @@ import it.univaq.grr.fitslot.data.local.entity.*
 
 /** Definisce le tabelle condivise da sale, corsi e login. */
 @Database(
-    entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class],
-    version = 2,
+    entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
+        AbbonamentoEntity::class, PianoAPuntiEntity::class,
+        IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
+    version = 3,
     exportSchema = true
 )
 @ColumnTypeConverters(Converters::class)
@@ -17,6 +19,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun salaDao(): SalaDao
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
+    abstract fun catalogoDao(): CatalogoDao
 }
 
 // Room genera l'implementazione specifica per la piattaforma.

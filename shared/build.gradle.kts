@@ -33,6 +33,12 @@ kotlin {
             implementation(libs.kotlinx.serialization)
         }
 
+        jvmTest.dependencies {
+            implementation(compose.desktop.uiTestJUnit4)
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutinesSwing)
+        }
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 /** Prepara il database persistete dell'applicazione desktop.
  * L'istanza restituita va conservata e riutilizzata. */
 
-fun creaDatabase(): AppDatabase {
+fun creaDatabase(percorso: String? = null): AppDatabase {
     //Conserva i dati fuori dalla cartella del progetto
     val cartellaDatabase = File(
         System.getProperty("user.home"),
@@ -20,13 +20,13 @@ fun creaDatabase(): AppDatabase {
         "impossibile creare la cartella del database: $cartellaDatabase"
     }
 
-    val fileDatabase = File(cartellaDatabase, "fitslot.db")
+    val fileDatabase = percorso?.let { File(it) } ?: File(cartellaDatabase, "fitslot.db")
 
     return Room.databaseBuilder<AppDatabase>(
         name = fileDatabase.absolutePath,
         factory = { AppDatabaseConstructor.initialize() }
     )
-        .addMigrations(MIGRAZIONE_1_2)
+        .addMigrations(MIGRAZIONE_1_2, MIGRAZIONE_2_3)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
