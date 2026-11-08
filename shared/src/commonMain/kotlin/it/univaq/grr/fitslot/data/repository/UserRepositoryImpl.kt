@@ -7,6 +7,7 @@ import it.univaq.grr.fitslot.domain.repository.UserRepository
 import it.univaq.grr.fitslot.utils.PasswordSecurity
 
 
+
 class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
 
     override suspend fun getUserByEmail(email: String): User? {

@@ -1,11 +1,13 @@
 package it.univaq.grr.fitslot.data.local
-import androidx.room3.ColumnTypeConverters
 import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.Room
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
-import androidx.room3.Database
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import it.univaq.grr.fitslot.data.local.dao.UserDao
 import it.univaq.grr.fitslot.data.local.entity.UserEntity
+import kotlinx.coroutines.Dispatchers
 
 @Database(
     //dichiarare le entità che fanno parte del database
@@ -18,6 +20,17 @@ import it.univaq.grr.fitslot.data.local.entity.UserEntity
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+
+    companion object {
+        fun create(): AppDatabase =
+            Room.databaseBuilder<AppDatabase>(
+                name = "fitslot.db",
+                factory = AppDatabaseConstructor::initialize
+            )
+                .setDriver(BundledSQLiteDriver())
+                .setQueryCoroutineContext(Dispatchers.IO)
+                .build()
+    }
 }
 
 // Room genera l'implementazione "actual" su ogni piattaforma

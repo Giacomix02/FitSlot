@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens
+package it.univaq.grr.fitslot.ui.screens.LoginScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedSecureTextField
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,11 +18,29 @@ import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import it.univaq.grr.fitslot.Screens
+import it.univaq.grr.fitslot.data.local.AppDatabase
+import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
+
+private val loginViewModelFactory = viewModelFactory {
+    initializer {
+        val database = AppDatabase.create()
+        val userDao = database.userDao()
+        val userRepository = UserRepositoryImpl(userDao)
+        LoginViewModel(userRepository = userRepository)
+    }
+}
 
 @Composable
-fun LoginScreen(navController: NavController) {
-    var emailInput by remember { mutableStateOf("") }
-    var passwordInput by remember { mutableStateOf("") }
+fun LoginScreen(
+    navController: NavController,
+    viewModel: LoginViewModel = viewModel(factory = loginViewModelFactory),
+) {
+
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
@@ -34,18 +50,27 @@ fun LoginScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center
     ) {
         OutlinedTextField(
-            value = emailInput,
-            onValueChange = {emailInput = it},
-            label = {Text("Username") }
+            value = viewModel.emailInput,
+            onValueChange = { viewModel.onEmailInputChange(it) },
+            label = {Text("Email") }
         )
         OutlinedTextField(
-            value = passwordInput,
-            onValueChange = {passwordInput = it},
+            value = viewModel.passwordInput,
+            onValueChange = { viewModel.onPasswordInputChange(it) },
             label = {Text("Password") },
             visualTransformation = PasswordVisualTransformation()
         )
-        Button(onClick = {  }) {
+        Button(onClick = {
+            viewModel.onLoginClick (
+                onSuccess = {
+                    navController.navigate(Screens.Home)
+                }
+            )
+        }) {
            Text("Login")
+        }
+        if (viewModel.loginError) {
+            Text("Email o password non validi")
         }
     }
 }

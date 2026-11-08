@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
-import it.univaq.grr.fitslot.ui.screens.LoginScreen
+import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.TestScreen
 import kotlinx.serialization.Serializable
 /**
