@@ -47,6 +47,9 @@ fun HomeScreen (navController: NavController) {
         ) {
             Text("Crea sala")
         }
+            Button(onClick = { navController.navigate(Screens.Login) }) {
+                Text("Login")
+            }
             AnimatedVisibility(showContent) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),

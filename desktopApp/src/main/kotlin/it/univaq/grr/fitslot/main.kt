@@ -4,6 +4,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import it.univaq.grr.fitslot.data.local.creaDatabase
 import it.univaq.grr.fitslot.data.repository.SalaRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import kotlinx.coroutines.runBlocking
 
 /** Punto di avvio dell'applicazione desktop.
@@ -21,7 +22,7 @@ fun main() {
                 onCloseRequest = ::exitApplication,
                 title = "FitSlot"
             ) {
-                App(salaRepository = salaRepository)
+                App(salaRepository, UserRepositoryImpl(database.userDao()))
             }
         }
     } finally {

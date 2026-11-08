@@ -1,27 +1,25 @@
 package it.univaq.grr.fitslot.data.local
-import androidx.room3.ColumnTypeConverters
-import androidx.room3.ConstructedBy
-import androidx.room3.RoomDatabase
-import androidx.room3.RoomDatabaseConstructor
-import androidx.room3.Database
-import it.univaq.grr.fitslot.data.local.entity.UserEntity
-import it.univaq.grr.fitslot.data.local.dao.SalaDao
 
+import androidx.room3.*
+import it.univaq.grr.fitslot.data.local.converter.Converters
+import it.univaq.grr.fitslot.data.local.dao.*
+import it.univaq.grr.fitslot.data.local.entity.*
+
+/** Definisce le tabelle condivise da sale, corsi e login. */
 @Database(
-    //dichiarare le entità che fanno parte del database
-    entities = [UserEntity::class, SalaEntity::class],
-    version = 1,
+    entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class],
+    version = 2,
     exportSchema = true
 )
-
-//@ColumnTypeConverters(NomeConverter::class) //Inserire solo se si hanno dei converter personalizzati, altrimenti non serve
+@ColumnTypeConverters(Converters::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
-    // Definire qui i DAO come abstract fun
     abstract fun salaDao(): SalaDao
+    abstract fun userDao(): UserDao
+    abstract fun corsoDao(): CorsoDao
 }
 
-// Room genera l'implementazione "actual" su ogni piattaforma
+// Room genera l'implementazione specifica per la piattaforma.
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase

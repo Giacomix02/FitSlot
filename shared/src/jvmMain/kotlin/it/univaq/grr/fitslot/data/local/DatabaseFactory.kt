@@ -26,6 +26,7 @@ fun creaDatabase(): AppDatabase {
         name = fileDatabase.absolutePath,
         factory = { AppDatabaseConstructor.initialize() }
     )
+        .addMigrations(MIGRAZIONE_1_2)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()
