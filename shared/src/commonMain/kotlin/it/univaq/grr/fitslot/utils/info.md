@@ -1,1 +1,0 @@
-funzioni di estensione (extension functions), formattatori di date/orari (fondamentali per la gestione degli slot temporali) e logger

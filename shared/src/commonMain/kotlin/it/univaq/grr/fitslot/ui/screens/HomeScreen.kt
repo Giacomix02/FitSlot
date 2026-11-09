@@ -17,39 +17,37 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import fitslot.shared.generated.resources.Res
 import fitslot.shared.generated.resources.compose_multiplatform
 import it.univaq.grr.fitslot.Screens
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun HomeScreen (navController: NavController) {
+fun HomeScreen(navController: NavController) {
     var showContent by remember { mutableStateOf(false) }
     Column(
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .safeContentPadding()
-                .fillMaxSize(),
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .safeContentPadding()
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text("Screen Home")
+        Text("Verranno testati tutti gli screen e le relative navigazioni")
+        Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
+            Text("Go to test screen")
+        }
+        Button(onClick = { navController.navigate(Screens.Login) }) {
+            Text("Go to Login screen")
+        }
+    }
+    AnimatedVisibility(showContent) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me!")
-            }
-            Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
-                Text("Go to test screen")
-            }
-            AnimatedVisibility(showContent) {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                   Text("Compose: siud")
-                }
-            }
+            Image(painterResource(Res.drawable.compose_multiplatform), null)
+            Text("Compose: siud")
         }
+    }
 }
