@@ -21,6 +21,12 @@ import kotlinx.coroutines.Dispatchers
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
+    /*
+    companion object is a special type of object that is associated with a class rather than
+    an instance of the class. It's similar to static members in other programming languages,
+    but with some added functionality.
+     */
+
     companion object {
         fun create(): AppDatabase =
             Room.databaseBuilder<AppDatabase>(
