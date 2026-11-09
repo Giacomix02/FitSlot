@@ -67,7 +67,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           # Cerca la cartella HTML generata da Gradle per jvmTest
-          path: "build/reports/tests/jvmTest"
+          path: "shared/build/reports/tests/jvmTest"
 
       - name: Deploy HTML Report to GitHub Pages
         if: always() && github.ref == 'refs/heads/main'
