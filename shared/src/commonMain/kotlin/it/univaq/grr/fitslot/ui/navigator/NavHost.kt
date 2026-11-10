@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
+import it.univaq.grr.fitslot.ui.screens.LoginScreen.RegistrationScreen
 import it.univaq.grr.fitslot.ui.screens.TestScreen
 import kotlinx.serialization.Serializable
 /**
@@ -21,6 +22,9 @@ sealed class Screens {
     data class Test (val message:String)
     @Serializable
     data object Login
+    @Serializable
+    data object Registration
+
 }
 
 @Composable
@@ -43,11 +47,16 @@ fun Navigation(content: @Composable () -> Unit) {
             LoginScreen(navController)
         }
 
+        composable<Screens.Registration> {
+            RegistrationScreen(navController)
+        }
+
         // ogni route è definita come segue
         // composable<Screens.Message> {
         //     val args = it.toRoute<Screens.Message>() // argomenti per mandare dati in una route
         //     Messagescreen(navController, args) //screen composables from step 3
         // }
+
     }
 
     content()
