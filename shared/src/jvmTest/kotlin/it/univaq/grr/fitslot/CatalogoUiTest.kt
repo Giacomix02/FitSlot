@@ -10,7 +10,6 @@ import it.univaq.grr.fitslot.data.local.AppDatabaseConstructor
 import it.univaq.grr.fitslot.data.local.entity.*
 import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.repository.*
-import it.univaq.grr.fitslot.domain.SessioneUtente
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,17 +37,9 @@ class CatalogoUiTest {
         factory = { AppDatabaseConstructor.initialize() })
         .setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
 
-    private fun avvia(db: AppDatabase, ruolo: Ruolo = Ruolo.GESTORE) {
-        val user = UserEntity(email = "ui@test.it", password = "hash", salt = "salt", username = "ui",
-            nome = "Roberto", cognome = "", dataNascita = "", telefono = "", indirizzo = "", citta = "",
-            emailContatto = "ui@test.it", ruolo = ruolo)
-        val id = runBlocking { db.userDao().inserisci(user) }
-        val sessione = SessioneUtente().also { it.accedi(user.copy(id = id).toDomain()) }
-        rule.setContent {
-            App(SalaRepositoryImpl(db.salaDao(), sessione), UserRepositoryImpl(db.userDao()),
-                CatalogoRepositoryImpl(db.catalogoDao(), sessione), sessione)
-        }
-        attendi("FitSlot")
+    private fun avvia(db: AppDatabase) {
+        rule.setContent { App(SalaRepositoryImpl(db.salaDao()), CatalogoRepositoryImpl(db.catalogoDao())) }
+        attendi("Screen Home")
     }
 
     private fun attendi(testo: String) {
@@ -98,53 +89,11 @@ class CatalogoUiTest {
                 attendi("Piano eliminato correttamente.")
                 rule.onNodeWithText("$nome aggiornato").assertDoesNotExist()
                 rule.onNodeWithText("Torna alla Home").performScrollTo().clicca()
-                attendi("FitSlot")
+                attendi("Screen Home")
             }
             assertEquals(0, runBlocking { db.catalogoDao().osservaAbbonamenti().first().size })
             assertEquals(0, runBlocking { db.catalogoDao().osservaPianiAPunti().first().size })
         } finally { runBlocking { db.close() } }
     }
 
-    @Test fun iscrittoNonVedeLeOperazioniDelGestoreELogoutFunziona() {
-        val db = database()
-        try {
-            avvia(db, Ruolo.ISCRITTO)
-            rule.onNodeWithText("Gestisci abbonamenti").assertDoesNotExist()
-            rule.onNodeWithText("Gestisci piani a punti").assertDoesNotExist()
-            rule.onNodeWithText("Crea sala").assertDoesNotExist()
-            rule.onNodeWithText("Esci").clicca()
-            attendi("Login")
-            rule.onNodeWithText("Benvenuto, Roberto").assertDoesNotExist()
-        } finally { runBlocking { db.close() } }
-    }
-
-    @Test fun primoAvvioConfigurazioneEAccessoConCredenzialiScelte() {
-        val db = database()
-        try {
-            val sessione = SessioneUtente()
-            val utenti = UserRepositoryImpl(db.userDao())
-            rule.setContent {
-                App(SalaRepositoryImpl(db.salaDao(), sessione), utenti,
-                    CatalogoRepositoryImpl(db.catalogoDao(), sessione), sessione)
-            }
-            attendi("Configura il primo gestore")
-            campo("Nome", "Gestore prova")
-            campo("Email", "gestore-ui@test.it")
-            campo("Password (almeno 8 caratteri)", "ProvaSoloNeiTest123!")
-            campo("Conferma password", "ProvaSoloNeiTest123!")
-            rule.onNodeWithText("Crea gestore").performScrollTo().clicca()
-            attendi("Gestisci abbonamenti")
-            rule.onNodeWithText("Esci").clicca()
-            attendi("Login")
-            rule.onNodeWithText("Login").clicca()
-            rule.onNodeWithText("Email").performTextReplacement("gestore-ui@test.it")
-            rule.onNodeWithText("Password").performTextReplacement("errata")
-            rule.onNodeWithText("Login").clicca()
-            attendi("Email o password non validi")
-            rule.onNodeWithText("Password").performTextReplacement("ProvaSoloNeiTest123!")
-            rule.onNodeWithText("Login").clicca()
-            attendi("Gestisci piani a punti")
-            rule.onNodeWithText("Benvenuto, Gestore prova").assertExists()
-        } finally { runBlocking { db.close() } }
-    }
 }

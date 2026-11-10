@@ -1,13 +1,13 @@
 package it.univaq.grr.fitslot
 
 import androidx.room3.Room
+import androidx.room3.useWriterConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import it.univaq.grr.fitslot.data.local.*
 import it.univaq.grr.fitslot.data.local.entity.*
 import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.repository.*
-import it.univaq.grr.fitslot.domain.SessioneUtente
 import it.univaq.grr.fitslot.domain.models.*
 import java.nio.file.Files
 import java.nio.file.Path
@@ -31,12 +31,11 @@ class CatalogoDatabaseTest {
         cognome = "", dataNascita = "", telefono = "", indirizzo = "", citta = "",
         emailContatto = email, ruolo = ruolo)
 
-    private fun sessione(ruolo: Ruolo = Ruolo.GESTORE) = SessioneUtente().also { it.accedi(utente(ruolo).toDomain()) }
 
     @Test fun creazioneModificaEliminazioneAbbonamento() = runBlocking<Unit> {
         val db = database()
         try {
-            val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione())
+            val repo = CatalogoRepositoryImpl(db.catalogoDao())
             val id = repo.salvaAbbonamento(Abbonamento(nome = "Mensile", prezzoCentesimi = 4990, durataGiorni = 30))
             assertEquals(4990L, repo.osservaAbbonamenti().first().single().prezzoCentesimi)
             repo.salvaAbbonamento(Abbonamento(id, "Trimestrale", 12000, 90))
@@ -49,7 +48,7 @@ class CatalogoDatabaseTest {
     @Test fun pianoAPuntiSalvaIlNumeroDiIngressi() = runBlocking<Unit> {
         val db = database()
         try {
-            val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione())
+            val repo = CatalogoRepositoryImpl(db.catalogoDao())
             val id = repo.salvaPianoAPunti(PianoAPunti(nome = "Dieci ingressi", prezzoCentesimi = 7000, ingressiInclusi = 10))
             assertEquals(10, repo.osservaPianiAPunti().first().single().ingressiInclusi)
             repo.salvaPianoAPunti(PianoAPunti(id, "Venti ingressi", 12000, 20))
@@ -62,7 +61,7 @@ class CatalogoDatabaseTest {
     @Test fun nomiDuplicatiBloccatiAncheInModifica() = runBlocking<Unit> {
         val db = database()
         try {
-            val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione())
+            val repo = CatalogoRepositoryImpl(db.catalogoDao())
             val a = repo.salvaAbbonamento(Abbonamento(nome = "Mensile", prezzoCentesimi = 1, durataGiorni = 30))
             val b = repo.salvaAbbonamento(Abbonamento(nome = "Annuale", prezzoCentesimi = 2, durataGiorni = 365))
             assertFailsWith<IllegalArgumentException> { repo.salvaAbbonamento(Abbonamento(nome = "  MENSILE  ", prezzoCentesimi = 3, durataGiorni = 1)) }
@@ -82,8 +81,14 @@ class CatalogoDatabaseTest {
         val db = database()
         try {
             val dao = db.catalogoDao()
-            val repo = CatalogoRepositoryImpl(dao, sessione())
-            val user = db.userDao().inserisci(utente(Ruolo.ISCRITTO))
+            val repo = CatalogoRepositoryImpl(dao)
+            val user = 1L
+            // Dato di prova inserito senza estendere il DAO utenti del collega.
+            db.useWriterConnection { connection ->
+                connection.usePrepared("INSERT INTO user (id,email,password,salt,username,nome,cognome,data_nascita,telefono,indirizzo,citta,email_contatto,ruolo) VALUES (1,'iscritto@test.it','hash','salt','iscritto','Iscritto','','','','','','','ISCRITTO')") {
+                    it.step()
+                }
+            }
             val a = repo.salvaAbbonamento(Abbonamento(nome = "Mensile", prezzoCentesimi = 1, durataGiorni = 30))
             val p = repo.salvaPianoAPunti(PianoAPunti(nome = "Ingressi", prezzoCentesimi = 1, ingressiInclusi = 10))
             dao.associaAbbonamento(IscrizioneAbbonamentoEntity(user, a))
@@ -105,27 +110,10 @@ class CatalogoDatabaseTest {
         } finally { db.close() }
     }
 
-    @Test fun soloIlGestorePuoModificareCatalogoESale() = runBlocking<Unit> {
-        val db = database()
-        try {
-            for (sessione in listOf(SessioneUtente(), sessione(Ruolo.ISCRITTO), sessione(Ruolo.ALLENATORE), sessione(Ruolo.RECEPIONIST))) {
-                val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione)
-                assertFailsWith<IllegalStateException> { repo.salvaAbbonamento(Abbonamento(nome = "Mensile", prezzoCentesimi = 1, durataGiorni = 1)) }
-                assertFailsWith<IllegalStateException> { repo.salvaPianoAPunti(PianoAPunti(nome = "Ingressi", prezzoCentesimi = 1, ingressiInclusi = 1)) }
-                assertFailsWith<IllegalStateException> { repo.eliminaAbbonamento(1) }
-                assertFailsWith<IllegalStateException> { repo.eliminaPianoAPunti(1) }
-                assertFailsWith<IllegalStateException> { SalaRepositoryImpl(db.salaDao(), sessione).inserisci(Sala(nome = "Sala", capienza = 10)) }
-            }
-            val sessione = sessione()
-            sessione.esci()
-            assertFailsWith<IllegalStateException> { sessione.richiediGestore() }
-        } finally { db.close() }
-    }
-
     @Test fun validazioneCampiERecordScomparsi() = runBlocking<Unit> {
         val db = database()
         try {
-            val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione())
+            val repo = CatalogoRepositoryImpl(db.catalogoDao())
             assertFailsWith<IllegalArgumentException> { repo.salvaAbbonamento(Abbonamento(nome = " ", prezzoCentesimi = 1, durataGiorni = 1)) }
             assertFailsWith<IllegalArgumentException> { repo.salvaAbbonamento(Abbonamento(nome = "A", prezzoCentesimi = -1, durataGiorni = 1)) }
             assertFailsWith<IllegalArgumentException> { repo.salvaAbbonamento(Abbonamento(nome = "A", prezzoCentesimi = 1, durataGiorni = 0)) }
@@ -150,21 +138,6 @@ class CatalogoDatabaseTest {
         assertEquals("12,34", formattaPrezzo(1234))
     }
 
-    @Test fun configurazioneGestoreUnaSolaVoltaELogin() = runBlocking<Unit> {
-        val db = database()
-        try {
-            val repo = UserRepositoryImpl(db.userDao())
-            assertTrue(repo.serveConfigurazione())
-            val user = repo.creaPrimoGestore("roby@test.it", "PasswordTest123!", "Roberto")
-            assertEquals(Ruolo.GESTORE, user.ruolo)
-            assertFalse(repo.serveConfigurazione())
-            assertNotEquals("PasswordTest123!", db.userDao().getUserById(user.id)!!.password)
-            assertNotNull(repo.userLogin("roby@test.it", "PasswordTest123!"))
-            assertNull(repo.userLogin("roby@test.it", "errata"))
-            assertFailsWith<IllegalStateException> { repo.creaPrimoGestore("altro@test.it", "PasswordTest123!", "Altro") }
-        } finally { db.close() }
-    }
-
     @Test fun migrazioneDalloSchemaOriginaleConservaLaSala() = runBlocking<Unit> {
         val path = Files.createTempFile("fitslot-migrazione-", ".db")
         try {
@@ -183,8 +156,8 @@ class CatalogoDatabaseTest {
             } finally { connection.close() }
             val db = database(path.toString())
             try {
-                assertEquals(0, db.userDao().contaUtenti())
-                val repo = CatalogoRepositoryImpl(db.catalogoDao(), sessione())
+                assertNull(db.userDao().getUserById(1))
+                val repo = CatalogoRepositoryImpl(db.catalogoDao())
                 repo.salvaAbbonamento(Abbonamento(nome = "Migrato", prezzoCentesimi = 1200, durataGiorni = 30))
             } finally { db.close() }
             val check = BundledSQLiteDriver().open(path.toString())

@@ -1,0 +1,90 @@
+name: Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096M -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+
+# Permessi necessari per pubblicare i report nei Checks, PR e su GitHub Pages
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Gradle setup
+        uses: ./.github/actions/gradle-setup
+
+      - name: Install UI test display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth libgl1 libfontconfig1 libfreetype6
+
+      # --continue permette a Gradle di eseguire tutti i test anche se uno fallisce
+      - name: Run unit tests
+        run: xvfb-run -a ./gradlew :desktopApp:compileKotlin jvmTest --continue
+
+      # -------------------------------------------------------------------------
+      # 1. JOB SUMMARY: Tabella Markdown riassuntiva nella schermata del workflow
+      # -------------------------------------------------------------------------
+      - name: Test Summary in Workflow
+        uses: test-summary/action@v2
+        if: always()
+        with:
+          paths: "**/build/test-results/**/TEST-*.xml"
+
+      # -------------------------------------------------------------------------
+      # 2. ANNOTAZIONI & TAB TESTS: Crea il tab "Tests" e annota le righe di codice
+      # -------------------------------------------------------------------------
+      - name: Publish Test Results & Annotations
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: "**/build/test-results/**/TEST-*.xml"
+
+      # -------------------------------------------------------------------------
+      # 3. REPORT HTML SU GITHUB PAGES: Navigabile direttamente via browser (solo su push a main)
+      # -------------------------------------------------------------------------
+      - name: Setup Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
+      - name: Upload HTML Report artifact for Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Cerca la cartella HTML generata da Gradle per jvmTest
+          path: "shared/build/reports/tests/jvmTest"
+
+      - name: Deploy HTML Report to GitHub Pages
+        if: always() && github.ref == 'refs/heads/main'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      # -------------------------------------------------------------------------
+      # Fallback: Mantiene comunque lo zip negli artefatti classici
+      # -------------------------------------------------------------------------
+      - name: Upload test reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: "**/build/reports/tests/"

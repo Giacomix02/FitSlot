@@ -9,11 +9,12 @@ Dalla directory `/Users/uni/IdeaProjects/FitSlot`:
 ```
 
 L'applicazione usa un unico database in `~/.fitslot/fitslot.db`.
-Se non esistono utenti compare la configurazione del primo gestore:
-inserire nome, email, password e conferma. Non esistono credenziali predefinite.
-Questa configurazione è bloccata in transazione dopo la creazione del primo utente.
-Alle aperture successive si accede con le credenziali scelte. Il logout elimina
-la sessione in memoria. Non vengono conservate password nella sessione.
+Login, password, sessione e registrazione sono di competenza delle US del team.
+I file di login, UserDao, UserRepository e PasswordSecurity coincidono con main.
+Non viene aggiunta alcuna configurazione del primo gestore.
+L'accesso come gestore è una precondizione delle US di Roby: il collegamento
+dei permessi verrà concordato con chi implementa l'autenticazione. La Home attuale
+del team è una schermata di prova con collegamenti alle diverse funzionalità.
 
 `FITSLOT_DB_PATH` permette di usare un database separato per le prove.
 I database sperimentali creati in passato dai colleghi come `fitslot.db`
@@ -22,8 +23,7 @@ nella directory di lavoro non vengono importati o cancellati automaticamente.
 ## GRR-14
 
 Creazione della sala con nome e capienza, salvataggio e conferma.
-La Home mostra l'operazione solo al gestore autenticato. Il ruolo viene controllato
-anche dal repository prima dell'inserimento.
+Il collegamento al ruolo del gestore è demandato all'integrazione con il team.
 
 ## GRR-15
 
@@ -48,7 +48,7 @@ Come concordato, i punti rappresentano ingressi, non una seconda valuta.
 - Prima dell'eliminazione viene richiesta conferma.
 - L'eliminazione viene impedita se ci sono iscritti; l'utente riceve un messaggio.
 - Errori di salvataggio mantengono i dati del modulo per permettere la correzione.
-- Le operazioni di modifica sono riservate al gestore anche nel repository.
+- Il controllo del gestore non viene reimplementato nelle US dei cataloghi: va integrato con il team.
 
 Prezzo, durata in giorni e validazioni sono le scelte minime di implementazione:
 vanno confermate in revisione dal team, perché le US non dettagliano questi campi.
@@ -85,9 +85,15 @@ che sala e piano salvati siano ancora presenti.
 
 I test SQLite usano database temporanei o in memoria, non il database personale.
 Coprono CRUD dei due cataloghi, duplicati in creazione/modifica, piano con
-iscritti, chiavi esterne, permessi, validazione dei prezzi, login,
-configurazione iniziale e migrazione. I test Compose verificano le azioni
-dei moduli e la disponibilità delle operazioni in base al ruolo.
+iscritti, chiavi esterne, validazione dei prezzi e migrazione. I test Compose verificano le azioni
+dei moduli. I test di login e password sono quelli del collega, mantenuti invariati.
 
 Il lavoro dei corsi conserva il TODO del collega in `Sala.isAlreadyOccupiedAtFasciaOraria`:
 il controllo calendario è ancora provvisorio e non fa parte delle US di Roby.
+
+## GitHub Actions
+
+La cartella `.github` proviene da main, dove è stata integrata la GRR-12.
+Il workflow esegue i test sulle PR verso main e sui push a main, conserva i report
+del team ed esegue i test UI con Xvfb sul runner Linux. Viene verificata anche la
+compilazione desktop. I report Pages rimangono limitati ai push su main.
