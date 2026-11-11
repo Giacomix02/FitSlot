@@ -8,4 +8,6 @@ interface UserRepository {
 
     suspend fun userLogin(email: String, password: String): User?
 
+    suspend fun userRegistration(user: User): Long
+
 }

@@ -1,6 +1,8 @@
 package it.univaq.grr.fitslot.data.local.dao
 
 import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import it.univaq.grr.fitslot.data.local.entity.UserEntity
 
@@ -14,4 +16,7 @@ interface UserDao {
 
     @Query("SELECT * FROM user WHERE id = :id")
     suspend fun getUserById(id: Long): UserEntity?
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertUser(user: UserEntity): Long
 }

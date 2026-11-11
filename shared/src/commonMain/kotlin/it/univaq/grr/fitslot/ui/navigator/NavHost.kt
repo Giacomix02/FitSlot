@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
+import it.univaq.grr.fitslot.ui.screens.LoginScreen.RegistrationScreen
 import it.univaq.grr.fitslot.ui.screens.TestScreen
 import kotlinx.serialization.Serializable
 /**
@@ -36,6 +37,8 @@ sealed class Screens {
     @Serializable data object CreazioneSala
     @Serializable data object Abbonamenti
     @Serializable data object PianiAPunti
+    @Serializable data object Registration
+
 }
 
 @Composable
@@ -71,6 +74,8 @@ fun Navigation(salaRepository: SalaRepository, catalogoRepository: CatalogoRepos
         }
         composable<Screens.PianiAPunti> {
             DestinazioneCatalogo(TipoCatalogo.PIANI_A_PUNTI, catalogoRepository) { navController.popBackStack() }
+        composable<Screens.Registration> {
+            RegistrationScreen(navController)
         }
 
         // ogni route è definita come segue
@@ -78,6 +83,7 @@ fun Navigation(salaRepository: SalaRepository, catalogoRepository: CatalogoRepos
         //     val args = it.toRoute<Screens.Message>() // argomenti per mandare dati in una route
         //     Messagescreen(navController, args) //screen composables from step 3
         // }
+
     }
 
     content()

@@ -12,7 +12,7 @@ import kotlinx.coroutines.Dispatchers
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
         AbbonamentoEntity::class, PianoAPuntiEntity::class,
         IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
-    version = 3,
+    version = 1,
     exportSchema = true
 )
 @ColumnTypeConverters(Converters::class)
@@ -23,19 +23,18 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
 
-    /*
-    companion object is a special type of object that is associated with a class rather than
-    an instance of the class. It's similar to static members in other programming languages,
-    but with some added functionality.
-     */
     companion object {
-        // Conserva l'API create() usata dal collega e allinea solo percorso e migrazioni.
-        fun create(name: String = percorsoDatabasePredefinito()): AppDatabase =
-            Room.databaseBuilder<AppDatabase>(name = name, factory = AppDatabaseConstructor::initialize)
-                .addMigrations(MIGRAZIONE_1_2, MIGRAZIONE_2_3)
+        private val instance: AppDatabase by lazy {
+            Room.databaseBuilder<AppDatabase>(
+                name = "fitslot.db",
+                factory = AppDatabaseConstructor::initialize
+            )
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
+        }
+
+        fun create(): AppDatabase = instance
     }
 }
 
