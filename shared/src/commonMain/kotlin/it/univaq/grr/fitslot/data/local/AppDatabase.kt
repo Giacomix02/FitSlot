@@ -1,5 +1,5 @@
 package it.univaq.grr.fitslot.data.local
-//import it.univaq.grr.fitslot.data.local.entity.UserEntity
+import androidx.room3.ColumnTypeConverters
 import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.Room
