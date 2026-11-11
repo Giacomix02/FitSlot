@@ -33,6 +33,10 @@ kotlin {
             implementation(libs.kotlin.test)
             implementation(libs.kotlinx.coroutines.test)
         }
+        jvmMain.dependencies {
+            implementation("jakarta.mail:jakarta.mail-api:2.1.3")
+            implementation("org.eclipse.angus:angus-mail:2.0.3")
+        }
     }
 }
 dependencies {
