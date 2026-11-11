@@ -1,17 +1,30 @@
 package it.univaq.grr.fitslot.data.local
-
-import androidx.room3.*
+import androidx.room3.ColumnTypeConverters
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import it.univaq.grr.fitslot.data.local.converter.Converters
-import it.univaq.grr.fitslot.data.local.dao.*
-import it.univaq.grr.fitslot.data.local.entity.*
+import it.univaq.grr.fitslot.data.local.dao.CatalogoDao
+import it.univaq.grr.fitslot.data.local.dao.CorsoDao
+import it.univaq.grr.fitslot.data.local.dao.SalaDao
+import it.univaq.grr.fitslot.data.local.dao.UserDao
+import it.univaq.grr.fitslot.data.local.entity.AbbonamentoEntity
+import it.univaq.grr.fitslot.data.local.entity.CorsoEntity
+import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
+import it.univaq.grr.fitslot.data.local.entity.IscrizioneAbbonamentoEntity
+import it.univaq.grr.fitslot.data.local.entity.IscrizionePianoAPuntiEntity
+import it.univaq.grr.fitslot.data.local.entity.PianoAPuntiEntity
+import it.univaq.grr.fitslot.data.local.entity.SalaEntity
+import it.univaq.grr.fitslot.data.local.entity.UserEntity
 import kotlinx.coroutines.Dispatchers
 
-/** Registra le tabelle delle US integrate senza modificare il funzionamento del login. */
 @Database(
+
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class,
-        IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
     version = 1,
     exportSchema = true
 )
@@ -26,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private val instance: AppDatabase by lazy {
             Room.databaseBuilder<AppDatabase>(
-                name = "fitslot.db",
+                name =  "fitslot.db",
                 factory = AppDatabaseConstructor::initialize
             )
                 .setDriver(BundledSQLiteDriver())

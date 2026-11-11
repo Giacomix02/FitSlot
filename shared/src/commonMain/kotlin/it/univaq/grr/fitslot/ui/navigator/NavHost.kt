@@ -1,24 +1,28 @@
 package it.univaq.grr.fitslot
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import it.univaq.grr.fitslot.domain.repository.SalaRepository
-import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
-import it.univaq.grr.fitslot.ui.screens.creazioneSala.*
-import it.univaq.grr.fitslot.ui.screens.catalogo.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
+import it.univaq.grr.fitslot.domain.repository.SalaRepository
+import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.RegistrationScreen
+import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
+import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoViewModel
+import it.univaq.grr.fitslot.ui.screens.catalogo.TipoCatalogo
+import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaScreen
+import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaViewModel
 import kotlinx.serialization.Serializable
 
 /**
@@ -31,6 +35,10 @@ sealed class Screens {
 
     @Serializable
     data object Login
+
+    @Serializable
+    data object CorsiScreen
+
     @Serializable
     data object CreazioneSala
     @Serializable
@@ -64,6 +72,10 @@ fun Navigation(
 
         composable<Screens.Registration> {
             RegistrationScreen(navController)
+        }
+
+        composable<Screens.CorsiScreen> {
+            CorsiScreen()
         }
 
         composable<Screens.CreazioneSala> {
