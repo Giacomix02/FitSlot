@@ -1,7 +1,6 @@
 package it.univaq.grr.fitslot.ui.screens.CreazioneCorso
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.CorsoRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Corso
@@ -11,7 +10,6 @@ import it.univaq.grr.fitslot.domain.repository.CorsoRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 val sale = listOf(
@@ -20,7 +18,7 @@ val sale = listOf(
     Sala(3, "yoga", 20)
 )
 
-val fasceOrarie = listOf<FasciaOraria>(
+val fasceOrarie = listOf(
     FasciaOraria(1, LocalDateTime.parse("2027-06-01T15:30"),LocalDateTime.parse("2027-06-01T17:30") ),
     FasciaOraria(2, LocalDateTime.parse("2027-06-01T18:30"),LocalDateTime.parse("2027-06-01T19:30") ),
     FasciaOraria(3, LocalDateTime.parse("2027-06-02T12:30"),LocalDateTime.parse("2027-06-02T15:00") )
@@ -34,13 +32,13 @@ data class CorsiScreenState(
     var showCreazioneCorsoEseguita: Boolean = false
 )
 
-class CorsiViewModel(): ViewModel() {
+class CorsiViewModel: ViewModel() {
     val database = AppDatabase.create()
     val corsoRepository: CorsoRepository = CorsoRepositoryImpl(database.corsoDao())
     val uiState: StateFlow<CorsiScreenState> field = MutableStateFlow(CorsiScreenState())
 
-    val saleList: List<Sala> field = MutableList<Sala>(sale.size,   { index ->  sale.get(index)})
-    val fasceOrarieList: List<FasciaOraria> field = MutableList(fasceOrarie.size, {index -> fasceOrarie.get(index)})
+    val saleList: List<Sala> field = MutableList<Sala>(sale.size) { index -> sale[index] }
+    val fasceOrarieList: List<FasciaOraria> field = MutableList(fasceOrarie.size) { index -> fasceOrarie[index] }
 
     fun showDialog() { uiState.update { it.copy(showDialog = true) } }
 
@@ -56,7 +54,7 @@ class CorsiViewModel(): ViewModel() {
         uiState.update { it.copy(showFasceOrarieDropDown = show) }
     }
 
-    fun creaCorso(nome: String, sala: Sala, fasciaOraria: FasciaOraria) {
+    suspend fun creaCorso(nome: String, sala: Sala, fasciaOraria: FasciaOraria) {
         val corso: Corso
         try {
             corso = Corso(name= nome, salaAssegnata = sala, fasciaOraria = fasciaOraria)
@@ -64,10 +62,16 @@ class CorsiViewModel(): ViewModel() {
             uiState.update { it.copy(erroreCreazioneCorso = e.message) }
             return
         }
-        viewModelScope.launch {
+//        uiState.update { it.copy(erroreCreazioneCorso = null, showCreazioneCorsoEseguita = true) }
+
+        try {
             corsoRepository.creaCorso(corso)
-            uiState.update { it.copy(erroreCreazioneCorso = null, showCreazioneCorsoEseguita = true) }
+            uiState.update { it.copy(showCreazioneCorsoEseguita = true) }
+        } catch (e: Exception) {
+            uiState.update { it.copy(erroreCreazioneCorso = e.message ?: e.toString()) }
         }
+
+
 
 
     }

@@ -37,9 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
+import kotlinx.coroutines.launch
 
 @Preview
 @Composable
@@ -103,12 +105,14 @@ fun CorsiScreen() {
                             }
                         }
                         Row() {
-                            Button(onClick = {
+                            Button(onClick = { viewModel.viewModelScope.launch {
                                 viewModel.creaCorso(
                                     nomeFieldState.text.toString(),
                                     selectedSala.value,
                                     selectedFasciaOraria.value
                                 )
+                            }
+
                             }) {
                                 Row {
                                     Text("Crea corso")

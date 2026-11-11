@@ -1,13 +1,18 @@
 package it.univaq.grr.fitslot.data.local
-
-import androidx.room3.*
+//import it.univaq.grr.fitslot.data.local.entity.UserEntity
+import androidx.room3.ConstructedBy
+import androidx.room3.Database
+import androidx.room3.Room
+import androidx.room3.RoomDatabase
+import androidx.room3.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import it.univaq.grr.fitslot.data.local.converter.Converters
-import it.univaq.grr.fitslot.data.local.dao.*
-import it.univaq.grr.fitslot.data.local.entity.*
+import it.univaq.grr.fitslot.data.local.dao.CorsoDao
+import it.univaq.grr.fitslot.data.local.dao.SalaDao
+import it.univaq.grr.fitslot.data.local.entity.CorsoEntity
+import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
+import it.univaq.grr.fitslot.data.local.entity.SalaEntity
 import kotlinx.coroutines.Dispatchers
 
-/** Registra le tabelle delle US integrate senza modificare il funzionamento del login. */
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
@@ -27,7 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     companion object {
         private val instance: AppDatabase by lazy {
             Room.databaseBuilder<AppDatabase>(
-                name = "fitslot.db",
+                name = name,
                 factory = AppDatabaseConstructor::initialize
             )
                 .setDriver(BundledSQLiteDriver())
