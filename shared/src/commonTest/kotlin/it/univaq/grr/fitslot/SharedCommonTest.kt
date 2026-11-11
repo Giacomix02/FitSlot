@@ -14,7 +14,7 @@ class SharedCommonTest {
      */
     @Test
     fun createDbTest() {
-        assertNotNull(AppDatabase.create(name = "fitslotTest.db"), "Creazione database null")
+        assertNotNull(AppDatabase.create(), "Creazione database null")
     }
     var database: AppDatabase? = null
 
