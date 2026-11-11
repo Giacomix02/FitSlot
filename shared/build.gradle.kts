@@ -31,10 +31,15 @@ kotlin {
             // Dipendenze aggiunte dal team per la navigazione.
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization)
+            // Source: https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
+            implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
         }
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            // Source: https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-test
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
         }
     }
 }

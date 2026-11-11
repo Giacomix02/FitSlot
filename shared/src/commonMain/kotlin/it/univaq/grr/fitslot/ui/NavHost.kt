@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
+import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.TestScreen
 import it.univaq.grr.fitslot.ui.screens.creazionesala.CreazioneSalaScreen
@@ -31,6 +32,8 @@ sealed class Screens {
     @Serializable
     data class Test(val message: String)
 
+    @Serializable
+    data object CorsiScreen
     @Serializable
     data object CreazioneSala
 }
@@ -79,6 +82,10 @@ fun Navigation(salaRepository: SalaRepository) {
                     onSalva = creazioneSalaViewModel::salva
                 )
             }
+        }
+
+        composable<Screens.CorsiScreen> {
+            CorsiScreen()
         }
     }
 }

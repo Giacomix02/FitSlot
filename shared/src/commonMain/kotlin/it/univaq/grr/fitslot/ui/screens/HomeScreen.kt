@@ -1,25 +1,23 @@
 package it.univaq.grr.fitslot.ui.screens
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavController
 import fitslot.shared.generated.resources.Res
 import fitslot.shared.generated.resources.compose_multiplatform
 import it.univaq.grr.fitslot.Screens
@@ -40,6 +38,10 @@ fun HomeScreen (navController: NavController) {
             }
             Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
                 Text("Go to test screen")
+            }
+
+            Button(onClick = {navController.navigate(Screens.CorsiScreen)}) {
+                Text("Pagina corsi")
             }
         // Apre la schermata di creazione della sala.
         Button(
