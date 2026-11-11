@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 
 /** Registra le tabelle delle US integrate senza modificare il funzionamento del login. */
 @Database(
+
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
         AbbonamentoEntity::class, PianoAPuntiEntity::class,
         IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],

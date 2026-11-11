@@ -1,7 +1,7 @@
 package it.univaq.grr.fitslot.domain.models
 
 data class Corso(
-    val id: Long,
+    val id: Long = 0,
     var name: String,
     var salaAssegnata: Sala,
     var fasciaOraria: FasciaOraria

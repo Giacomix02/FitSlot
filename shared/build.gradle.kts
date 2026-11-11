@@ -9,6 +9,7 @@ plugins {
 
 kotlin {
     jvm()
+
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -17,12 +18,19 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.components.resources)
             implementation(libs.compose.uiToolingPreview)
+
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
+
             api(libs.androidx.room3.runtime)
             implementation(libs.androidx.sqlite.bundled)
+
+            // Dipendenze aggiunte dal team per la navigazione.
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization)
+            // Source: https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
+            implementation("androidx.compose.material:material-icons-extended:1.7.8")
+
         }
         jvmTest.dependencies {
             implementation(compose.desktop.uiTestJUnit4)
@@ -35,6 +43,7 @@ kotlin {
         }
     }
 }
+
 dependencies {
     add("kspJvm", libs.androidx.room3.compiler)
 }

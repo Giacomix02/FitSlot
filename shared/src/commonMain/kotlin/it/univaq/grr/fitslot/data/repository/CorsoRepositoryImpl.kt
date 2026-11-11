@@ -6,9 +6,8 @@ import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.repository.CorsoRepository
 
 
-sealed class CorsoRepositoryImpl (private val corsoDao: CorsoDao): CorsoRepository {
+class CorsoRepositoryImpl (private val corsoDao: CorsoDao): CorsoRepository {
     override suspend fun creaCorso(corso: Corso) {
-        corsoDao.insertAll(corso.toEntity())
+        return corsoDao.insertAll(corso.toEntity())
     }
-
 }
