@@ -32,7 +32,8 @@ fun <T> DropDownSelector(
     isRequired: Boolean = false,
     errorMessage: String? = null,
     enabled: Boolean = true,
-    dropdownOffset: Dp = 0.dp
+    dropdownOffset: Dp = 0.dp,
+    customItemContent: (@Composable (T) -> Unit)? = null
 ) {
     var expanded by remember { mutableStateOf(false) }
     val isError = errorMessage != null
@@ -77,10 +78,14 @@ fun <T> DropDownSelector(
             items.forEach { item ->
                 DropdownMenuItem(
                     text = {
-                        Text(
-                            text = itemLabel(item),
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
+                        if (customItemContent != null) {
+                            customItemContent(item)
+                        } else {
+                            Text(
+                                text = itemLabel(item),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     },
                     onClick = {
                         onItemSelected(item)
