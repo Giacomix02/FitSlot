@@ -3,8 +3,10 @@ package it.univaq.grr.fitslot.ui.screens.LoginScreen
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,6 +34,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -38,6 +45,8 @@ import it.univaq.grr.fitslot.Screens
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import it.univaq.grr.fitslot.ui.components.CustomTextField
+import javafx.scene.control.skin.TextInputControlSkin
+import javax.print.attribute.TextSyntax
 
 private val registrationViewModelFactory = viewModelFactory {
     initializer {
@@ -56,7 +65,7 @@ fun RegistrationScreen(
 
 
     val datePickerState = rememberDatePickerState(
-        initialDisplayMode = DisplayMode.Input
+        initialDisplayedMonthMillis = 1009843200000L
     )
 
     val dateFormatter = remember { DatePickerDefaults.dateFormatter() }
@@ -107,6 +116,22 @@ fun RegistrationScreen(
                 .padding(1.dp)
         ) {
             DatePicker(
+                title = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp, bottom = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            fontSize = 25.sp,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            text = "Seleziona data di nascita",
+                            color = MaterialTheme.colorScheme.onPrimaryFixed
+                        )
+                    }
+                },
                 state = datePickerState,
                 dateFormatter = dateFormatter,
                 modifier = Modifier

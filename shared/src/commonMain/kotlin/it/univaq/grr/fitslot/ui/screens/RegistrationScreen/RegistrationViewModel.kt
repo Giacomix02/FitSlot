@@ -11,9 +11,7 @@ import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.UserRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
-import java.io.Console
 
 data class RegistrationField(
     val key: String,
@@ -32,6 +30,22 @@ class RegistrationViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+
+    private val emailRegex = Regex(
+        "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    )
+
+    private val phoneRegex = Regex(
+        "^\\+?[0-9\\s-]{6,15}$"
+    )
+
+    private fun validazioneMail(email: String): Boolean {
+        return emailRegex.matches(email)
+    }
+
+    private fun validazioneTelefono(phone: String): Boolean {
+        return phoneRegex.matches(phone)
+    }
 
     val fields = listOf(
         RegistrationField("email", "Email", "Inserisci l'Email"),
@@ -84,14 +98,37 @@ class RegistrationViewModel(
             return null
         }
 
-        return if (valueOf(field.key).isBlank()) field.errorMessage else null
+        val value = valueOf(field.key).trim()
+
+        // 1. Controllo campo vuoto
+        if (value.isBlank()) {
+            return field.errorMessage
+        }
+
+        // 2. Controllo Email (copre sia email che eventuale emailContatto)
+        if (field.key == "email" || field.key == "emailContatto") {
+            if (!validazioneMail(value)) {
+                return "Formato email non valido"
+            }
+        }
+
+        // 3. Controllo Telefono
+        if (field.key == "telefono") {
+            if (!validazioneTelefono(value)) {
+                return "Inserisci solo cifre valide per il telefono"
+            }
+        }
+
+        return null
     }
 
     fun onRegisterClick(onSuccess: () -> Unit) {
         submitted.value = true
 
         val selectedDateMillis = dateNascitaMillis
-        if (fields.any { it.required && valueOf(it.key).isBlank() } || selectedDateMillis == null) {
+
+        val hasValidationErrors = fields.any { errorOf(it) != null }
+        if (hasValidationErrors || selectedDateMillis == null) {
             registrationErrorText.value = errors.CAMPI_VUOTI.message
             registrationError.value = true
             return
