@@ -7,10 +7,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.sqlite.SQLiteException
+import it.univaq.grr.fitslot.data.local.LocalStorage
+import it.univaq.grr.fitslot.domain.exceptions.LocalStorageException
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.UserRepository
+import it.univaq.grr.fitslot.utils.EmailSender
+import it.univaq.grr.fitslot.utils.EnvRetriever
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 data class RegistrationField(
@@ -30,6 +35,8 @@ class RegistrationViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
+
+    private var ruoloScelto : Ruolo = Ruolo.ISCRITTO
 
     private val emailRegex = Regex(
         "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
@@ -85,6 +92,10 @@ class RegistrationViewModel(
         registrationError.value = false
     }
 
+    fun onRuoloChanged(ruolo: Ruolo) {
+        ruoloScelto = ruolo
+    }
+
     fun dateErrorMessage(): String? {
         return if (submitted.value && dateNascitaMillis == null) {
             "Inserisci la data di nascita"
@@ -122,6 +133,32 @@ class RegistrationViewModel(
         return null
     }
 
+    fun isGestore(): Boolean {
+        try {
+            val utente = LocalStorage.getLocalStorage("user") as User
+            return Ruolo.GESTORE.equals(utente.ruolo)
+        }catch (ex: LocalStorageException) {
+            return false
+        }
+    }
+
+    fun isReceptionist(): Boolean {
+        try {
+            val utente = LocalStorage.getLocalStorage("user") as User
+            return Ruolo.RECEPIONIST.equals(utente.ruolo)
+        }catch (ex: LocalStorageException) {
+            return false
+        }
+    }
+
+    fun getUserFromLocalStorage(): User? {
+        try {
+            return LocalStorage.getLocalStorage("user") as User
+        }catch (ex: LocalStorageException) {
+            return null
+        }
+    }
+
     fun onRegisterClick(onSuccess: () -> Unit) {
         submitted.value = true
 
@@ -145,12 +182,33 @@ class RegistrationViewModel(
             indirizzo = valueOf("indirizzo"),
             citta = valueOf("citta"),
             emailContatto = valueOf("emailContatto"),
-            ruolo = Ruolo.ISCRITTO
+            ruolo = ruoloScelto
         )
+
+        ruoloScelto = Ruolo.ISCRITTO
+
+        val senderEmail = EnvRetriever.get("GMAIL_USER")
+        val appPassword = EnvRetriever.get("GMAIL_APP_PASSWORD")
+
+        print("*****")
+        print(senderEmail)
+        print(appPassword)
 
         viewModelScope.launch {
             try {
                 val result = userRepository.userRegistration(user)
+
+                if(senderEmail!==null && appPassword!==null) {
+                    async{
+                        EmailSender.sendWelcomeEmail(
+                            toEmail = user.emailContatto,
+                            usernameWelcome = user.username,
+                            senderEmail = senderEmail,
+                            appPassword = appPassword
+                        )
+                    }
+                }
+
                 onSuccess()
             } catch (e: Exception) {
                 if (e is CancellationException) {

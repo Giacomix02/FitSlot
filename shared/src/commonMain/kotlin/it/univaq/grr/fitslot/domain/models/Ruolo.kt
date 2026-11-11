@@ -1,8 +1,8 @@
 package it.univaq.grr.fitslot.domain.models
 
-enum class Ruolo {
-    GESTORE,
-    ISCRITTO,
-    ALLENATORE,
-    RECEPIONIST
+enum class Ruolo (val value: String) {
+    GESTORE("Gestore"),
+    RECEPIONIST("Receptionist"),
+    ALLENATORE("Allenatore"),
+    ISCRITTO("Iscritto"),
 }
