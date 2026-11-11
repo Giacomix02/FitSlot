@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
 
+
 /** Passa soltanto le dipendenze delle schermate di Roby alla navigazione del team. */
 @Composable
 fun App(salaRepository: SalaRepository, catalogoRepository: CatalogoRepository) {

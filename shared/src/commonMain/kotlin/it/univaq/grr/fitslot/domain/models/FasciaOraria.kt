@@ -1,13 +1,15 @@
 package it.univaq.grr.fitslot.domain.models
 
+import java.time.Duration
 import java.time.LocalDateTime
 
 data class FasciaOraria(
-    val id: Long,
-    var orarioInizio: LocalDateTime,
-    var orarioFine: LocalDateTime
+    val id: Long = 0,
+    var orarioInizio: LocalDateTime = LocalDateTime.now(),
+    var orarioFine: LocalDateTime = LocalDateTime.now().plusHours(2)
 ) {
-    var durata: Int = orarioFine.hour.minus(orarioInizio.hour)
+        val durata: Int
+        get() = Duration.between(orarioInizio, orarioFine).toHours().toInt()
 
     init {
         require(durata>0) {"Orari devono essere cronologicamente sensati"}
