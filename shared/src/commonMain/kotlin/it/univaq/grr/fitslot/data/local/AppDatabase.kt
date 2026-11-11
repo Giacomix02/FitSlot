@@ -37,9 +37,9 @@ abstract class AppDatabase : RoomDatabase() {
      */
 
     companion object {
-        fun create(): AppDatabase =
+        fun create(name: String = "fitslot.db"): AppDatabase =
             Room.databaseBuilder<AppDatabase>(
-                name = "fitslot.db",
+                name = name,
                 factory = AppDatabaseConstructor::initialize
             )
                 .setDriver(BundledSQLiteDriver())
