@@ -7,25 +7,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +34,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
+import it.univaq.grr.fitslot.ui.components.DropDownMenuForSelection
 import kotlinx.coroutines.launch
 
 @Preview
@@ -145,47 +139,3 @@ fun CorsiScreen() {
 }
 
 
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun <T> DropDownMenuForSelection(
-    showDropDown: Boolean,
-    setDropDown: (Boolean) -> Unit, //Funzione per cambiare il booleano
-    elementsList: List<T>,
-    textFieldState: TextFieldState, //Stato da gestire per cosa è scritto nella selection
-    selectedElement: MutableState<T>,
-    onInteraction: () -> Unit = {},
-    optionText: (element: T) -> String // il testo da mostrare per ogni opzione varia in base all'elemento che diamo
-) {
-    ExposedDropdownMenuBox(
-        expanded = showDropDown, // controlla se il menu è espanso o meno
-        onExpandedChange = { show -> setDropDown(show); if (show) onInteraction() },
-    ) {
-        TextField(
-            state = textFieldState,
-            readOnly = true,
-            modifier = Modifier
-                .menuAnchor(
-                    ExposedDropdownMenuAnchorType.PrimaryEditable,
-                    true
-                )
-                .onFocusChanged { if (it.isFocused) onInteraction() }
-        )
-        ExposedDropdownMenu(
-            expanded = showDropDown, // stessa cosa del box
-            onDismissRequest = { setDropDown(false) }
-        ) {
-            elementsList.forEach { element -> // tutti gli elementi dentro
-                DropdownMenuItem(
-                    text = { Text(optionText(element)) }, // mettiamo il testo impostato in base a quale elemento mostrare
-                    onClick = {
-                        onInteraction()
-                        selectedElement.value = element
-                        textFieldState.setTextAndPlaceCursorAtEnd(optionText(element))
-                        setDropDown(false)
-                    }
-                )
-            }
-        }
-
-    }
-}
