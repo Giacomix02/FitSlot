@@ -1,8 +1,10 @@
 package it.univaq.grr.fitslot.data.repository
 
+import it.univaq.grr.fitslot.data.local.LocalStorage
 import it.univaq.grr.fitslot.data.local.dao.UserDao
 import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
+import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.UserRepository
 import it.univaq.grr.fitslot.utils.PasswordSecurity
@@ -30,7 +32,11 @@ class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
             expectedHashBase64 = userEntity.password
         )
 
-        return if (isPasswordValid) userEntity.toDomain() else null
+
+        if(isPasswordValid) {
+            LocalStorage.addLocalStorage("user",userEntity.toDomain())
+            return userEntity.toDomain()
+        }else return null
     }
 
     override suspend fun userRegistration(user: User): Long {

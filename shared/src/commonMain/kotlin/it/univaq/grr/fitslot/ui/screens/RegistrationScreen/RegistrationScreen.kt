@@ -31,6 +31,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -39,7 +42,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import it.univaq.grr.fitslot.Screens
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
+import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.ui.components.CustomTextField
+import it.univaq.grr.fitslot.ui.components.DropDownSelector
+import javax.management.relation.Role
 
 private val registrationViewModelFactory = viewModelFactory {
     initializer {
@@ -55,6 +61,8 @@ fun RegistrationScreen(
     navController: NavController,
     viewModel: RegistrationViewModel = viewModel(factory = registrationViewModelFactory),
 ) {
+
+    var selectedRuolo by remember { mutableStateOf<Ruolo?>(null) }
 
 
     val datePickerState = rememberDatePickerState(
@@ -76,6 +84,10 @@ fun RegistrationScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+
+        // vede se il gestore ha fatto l'accesso
+
+
         viewModel.fields.forEach { field ->
             CustomTextField(
                 value = viewModel.valueOf(field.key),
@@ -134,6 +146,23 @@ fun RegistrationScreen(
                         scaleY = 1f,
                         transformOrigin = TransformOrigin(0f, 0f)
                     )
+            )
+        }
+
+        if(viewModel.isGestore()){
+            DropDownSelector(
+                items = Ruolo.entries,
+                selectedItem = selectedRuolo,
+                onItemSelected = { ruolo ->
+                    selectedRuolo = ruolo
+                    viewModel.onRuoloChanged(ruolo)
+                },
+                label = "Ruolo",
+                itemLabel = { it.value },
+                placeholder = "Seleziona un ruolo",
+                isRequired = true,
+                errorMessage = if (/* validazione fallita */ false) "Seleziona un ruolo valido" else null,
+                modifier = Modifier.fillMaxWidth(0.6f)
             )
         }
 

@@ -11,12 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Properties
 
-class GmailSmtpSender(
-    private val senderEmail: String,
-    private val appPassword: String // La password per le app di 16 lettere (senza spazi)
-) : EmailSender {
+actual object EmailSender{
 
-    override suspend fun sendWelcomeEmail(toEmail: String, username: String): Result<Unit> =
+    actual suspend fun sendWelcomeEmail(toEmail: String, usernameWelcome: String, senderEmail: String, appPassword: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             runCatching {
                 val props = Properties().apply {
@@ -39,10 +36,10 @@ class GmailSmtpSender(
                 val message = MimeMessage(session).apply {
                     setFrom(InternetAddress(senderEmail, "FitSlot"))
                     setRecipient(Message.RecipientType.TO, InternetAddress(toEmail))
-                    subject = "Conferma registrazione: Benvenuto $username!"
+                    subject = "Conferma registrazione: Benvenuto $usernameWelcome!"
                     setText(
                         """
-                        Ciao $username,
+                        Ciao $usernameWelcome,
                         
                         Il tuo account è stato creato con successo all'interno del sistema.
                         

@@ -54,7 +54,7 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
 }
 
 private fun SQLiteConnection.seedDefaultAdmin() {
-    val adminEmail = "admin@fitslot.it"
+    val adminEmail = "admin"
     val plainPassword = "admin"
     val salt = PasswordSecurity.generateSalt()
     val hashedPassword = PasswordSecurity.hashPassword(plainPassword, salt)
