@@ -33,9 +33,14 @@ jobs:
       - name: Gradle setup
         uses: ./.github/actions/gradle-setup
 
+      - name: Install UI test display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth libgl1 libfontconfig1 libfreetype6
+
       # --continue permette a Gradle di eseguire tutti i test anche se uno fallisce
       - name: Run unit tests
-        run: ./gradlew jvmTest --continue
+        run: xvfb-run -a ./gradlew :desktopApp:compileKotlin jvmTest --continue
 
       # -------------------------------------------------------------------------
       # 1. JOB SUMMARY: Tabella Markdown riassuntiva nella schermata del workflow

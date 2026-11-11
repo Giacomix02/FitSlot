@@ -7,7 +7,6 @@ import androidx.navigation.NavController
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.safeContentPadding
@@ -34,6 +33,9 @@ fun HomeScreen(navController: NavController) {
     ) {
         Text("Screen Home")
         Text("Verranno testati tutti gli screen e le relative navigazioni")
+        Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Crea sala") }
+        Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
+        Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
         Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
             Text("Go to test screen")
         }

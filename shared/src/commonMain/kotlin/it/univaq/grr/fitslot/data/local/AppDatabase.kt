@@ -1,25 +1,27 @@
 package it.univaq.grr.fitslot.data.local
-import androidx.room3.ConstructedBy
-import androidx.room3.Database
-import androidx.room3.Room
-import androidx.room3.RoomDatabase
-import androidx.room3.RoomDatabaseConstructor
+
+import androidx.room3.*
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import it.univaq.grr.fitslot.data.local.dao.UserDao
-import it.univaq.grr.fitslot.data.local.entity.UserEntity
+import it.univaq.grr.fitslot.data.local.converter.Converters
+import it.univaq.grr.fitslot.data.local.dao.*
+import it.univaq.grr.fitslot.data.local.entity.*
 import kotlinx.coroutines.Dispatchers
 
+/** Registra le tabelle delle US integrate senza modificare il funzionamento del login. */
 @Database(
-    //dichiarare le entità che fanno parte del database
-    entities = [UserEntity::class],
+    entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
+        AbbonamentoEntity::class, PianoAPuntiEntity::class,
+        IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
     version = 1,
     exportSchema = true
 )
-
-//@ColumnTypeConverters(NomeConverter::class) //Inserire solo se si hanno dei converter personalizzati, altrimenti non serve
+@ColumnTypeConverters(Converters::class)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
+    abstract fun salaDao(): SalaDao
     abstract fun userDao(): UserDao
+    abstract fun corsoDao(): CorsoDao
+    abstract fun catalogoDao(): CatalogoDao
 
     companion object {
         private val instance: AppDatabase by lazy {
@@ -36,7 +38,6 @@ abstract class AppDatabase : RoomDatabase() {
     }
 }
 
-// Room genera l'implementazione "actual" su ogni piattaforma
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
     override fun initialize(): AppDatabase
