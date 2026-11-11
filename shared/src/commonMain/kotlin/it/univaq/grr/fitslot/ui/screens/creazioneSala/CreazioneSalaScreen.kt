@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.creazionesala
+package it.univaq.grr.fitslot.ui.screens.creazioneSala
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

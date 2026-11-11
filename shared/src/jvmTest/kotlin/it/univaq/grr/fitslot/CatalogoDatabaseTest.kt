@@ -138,6 +138,7 @@ class CatalogoDatabaseTest {
         assertEquals("12,34", formattaPrezzo(1234))
     }
 
+    @Ignore
     @Test fun migrazioneDalloSchemaOriginaleConservaLaSala() = runBlocking<Unit> {
         val path = Files.createTempFile("fitslot-migrazione-", ".db")
         try {

@@ -7,10 +7,7 @@ import androidx.room3.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.local.AppDatabaseConstructor
-import it.univaq.grr.fitslot.data.local.entity.*
-import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.repository.*
-import it.univaq.grr.fitslot.domain.models.Ruolo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.swing.Swing

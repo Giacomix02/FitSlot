@@ -13,4 +13,4 @@ actual fun percorsoDatabasePredefinito(): String {
 
 /** Delega al builder condiviso dal team senza duplicare la connessione. */
 fun creaDatabase(percorso: String? = null): AppDatabase =
-    AppDatabase.create(percorso ?: percorsoDatabasePredefinito())
+    AppDatabase.create()

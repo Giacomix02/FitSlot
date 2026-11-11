@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.creazionesala
+package it.univaq.grr.fitslot.ui.screens.creazioneSala
 
 /** Contiene i valori dei campi e lo stato del salvataggio
  * mostrati nella schermata di creazione di una sala.*/

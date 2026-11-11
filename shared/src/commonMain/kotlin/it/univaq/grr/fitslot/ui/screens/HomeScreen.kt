@@ -36,9 +36,6 @@ fun HomeScreen(navController: NavController) {
         Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Crea sala") }
         Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
         Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
-        Button(onClick = { navController.navigate(Screens.Test("test message")) }) {
-            Text("Go to test screen")
-        }
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }

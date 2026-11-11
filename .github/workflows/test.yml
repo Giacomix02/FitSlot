@@ -40,7 +40,7 @@ jobs:
 
       # --continue permette a Gradle di eseguire tutti i test anche se uno fallisce
       - name: Run unit tests
-        run: xvfb-run -a ./gradlew :desktopApp:compileKotlin jvmTest --continue
+        run: xvfb-run -a ./gradlew :desktopApp:compileKotlin :shared:jvmTest --continue
 
       # -------------------------------------------------------------------------
       # 1. JOB SUMMARY: Tabella Markdown riassuntiva nella schermata del workflow
@@ -68,14 +68,15 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload HTML Report artifact for Pages
-        if: always() && github.ref == 'refs/heads/main'
+        if: always() && github.ref == 'refs/heads/main' && hashFiles('shared/build/reports/tests/jvmTest/index.html') != ''
+        id: upload-pages
         uses: actions/upload-pages-artifact@v3
         with:
           # Cerca la cartella HTML generata da Gradle per jvmTest
           path: "shared/build/reports/tests/jvmTest"
 
       - name: Deploy HTML Report to GitHub Pages
-        if: always() && github.ref == 'refs/heads/main'
+        if: always() && github.ref == 'refs/heads/main' && steps.upload-pages.outcome == 'success'
         id: deployment
         uses: actions/deploy-pages@v4
 

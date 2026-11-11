@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.creazionesala
+package it.univaq.grr.fitslot.ui.screens.creazioneSala
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

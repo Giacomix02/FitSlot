@@ -50,7 +50,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `registration returns 1 (user id) on success`() = runTest {
+    fun `registration returns 0 (user id) on success`() = runTest {
         val user = createUser("Password123!")
         val repository = UserRepositoryImpl(FakeUserDao())
 
