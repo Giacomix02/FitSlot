@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -18,8 +17,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerFormatter
-import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -34,9 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -45,8 +40,6 @@ import it.univaq.grr.fitslot.Screens
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import it.univaq.grr.fitslot.ui.components.CustomTextField
-import javafx.scene.control.skin.TextInputControlSkin
-import javax.print.attribute.TextSyntax
 
 private val registrationViewModelFactory = viewModelFactory {
     initializer {
