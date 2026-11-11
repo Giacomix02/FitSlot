@@ -4,20 +4,20 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -60,6 +60,9 @@ fun LoginScreen(
             label = {Text("Password") },
             visualTransformation = PasswordVisualTransformation()
         )
+        if (viewModel.loginError) {
+            Text("Email o password non validi")
+        }
         Button(onClick = {
             viewModel.onLoginClick (
                 onSuccess = {
@@ -69,8 +72,18 @@ fun LoginScreen(
         }) {
            Text("Login")
         }
-        if (viewModel.loginError) {
-            Text("Email o password non validi")
+
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        )
+        Button(
+            onClick = {
+                navController.navigate(Screens.Registration)
+            }
+        ) {
+            Text("Oppure Registrati")
         }
     }
 }
