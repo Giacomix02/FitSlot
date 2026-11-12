@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.domain.models
+package it.univaq.grr.fitslot.utils
 
 /** Converte euro in centesimi senza utilizzare numeri a virgola mobile. */
 fun prezzoInCentesimi(testo: String): Long? {
@@ -10,6 +10,7 @@ fun prezzoInCentesimi(testo: String): Long? {
     if (euro > (Long.MAX_VALUE - centesimi) / 100) return null
     return euro * 100 + centesimi
 }
+
 
 fun formattaPrezzo(centesimi: Long): String =
     "${centesimi / 100},${(centesimi % 100).toString().padStart(2, '0')}"

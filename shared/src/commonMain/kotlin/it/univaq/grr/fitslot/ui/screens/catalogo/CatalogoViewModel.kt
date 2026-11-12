@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.domain.models.*
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
+import it.univaq.grr.fitslot.utils.formattaPrezzo
+import it.univaq.grr.fitslot.utils.prezzoInCentesimi
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch

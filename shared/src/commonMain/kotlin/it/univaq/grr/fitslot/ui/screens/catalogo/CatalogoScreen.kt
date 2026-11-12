@@ -7,7 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import it.univaq.grr.fitslot.domain.models.formattaPrezzo
+import it.univaq.grr.fitslot.utils.formattaPrezzo
 
 /** Mostra il catalogo e il modulo di creazione o modifica del piano. */
 @Composable

@@ -6,9 +6,10 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import it.univaq.grr.fitslot.data.local.*
 import it.univaq.grr.fitslot.data.local.entity.*
-import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.repository.*
 import it.univaq.grr.fitslot.domain.models.*
+import it.univaq.grr.fitslot.utils.formattaPrezzo
+import it.univaq.grr.fitslot.utils.prezzoInCentesimi
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.test.*
@@ -135,7 +136,11 @@ class CatalogoDatabaseTest {
         assertEquals(1230L, prezzoInCentesimi("12.3"))
         assertEquals(0L, prezzoInCentesimi("0"))
         assertEquals(100L, prezzoInCentesimi(" 1 "))
-        for (valore in listOf("", "abc", "-1", "1,234", "1.2.3", "99999999999999999999")) assertNull(prezzoInCentesimi(valore))
+        for (valore in listOf("", "abc", "-1", "1,234", "1.2.3", "99999999999999999999")) assertNull(
+            prezzoInCentesimi(
+                valore
+            )
+        )
         assertEquals(Long.MAX_VALUE, prezzoInCentesimi("92233720368547758.07"))
         assertNull(prezzoInCentesimi("92233720368547758.08"))
         assertEquals("12,34", formattaPrezzo(1234))
