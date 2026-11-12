@@ -18,6 +18,9 @@ import kotlinx.serialization.json.*
 
 /** Verifica i vincoli delle US contro SQLite reale, senza toccare i dati locali. */
 class CatalogoDatabaseTest {
+    @BeforeTest fun preparaGestore() { impostaUtenteGestioneTest() }
+    @AfterTest fun pulisciUtente() { impostaUtenteGestioneTest(null) }
+
     private fun database(path: String? = null): AppDatabase {
         val builder = if (path == null) Room.inMemoryDatabaseBuilder<AppDatabase>(
             factory = { AppDatabaseConstructor.initialize() })

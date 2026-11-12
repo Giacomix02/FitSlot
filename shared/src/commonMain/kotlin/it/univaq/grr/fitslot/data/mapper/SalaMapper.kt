@@ -13,3 +13,5 @@ fun Sala.toEntity(): SalaEntity{
         capienza = this.capienza
     )
 }
+
+fun SalaEntity.toDomain(): Sala = Sala(id = id, nome = nome, capienza = capienza)

@@ -1,94 +1,72 @@
 package it.univaq.grr.fitslot.ui.screens.creazioneSala
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.domain.models.Sala
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-
-/** Gestisce i campi e il salvataggio della nuova sala.
- * Accede ai dati attraverso il repository, senza conoscere Room. */
-
-class CreazioneSalaViewModel(
-    private val salaRepository: SalaRepository
-) : ViewModel() {
-
-    // Solo il ViewModel può modificare lo stato.
+/** Gestisce modulo ed elenco senza accedere direttamente al database. */
+class CreazioneSalaViewModel(private val salaRepository: SalaRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(CreazioneSalaUiState())
-
-    // La schermata può osservare lo stato, senza modificarlo direttamente.
     val uiState = _uiState.asStateFlow()
-
-    fun aggiornaNome(nome: String) {
-        if (_uiState.value.salvataggioInCorso) return
-
-        _uiState.update {
-            it.copy(nome = nome, errore = null, salaCreata = false)
+    init {
+        viewModelScope.launch {
+            try { salaRepository.osservaSale().collect { sale -> _uiState.update { it.copy(elenco = sale, caricamento = false) } } }
+            catch (e: CancellationException) { throw e }
+            catch (e: Exception) { _uiState.update { it.copy(caricamento = false, errore = "Impossibile caricare le sale. Torna alla Home e riprova.") } }
         }
     }
-
-    fun aggiornaCapienza(capienza: String) {
+    private fun aggiorna(modifica: (CreazioneSalaUiState) -> CreazioneSalaUiState) {
         if (_uiState.value.salvataggioInCorso) return
-
-        _uiState.update {
-            it.copy(capienza = capienza, errore = null, salaCreata = false)
-        }
+        _uiState.update { modifica(it).copy(errore = null, conferma = null) }
     }
-
+    fun aggiornaNome(nome: String) = aggiorna { it.copy(nome = nome) }
+    fun aggiornaCapienza(capienza: String) = aggiorna { it.copy(capienza = capienza) }
+    fun modifica(sala: Sala) = aggiorna { it.copy(idModifica = sala.id, nome = sala.nome, capienza = sala.capienza.toString()) }
+    fun annullaModifica() = aggiorna { it.copy(idModifica = null, nome = "", capienza = "") }
+    fun richiediEliminazione(sala: Sala) = aggiorna { it.copy(daEliminare = sala) }
+    fun annullaEliminazione() = aggiorna { it.copy(daEliminare = null) }
     fun salva() {
         val stato = _uiState.value
-
-        // Evita richieste duplicate durante il salvataggio
-        // o dopo il successo, finché i campi non vengono modificati.
-        if (stato.salvataggioInCorso || stato.salaCreata) return
-
-        val nome = stato.nome.trim()
+        if (stato.salvataggioInCorso) return
         val capienza = stato.capienza.trim().toIntOrNull()
-
-        if (nome.isBlank()) {
+        val errore = when {
+            stato.nome.isBlank() -> "Inserisci il nome della sala."
+            capienza == null || capienza <= 0 -> "Inserisci una capienza intera maggiore di zero."
+            else -> null
+        }
+        if (errore != null) { _uiState.update { it.copy(errore = errore, conferma = null) }; return }
+        esegui {
+            val sala = Sala(stato.idModifica ?: 0, stato.nome.trim(), capienza!!)
+            if (stato.idModifica == null) salaRepository.inserisci(sala) else salaRepository.modifica(sala)
+            _uiState.update { it.copy(idModifica = null, nome = "", capienza = "", conferma =
+                if (stato.idModifica == null) "Sala creata correttamente." else "Sala modificata correttamente.") }
+        }
+    }
+    fun confermaEliminazione() {
+        if (_uiState.value.salvataggioInCorso) return
+        val sala = _uiState.value.daEliminare ?: return
+        esegui {
+            salaRepository.elimina(sala.id)
             _uiState.update {
-                it.copy(errore = "Inserisci il nome della sala.")
+                val stato = if (it.idModifica == sala.id) it.copy(idModifica = null, nome = "", capienza = "") else it
+                stato.copy(daEliminare = null, conferma = "Sala eliminata correttamente.")
             }
-            return
         }
-
-        if (capienza == null || capienza <= 0) {
-            _uiState.update {
-                it.copy(errore = "Inserisci una capienza intera maggiore di zero.")
-            }
-            return
-        }
-
-        _uiState.update {
-            it.copy(salvataggioInCorso = true, errore = null)
-        }
-
-        // La coroutine permette di chiamare la funzione suspend del repository.
+    }
+    private fun esegui(operazione: suspend () -> Unit) {
+        _uiState.update { it.copy(salvataggioInCorso = true, errore = null, conferma = null) }
         viewModelScope.launch {
-            try {
-                val sala = Sala(nome = nome, capienza = capienza)
-                salaRepository.inserisci(sala)
-
-                // Mostra la conferma soltanto dopo l'inserimento riuscito.
-                _uiState.update {
-                    it.copy(salaCreata = true)
-                }
-            } catch (e: CancellationException) {
-                // La cancellazione della coroutine deve propagarsi.
-                throw e
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(errore = "Impossibile salvare la sala. Riprova.")
-                }
-            } finally {
-                _uiState.update {
-                    it.copy(salvataggioInCorso = false)
-                }
-            }
+            try { operazione() }
+            catch (e: CancellationException) { throw e }
+            catch (e: IllegalArgumentException) { mostraErrore(e.message) }
+            catch (e: IllegalStateException) { mostraErrore(e.message) }
+            catch (e: Exception) { mostraErrore("Operazione non riuscita. Riprova.") }
+            finally { _uiState.update { it.copy(salvataggioInCorso = false) } }
         }
+    }
+    private fun mostraErrore(messaggio: String?) {
+        _uiState.update { it.copy(errore = messaggio ?: "Operazione non riuscita.", daEliminare = null) }
     }
 }

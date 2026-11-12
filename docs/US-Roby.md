@@ -9,21 +9,36 @@ Dalla directory `/Users/uni/IdeaProjects/FitSlot`:
 ```
 
 L'applicazione usa un unico database in `~/.fitslot/fitslot.db`.
-Login, password, sessione e registrazione sono di competenza delle US del team.
-I file di login, UserDao, UserRepository e PasswordSecurity coincidono con main.
-Non viene aggiunta alcuna configurazione del primo gestore.
-L'accesso come gestore è una precondizione delle US di Roby: il collegamento
-dei permessi verrà concordato con chi implementa l'autenticazione. La Home attuale
-del team è una schermata di prova con collegamenti alle diverse funzionalità.
+Login, password, sessione e registrazione rimangono di competenza del team e i relativi
+file non sono modificati da questo completamento. Il login esistente salva un oggetto
+User alla chiave "user" di LocalStorage. PermessiGestioneDaLocalStorage legge quel ruolo
+senza creare, modificare o cancellare sessioni.
 
-`FITSLOT_DB_PATH` permette di usare un database separato per le prove.
-I database sperimentali creati in passato dai colleghi come `fitslot.db`
-nella directory di lavoro non vengono importati o cancellati automaticamente.
+Il gestore vede sulla Home Gestisci sale, Gestisci abbonamenti e Gestisci piani a punti.
+Le tre destinazioni rifiutano l'accesso agli altri utenti e i repository ricontrollano
+il ruolo prima di ogni inserimento, modifica o eliminazione. Mancanza di sessione o
+ruolo diverso da GESTORE produce un rifiuto. Non esiste una nuova schermata di login
+o di creazione del gestore.
 
 ## GRR-14
 
-Creazione della sala con nome e capienza, salvataggio e conferma.
-Il collegamento al ruolo del gestore è demandato all'integrazione con il team.
+Elenco delle sale salvate, creazione, modifica di nome e capienza e cancellazione con
+conferma. La modifica mantiene l'ID della sala, quindi non cambia i riferimenti dei corsi.
+La capienza deve essere intera e maggiore di zero, il nome obbligatorio.
+
+L'eliminazione viene bloccata se esiste un corso con salaAssegnataId corrispondente.
+Il controllo è parte dell'istruzione DELETE ed è eseguito in transazione con la gestione
+dell'esito: non dipende solo dal pulsante. Il messaggio mostrato è:
+"Impossibile eliminare la sala: è assegnata a uno o più corsi."
+
+Annullare modifica o eliminazione non modifica il database. Gli errori mantengono i dati
+del modulo. Una sala assegnata a un corso può essere rinominata o cambiare capienza:
+non vengono inventate regole sulle prenotazioni, assenti nel modello attuale.
+
+Il controllo copre i collegamenti realmente presenti oggi (tabella corso). Eventuali
+future tabelle di prenotazioni o associazioni sala-abbonamento andranno aggiunte ai
+controlli nel momento in cui saranno introdotte. Il codice dei corsi del collega
+non viene modificato.
 
 ## GRR-15
 
@@ -48,7 +63,8 @@ Come concordato, i punti rappresentano ingressi, non una seconda valuta.
 - Prima dell'eliminazione viene richiesta conferma.
 - L'eliminazione viene impedita se ci sono iscritti; l'utente riceve un messaggio.
 - Errori di salvataggio mantengono i dati del modulo per permettere la correzione.
-- Il controllo del gestore non viene reimplementato nelle US dei cataloghi: va integrato con il team.
+- Il ruolo è letto dalla sessione esistente del team, senza reimplementare il login.
+- Anche i repository delle tre US verificano GESTORE prima di ogni scrittura.
 
 Prezzo, durata in giorni e validazioni sono le scelte minime di implementazione:
 vanno confermate in revisione dal team, perché le US non dettagliano questi campi.
@@ -66,16 +82,12 @@ Il controllo considera tutte le associazioni presenti: un piano collegato a
 un iscritto non può essere eliminato. La transazione e i vincoli SQLite evitano
 eliminazioni accidentali anche se il dato cambia durante l'operazione.
 
-## Migrazioni
+## Database
 
-- Versione 1: tabella delle sale già usata nella prima prova.
-- Versione 2: integra utenti, corsi e fasce orarie dei colleghi.
-- Versione 3: aggiunge cataloghi e associazioni agli iscritti.
-
-Le migrazioni sono additive, senza fallback distruttivo. Gli schemi esportati
-sono conservati in `shared/schemas`. Il test parte dallo schema 1 esportato,
-verifica il passaggio alla versione attuale e riapre il database controllando
-che sala e piano salvati siano ancora presenti.
+Questo completamento non cambia tabelle o schema: aggiunge query e operazioni sulle
+tabelle già presenti in main. Non introduce nuove migrazioni e non modifica il builder
+del database condiviso. I file e i test storici delle migrazioni restano come in main;
+il test storico saltato non rappresenta una verifica eseguita da questa modifica.
 
 ## Verifiche
 
@@ -85,8 +97,13 @@ che sala e piano salvati siano ancora presenti.
 
 I test SQLite usano database temporanei o in memoria, non il database personale.
 Coprono CRUD dei due cataloghi, duplicati in creazione/modifica, piano con
-iscritti, chiavi esterne, validazione dei prezzi e migrazione. I test Compose verificano le azioni
-dei moduli. I test di login e password sono quelli del collega, mantenuti invariati.
+iscritti, chiavi esterne e validazione dei prezzi. I nuovi test coprono anche CRUD sale, collegamenti ai corsi e permessi. I test Compose verificano le azioni
+dei moduli, la conferma e l'annullamento dell'eliminazione, il blocco della sala usata,
+l'assenza delle funzioni per gli iscritti e il rifiuto di una route se il ruolo è cambiato.
+I test di login e password sono quelli del collega, mantenuti invariati.
+
+I dati utente impostati nei nostri test esistono solo nel processo di test e vengono
+rimossi dopo ciascuna prova. I test non accedono al database personale.
 
 Il lavoro dei corsi conserva il TODO del collega in `Sala.isAlreadyOccupiedAtFasciaOraria`:
 il controllo calendario è ancora provvisorio e non fa parte delle US di Roby.
