@@ -18,6 +18,7 @@ captures
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
 node_modules/
+.env
 /shared/schemas/
 /desktopApp/fitslot.db
 /desktopApp/fitslot.db-wal

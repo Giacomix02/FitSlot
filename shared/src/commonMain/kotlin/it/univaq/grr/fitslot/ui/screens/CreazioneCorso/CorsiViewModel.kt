@@ -1,23 +1,21 @@
 package it.univaq.grr.fitslot.ui.screens.CreazioneCorso
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.CorsoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.SalaRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
 import it.univaq.grr.fitslot.domain.repository.CorsoRepository
+import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import java.time.LocalDateTime
-
-val sale = listOf(
-    Sala(1, "fitness", 10),
-    Sala(2, "pesi", 18),
-    Sala(3, "yoga", 20)
-)
-
 val fasceOrarie = listOf(
     FasciaOraria(1, LocalDateTime.parse("2027-06-01T15:30"),LocalDateTime.parse("2027-06-01T17:30") ),
     FasciaOraria(2, LocalDateTime.parse("2027-06-01T18:30"),LocalDateTime.parse("2027-06-01T19:30") ),
@@ -35,9 +33,15 @@ data class CorsiScreenState(
 class CorsiViewModel: ViewModel() {
     val database = AppDatabase.create()
     val corsoRepository: CorsoRepository = CorsoRepositoryImpl(database.corsoDao())
+    val salaRepository : SalaRepository = SalaRepositoryImpl(database.salaDao())
     val uiState: StateFlow<CorsiScreenState> field = MutableStateFlow(CorsiScreenState())
 
-    val saleList: List<Sala> field = MutableList<Sala>(sale.size) { index -> sale[index] }
+    val saleList = salaRepository.osservaSale()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
     val fasceOrarieList: List<FasciaOraria> field = MutableList(fasceOrarie.size) { index -> fasceOrarie[index] }
 
     fun showDialog() { uiState.update { it.copy(showDialog = true) } }

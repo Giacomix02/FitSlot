@@ -45,6 +45,8 @@ fun CorsiScreen() {
     val viewModel: CorsiViewModel = viewModel<CorsiViewModel> { CorsiViewModel() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val saleList by viewModel.saleList.collectAsStateWithLifecycle()
+
     var selectedSala by remember { mutableStateOf<Sala?>(null) }
     var selectedFasciaOraria by remember { mutableStateOf<FasciaOraria?>(null) }
     FloatingActionButton(
@@ -78,7 +80,7 @@ fun CorsiScreen() {
                             modifier = Modifier.fillMaxWidth()
                         )
                         DropDownSelector(
-                            items = viewModel.saleList,
+                            items = saleList,
                             selectedItem = selectedSala,
                             onItemSelected = { sala ->
                                 selectedSala = sala
@@ -108,7 +110,7 @@ fun CorsiScreen() {
                             Button(onClick = { viewModel.viewModelScope.launch {
                                 viewModel.creaCorso(
                                     nomeCorso,
-                                    selectedSala ?: viewModel.saleList.first(),
+                                    selectedSala ?: saleList.first(),
                                     selectedFasciaOraria ?: viewModel.fasceOrarieList.first()
                                 )
                             }

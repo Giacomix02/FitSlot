@@ -18,7 +18,7 @@ import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
-import it.univaq.grr.fitslot.ui.screens.LoginScreen.RegistrationScreen
+import it.univaq.grr.fitslot.ui.screens.RegistrationScreen.RegistrationScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoViewModel
 import it.univaq.grr.fitslot.ui.screens.catalogo.TipoCatalogo

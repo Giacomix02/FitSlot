@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.LoginScreen
+package it.univaq.grr.fitslot.ui.screens.RegistrationScreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
@@ -196,7 +196,7 @@ class RegistrationViewModel(
 
         viewModelScope.launch {
             try {
-                val result = userRepository.userRegistration(user)
+                userRepository.userRegistration(user)
 
                 if(senderEmail!==null && appPassword!==null) {
                     async{

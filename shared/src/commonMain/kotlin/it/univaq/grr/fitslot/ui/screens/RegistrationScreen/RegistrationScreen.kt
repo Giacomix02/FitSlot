@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.LoginScreen
+package it.univaq.grr.fitslot.ui.screens.RegistrationScreen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -45,7 +45,6 @@ import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.ui.components.CustomTextField
 import it.univaq.grr.fitslot.ui.components.DropDownSelector
-import javax.management.relation.Role
 
 private val registrationViewModelFactory = viewModelFactory {
     initializer {
