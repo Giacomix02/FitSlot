@@ -2,6 +2,8 @@ package it.univaq.grr.fitslot
 
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.mapper.toEntity
+import it.univaq.grr.fitslot.data.repository.CorsoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.SalaRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
@@ -106,7 +108,12 @@ class CreazioneCorsoTest {
 
         @Test
         fun CreazioneCorsoVisibilitaFeedbackTest() {
-            val viewModel = CorsiViewModel()
+            // Database in memoria: ogni esecuzione parte da uno stato pulito
+            // e non usa il database personale dell'utente.
+            val viewModel = CorsiViewModel(
+                corsoRepository = CorsoRepositoryImpl(database!!.corsoDao()),
+                salaRepository = SalaRepositoryImpl(database!!.salaDao())
+            )
             val uiState = viewModel.uiState
 
             runBlocking { viewModel.creaCorso("    ", sala, fasciaOraria) }

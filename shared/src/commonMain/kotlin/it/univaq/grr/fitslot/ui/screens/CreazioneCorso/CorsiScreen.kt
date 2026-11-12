@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,29 @@ fun CorsiScreen() {
 
     var selectedSala by remember { mutableStateOf<Sala?>(null) }
     var selectedFasciaOraria by remember { mutableStateOf<FasciaOraria?>(null) }
+
+    fun resetCampi() {
+        nomeCorso = ""
+        selectedSala = null
+        selectedFasciaOraria = null
+    }
+
+    // Opzioni mostrate nei menu: se è già stata scelta una fascia oraria
+    // mostriamo solo le sale libere e viceversa.
+    var saleSelezionabili by remember { mutableStateOf<List<Sala>>(emptyList()) }
+    var fasceSelezionabili by remember { mutableStateOf(viewModel.fasceOrarieList) }
+
+    LaunchedEffect(saleList, selectedFasciaOraria, uiState.showCreazioneCorsoEseguita) {
+        saleSelezionabili = selectedFasciaOraria
+            ?.let { fascia -> viewModel.saleLibereInFascia(fascia) }
+            ?: saleList
+    }
+    LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita) {
+        fasceSelezionabili = selectedSala
+            ?.let { sala -> viewModel.fasceLibereInSala(sala) }
+            ?: viewModel.fasceOrarieList
+    }
+
     FloatingActionButton(
         modifier = Modifier.width(16.dp).height(16.dp).wrapContentSize(),
         onClick = { viewModel.showDialog() },
@@ -80,7 +104,7 @@ fun CorsiScreen() {
                             modifier = Modifier.fillMaxWidth()
                         )
                         DropDownSelector(
-                            items = saleList,
+                            items = saleSelezionabili,
                             selectedItem = selectedSala,
                             onItemSelected = { sala ->
                                 selectedSala = sala
@@ -90,8 +114,14 @@ fun CorsiScreen() {
                             itemLabel = { sala -> "${sala.nome}, capienza: ${sala.capienza}" },
                             modifier = Modifier.fillMaxWidth()
                         )
+                        if (selectedFasciaOraria != null && saleSelezionabili.isEmpty()) {
+                            Text(
+                                "Nessuna sala libera in questa fascia oraria",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                         DropDownSelector(
-                            items = viewModel.fasceOrarieList,
+                            items = fasceSelezionabili,
                             selectedItem = selectedFasciaOraria,
                             onItemSelected = { fasciaOraria ->
                                 selectedFasciaOraria = fasciaOraria
@@ -103,19 +133,30 @@ fun CorsiScreen() {
                             },
                             modifier = Modifier.fillMaxWidth()
                         )
+                        if (selectedSala != null && fasceSelezionabili.isEmpty()) {
+                            Text(
+                                "Nessuna fascia oraria libera per questa sala",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Button(onClick = { viewModel.viewModelScope.launch {
-                                viewModel.creaCorso(
-                                    nomeCorso,
-                                    selectedSala ?: saleList.first(),
-                                    selectedFasciaOraria ?: viewModel.fasceOrarieList.first()
-                                )
-                            }
-
-                            }) {
+                            val salaDaCreare = selectedSala ?: saleSelezionabili.firstOrNull()
+                            val fasciaDaCreare = selectedFasciaOraria ?: fasceSelezionabili.firstOrNull()
+                            Button(
+                                enabled = salaDaCreare != null && fasciaDaCreare != null,
+                                onClick = {
+                                    val sala = salaDaCreare ?: return@Button
+                                    val fascia = fasciaDaCreare ?: return@Button
+                                    viewModel.viewModelScope.launch {
+                                        if (viewModel.creaCorso(nomeCorso, sala, fascia)) {
+                                            resetCampi()
+                                        }
+                                    }
+                                }
+                            ) {
                                 Row {
                                     Text("Crea corso")
                                     Icon(Icons.Default.Add, contentDescription = "aggiungi corso")

@@ -11,6 +11,13 @@ data class FasciaOraria(
         val durata: Int
         get() = Duration.between(orarioInizio, orarioFine).toHours().toInt()
 
+    /**
+     * Due fasce si sovrappongono quando una inizia prima che l'altra finisca.
+     * Una fascia che inizia esattamente quando l'altra termina non è in conflitto.
+     */
+    fun siSovrapponeCon(altra: FasciaOraria): Boolean =
+        orarioInizio < altra.orarioFine && orarioFine > altra.orarioInizio
+
     init {
         require(durata>0) {"Orari devono essere cronologicamente sensati"}
         require(durata < DURATA_MASSIMA_ORE) {"Durata deve essere minore di $DURATA_MASSIMA_ORE"}

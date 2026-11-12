@@ -8,7 +8,7 @@ data class Corso(
 ) {
     init {
         require (name.isNotBlank()) { "Nome non può essere vuoto" }
-        require (! salaAssegnata.isAlreadyOccupiedAtFasciaOraria(fasciaOraria)
-        ) { "Sala assegnata è già occupata" }
+        // La disponibilità della sala nella fascia oraria dipende dai corsi
+        // salvati nel database: viene verificata da CorsoRepositoryImpl.
     }
 }
