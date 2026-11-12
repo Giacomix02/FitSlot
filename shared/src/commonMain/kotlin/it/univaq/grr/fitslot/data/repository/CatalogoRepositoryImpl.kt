@@ -1,6 +1,7 @@
 package it.univaq.grr.fitslot.data.repository
 
 import it.univaq.grr.fitslot.data.local.dao.CatalogoDao
+import it.univaq.grr.fitslot.domain.PermessiGestione
 import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Abbonamento
@@ -10,26 +11,31 @@ import kotlinx.coroutines.flow.map
 
 /** Gestisce il catalogo dei piani attraverso il DAO. */
 class CatalogoRepositoryImpl(
-    private val dao: CatalogoDao
+    private val dao: CatalogoDao,
+    private val permessi: PermessiGestione = PermessiGestioneDaLocalStorage
 ) : CatalogoRepository {
     override fun osservaAbbonamenti() = dao.osservaAbbonamenti().map { lista -> lista.map { it.toDomain() } }
     override fun osservaPianiAPunti() = dao.osservaPianiAPunti().map { lista -> lista.map { it.toDomain() } }
 
     override suspend fun salvaAbbonamento(abbonamento: Abbonamento): Long {
+        permessi.richiediGestore()
         valida(abbonamento.nome, abbonamento.prezzoCentesimi, abbonamento.durataGiorni)
         return dao.salvaAbbonamento(abbonamento.toEntity())
     }
 
     override suspend fun salvaPianoAPunti(piano: PianoAPunti): Long {
+        permessi.richiediGestore()
         valida(piano.nome, piano.prezzoCentesimi, piano.ingressiInclusi)
         return dao.salvaPianoAPunti(piano.toEntity())
     }
 
     override suspend fun eliminaAbbonamento(id: Long) {
+        permessi.richiediGestore()
         dao.eliminaAbbonamento(id)
     }
 
     override suspend fun eliminaPianoAPunti(id: Long) {
+        permessi.richiediGestore()
         dao.eliminaPianoAPunti(id)
     }
 

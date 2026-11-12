@@ -27,15 +27,15 @@ class CatalogoUiTest {
     @get:Rule val rule = createComposeRule()
 
     // Navigation Desktop verifica che le transizioni avvengano sul thread Swing.
-    @Before fun configuraMain() { Dispatchers.setMain(Dispatchers.Swing) }
-    @After fun ripristinaMain() { Dispatchers.resetMain() }
+    @Before fun configuraMain() { Dispatchers.setMain(Dispatchers.Swing); impostaUtenteGestioneTest() }
+    @After fun ripristinaMain() { Dispatchers.resetMain(); impostaUtenteGestioneTest(null) }
 
     private fun database() = Room.inMemoryDatabaseBuilder<AppDatabase>(
         factory = { AppDatabaseConstructor.initialize() })
         .setDriver(BundledSQLiteDriver()).setQueryCoroutineContext(Dispatchers.IO).build()
 
     private fun avvia(db: AppDatabase) {
-        rule.setContent { App(SalaRepositoryImpl(db.salaDao()), CatalogoRepositoryImpl(db.catalogoDao())) }
+        rule.setContent { App(SalaRepositoryImpl(db.salaDao()), CatalogoRepositoryImpl(db.catalogoDao()), PermessiGestioneDaLocalStorage) }
         attendi("Screen Home")
     }
 
@@ -93,4 +93,65 @@ class CatalogoUiTest {
         } finally { runBlocking { db.close() } }
     }
 
+
+    @Test fun gestioneSaleCompletaConConfermaEBloccoDeiCorsi() {
+        val db = database()
+        try {
+            avvia(db)
+            rule.onNodeWithText("Gestisci sale").clicca()
+            attendi("Nuova sala")
+            campo("Nome", "Sala prova")
+            campo("Capienza", "30")
+            rule.onNodeWithText("Crea sala").performScrollTo().clicca()
+            attendi("Sala creata correttamente.")
+            rule.onNodeWithText("Modifica").performScrollTo().clicca()
+            campo("Nome", "Sala aggiornata")
+            campo("Capienza", "45")
+            rule.onNodeWithText("Salva modifiche").performScrollTo().clicca()
+            attendi("Sala modificata correttamente.")
+            rule.onNodeWithText("Capienza: 45").performScrollTo().assertIsDisplayed()
+            rule.onNodeWithText("Elimina").performScrollTo().clicca()
+            rule.onNodeWithText("Annulla").clicca()
+            rule.onNodeWithText("Sala aggiornata").assertExists()
+
+            val id = runBlocking { db.salaDao().osservaSale().first().single().id }
+            runBlocking { db.corsoDao().insertAll(
+                it.univaq.grr.fitslot.data.local.entity.CorsoEntity(
+                    name = "Corso collegato", salaAssegnataId = id, fasciaOrariaId = 1)) }
+            rule.onNodeWithText("Elimina").performScrollTo().clicca()
+            rule.onAllNodesWithText("Elimina").onLast().clicca()
+            attendi("Impossibile eliminare la sala: è assegnata a uno o più corsi.")
+            rule.onNodeWithText("Sala aggiornata").assertExists()
+            runBlocking { db.corsoDao().delete(db.corsoDao().getALl().single()) }
+            rule.onNodeWithText("Elimina").performScrollTo().clicca()
+            rule.onAllNodesWithText("Elimina").onLast().clicca()
+            attendi("Sala eliminata correttamente.")
+            rule.onNodeWithText("Sala aggiornata").assertDoesNotExist()
+        } finally { runBlocking { db.close() } }
+    }
+
+    @Test fun nonGestoreNonVedeLeOperazioniDelleTreUS() {
+        impostaUtenteGestioneTest(it.univaq.grr.fitslot.domain.models.Ruolo.ISCRITTO)
+        val db = database()
+        try {
+            avvia(db)
+            rule.onNodeWithText("Gestisci sale").assertDoesNotExist()
+            rule.onNodeWithText("Gestisci abbonamenti").assertDoesNotExist()
+            rule.onNodeWithText("Gestisci piani a punti").assertDoesNotExist()
+            rule.onNodeWithText("Go to Login screen").assertExists()
+        } finally { runBlocking { db.close() } }
+    }
+
+    @Test fun routeGestioneProtettaAncheSeIlRuoloCambiaPrimaDelClick() {
+        val db = database()
+        try {
+            avvia(db)
+            // La Home è già visibile: il controllo della destinazione deve essere indipendente.
+            impostaUtenteGestioneTest(null)
+            rule.onNodeWithText("Gestisci sale").clicca()
+            attendi("Accesso riservato al gestore.")
+            rule.onNodeWithText("Accedi").assertExists()
+            rule.onNodeWithText("Nome").assertDoesNotExist()
+        } finally { runBlocking { db.close() } }
+    }
 }

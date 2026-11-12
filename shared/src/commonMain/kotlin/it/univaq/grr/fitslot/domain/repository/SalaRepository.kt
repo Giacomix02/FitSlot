@@ -1,10 +1,10 @@
 package it.univaq.grr.fitslot.domain.repository
-
 import it.univaq.grr.fitslot.domain.models.Sala
-
-/** Definisce le operazioni sulle sale disponibili alla logica dell'app.
- * I dettagli del databse sono gestiti dall'implemetazione. */
+import kotlinx.coroutines.flow.Flow
+/** Operazioni della GRR-14. */
 interface SalaRepository {
-    //Salva una nuova sala e restituisce l'id assegnato.
+    fun osservaSale(): Flow<List<Sala>>
     suspend fun inserisci(sala: Sala): Long
+    suspend fun modifica(sala: Sala)
+    suspend fun elimina(id: Long)
 }

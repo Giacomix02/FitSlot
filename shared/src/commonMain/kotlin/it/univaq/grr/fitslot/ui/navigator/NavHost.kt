@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import it.univaq.grr.fitslot.domain.PermessiGestione
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -54,6 +55,7 @@ sealed class Screens {
 fun Navigation(
     salaRepository: SalaRepository,
     catalogoRepository: CatalogoRepository,
+    permessiGestione: PermessiGestione,
     content: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
@@ -63,7 +65,7 @@ fun Navigation(
         startDestination = Screens.Home
     ) {
         composable<Screens.Home> {
-            HomeScreen(navController)
+            HomeScreen(navController, permessiGestione)
         }
 
         composable<Screens.Login> {
@@ -79,34 +81,27 @@ fun Navigation(
         }
 
         composable<Screens.CreazioneSala> {
-            val vm = viewModel { CreazioneSalaViewModel(salaRepository) }
-            val stato by vm.uiState.collectAsStateWithLifecycle()
-            Column(Modifier.fillMaxSize()) {
-                TextButton(
-                    onClick = { navController.popBackStack() },
-                    enabled = !stato.salvataggioInCorso
-                ) { Text("Torna alla Home") }
-                CreazioneSalaScreen(stato, vm::aggiornaNome, vm::aggiornaCapienza, vm::salva)
+            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+                val vm = viewModel { CreazioneSalaViewModel(salaRepository) }
+                val stato by vm.uiState.collectAsStateWithLifecycle()
+                Column(Modifier.fillMaxSize()) {
+                    TextButton(onClick = { navController.popBackStack() }, enabled = !stato.salvataggioInCorso) { Text("Torna alla Home") }
+                    CreazioneSalaScreen(stato, vm::aggiornaNome, vm::aggiornaCapienza, vm::salva,
+                        vm::modifica, vm::annullaModifica, vm::richiediEliminazione,
+                        vm::confermaEliminazione, vm::annullaEliminazione)
+                }
             }
         }
         composable<Screens.Abbonamenti> {
-            DestinazioneCatalogo(TipoCatalogo.ABBONAMENTI, catalogoRepository) { navController.popBackStack() }
+            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+                DestinazioneCatalogo(TipoCatalogo.ABBONAMENTI, catalogoRepository) { navController.popBackStack() }
+            }
         }
         composable<Screens.PianiAPunti> {
-            DestinazioneCatalogo(TipoCatalogo.PIANI_A_PUNTI, catalogoRepository) { navController.popBackStack() }
-            composable<Screens.Registration> {
-                RegistrationScreen(navController)
+            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+                DestinazioneCatalogo(TipoCatalogo.PIANI_A_PUNTI, catalogoRepository) { navController.popBackStack() }
             }
-
-            // ogni route è definita come segue
-            // composable<Screens.Message> {
-            //     val args = it.toRoute<Screens.Message>() // argomenti per mandare dati in una route
-            //     Messagescreen(navController, args) //screen composables from step 3
-            // }
-
         }
-
-
     }
     content()
 }
@@ -120,4 +115,16 @@ private fun DestinazioneCatalogo(tipo: TipoCatalogo, repository: CatalogoReposit
         vm::salva, vm::nuovo, vm::modifica, vm::richiediEliminazione,
         vm::confermaEliminazione, vm::annullaEliminazione, onIndietro
     )
+}
+
+/** Legge soltanto i permessi della sessione già gestita dal team. */
+@Composable
+private fun SoloGestore(permessi: PermessiGestione, onLogin: () -> Unit,
+                        onIndietro: () -> Unit, content: @Composable () -> Unit) {
+    if (permessi.puoGestire()) content()
+    else Column {
+        Text("Accesso riservato al gestore.")
+        TextButton(onClick = onLogin) { Text("Accedi") }
+        TextButton(onClick = onIndietro) { Text("Torna alla Home") }
+    }
 }
