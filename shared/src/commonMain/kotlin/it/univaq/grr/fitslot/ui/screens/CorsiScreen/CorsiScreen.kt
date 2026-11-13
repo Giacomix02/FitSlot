@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.CreazioneCorso
+package it.univaq.grr.fitslot.ui.screens.CorsiScreen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
