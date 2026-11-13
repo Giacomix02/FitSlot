@@ -1,4 +1,4 @@
-package it.univaq.grr.fitslot.ui.screens.CreazioneCorso
+package it.univaq.grr.fitslot.ui.screens.CorsiScreen
 
 import androidx.lifecycle.ViewModel
 import it.univaq.grr.fitslot.data.local.AppDatabase

@@ -5,7 +5,7 @@ import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
-import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiViewModel
+import it.univaq.grr.fitslot.ui.screens.CorsiScreen.CorsiViewModel
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDateTime
 import kotlin.test.AfterTest
