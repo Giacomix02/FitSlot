@@ -8,7 +8,7 @@ Dalla directory `/Users/uni/IdeaProjects/FitSlot`:
 ./gradlew :desktopApp:run
 ```
 
-L'applicazione usa un unico database in `~/.fitslot/fitslot.db`.
+Il builder condiviso usa il nome relativo `fitslot.db`: il percorso dipende dalla directory di avvio. Con Gradle desktop è stato osservato in `/Users/uni/IdeaProjects/FitSlot/desktopApp/fitslot.db`. Il parametro passato a `creaDatabase` non viene usato dal builder attuale.
 Login, password, sessione e registrazione rimangono di competenza del team e i relativi
 file non sono modificati da questo completamento. Il login esistente salva un oggetto
 User alla chiave "user" di LocalStorage. PermessiGestioneDaLocalStorage legge quel ruolo
@@ -86,8 +86,7 @@ eliminazioni accidentali anche se il dato cambia durante l'operazione.
 
 Questo completamento non cambia tabelle o schema: aggiunge query e operazioni sulle
 tabelle già presenti in main. Non introduce nuove migrazioni e non modifica il builder
-del database condiviso. I file e i test storici delle migrazioni restano come in main;
-il test storico saltato non rappresenta una verifica eseguita da questa modifica.
+del database condiviso. I file storici delle migrazioni restano invariati; nella semplificazione è stato rimosso il vecchio test di migrazione già disattivato, che non verificava lo schema attuale.
 
 ## Verifiche
 
@@ -95,18 +94,16 @@ il test storico saltato non rappresenta una verifica eseguita da questa modifica
 ./gradlew :desktopApp:compileKotlin :shared:jvmTest
 ```
 
-I test SQLite usano database temporanei o in memoria, non il database personale.
-Coprono CRUD dei due cataloghi, duplicati in creazione/modifica, piano con
-iscritti, chiavi esterne e validazione dei prezzi. I nuovi test coprono anche CRUD sale, collegamenti ai corsi e permessi. I test Compose verificano le azioni
-dei moduli, la conferma e l'annullamento dell'eliminazione, il blocco della sala usata,
-l'assenza delle funzioni per gli iscritti e il rifiuto di una route se il ruolo è cambiato.
-I test di login e password sono quelli del collega, mantenuti invariati.
+I sei test essenziali delle US coprono CRUD di sale e cataloghi, nomi duplicati,
+blocco di eliminazione per sale con corsi e piani con iscritti e conversione del prezzo.
+Le schermate vengono provate manualmente: i test UI e il test sui permessi di Roby
+sono stati rimossi per mantenere pochi esempi da studiare. I controlli dell’app restano.
+I test dei colleghi non sono modificati.
 
 I dati utente impostati nei nostri test esistono solo nel processo di test e vengono
 rimossi dopo ciascuna prova. I test non accedono al database personale.
 
-Il lavoro dei corsi conserva il TODO del collega in `Sala.isAlreadyOccupiedAtFasciaOraria`:
-il controllo calendario è ancora provvisorio e non fa parte delle US di Roby.
+Il main aggiornato osserva le sale reali anche nella creazione corsi e consulta il database per le sovrapposizioni delle fasce. Queste modifiche sono dei colleghi. Le fasce proposte sono ancora predefinite; non è una gestione completa del calendario.
 
 ## GitHub Actions
 
@@ -114,3 +111,7 @@ La cartella `.github` proviene da main, dove è stata integrata la GRR-12.
 Il workflow esegue i test sulle PR verso main e sui push a main, conserva i report
 del team ed esegue i test UI con Xvfb sul runner Linux. Viene verificata anche la
 compilazione desktop. I report Pages rimangono limitati ai push su main.
+
+## Semplificazione per lo studio
+
+La guida [TEST-ROBY.md](TEST-ROBY.md) spiega dove sono i test, come eseguirli da IntelliJ o terminale e come leggere i risultati. I test del prezzo sono in commonTest; database e schermate desktop restano in jvmTest. I ViewModel usano controlli espliciti e non passano più operazioni a un wrapper generico. Le regole delle tre US restano invariate.
