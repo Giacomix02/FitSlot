@@ -50,8 +50,14 @@ fun CatalogoScreen(
             }
         }
         item {
-            stato.errore?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            stato.conferma?.let { Text(it) }
+            val errore = stato.errore
+            if (errore != null) {
+                Text(errore, color = MaterialTheme.colorScheme.error)
+            }
+            val conferma = stato.conferma
+            if (conferma != null) {
+                Text(conferma)
+            }
         }
         item {
             Text("Piani sottoscrivibili", style = MaterialTheme.typography.titleLarge)
@@ -72,7 +78,8 @@ fun CatalogoScreen(
             }
         }
     }
-    stato.daEliminare?.let { voce ->
+    val voce = stato.daEliminare
+    if (voce != null) {
         AlertDialog(
             onDismissRequest = { if (abilitato) onAnnullaEliminazione() },
             title = { Text("Elimina piano") },
