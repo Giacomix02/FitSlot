@@ -29,8 +29,14 @@ fun CreazioneSalaScreen(
             }
         }
         item {
-            stato.errore?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-            stato.conferma?.let { Text(it) }
+            val errore = stato.errore
+            if (errore != null) {
+                Text(errore, color = MaterialTheme.colorScheme.error)
+            }
+            val conferma = stato.conferma
+            if (conferma != null) {
+                Text(conferma)
+            }
         }
         item {
             Text("Sale salvate", style = MaterialTheme.typography.titleLarge)
@@ -50,7 +56,8 @@ fun CreazioneSalaScreen(
             }
         }
     }
-    stato.daEliminare?.let { sala ->
+    val sala = stato.daEliminare
+    if (sala != null) {
         AlertDialog(
             onDismissRequest = { if (abilitato) onAnnullaEliminazione() },
             title = { Text("Elimina sala") },
