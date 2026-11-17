@@ -1,28 +1,11 @@
 package it.univaq.grr.fitslot.ui.screens.CorsiScreen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +19,7 @@ import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
 import it.univaq.grr.fitslot.ui.components.CustomTextField
 import it.univaq.grr.fitslot.ui.components.DropDownSelector
+import it.univaq.grr.fitslot.ui.components.createButton
 import kotlinx.coroutines.launch
 
 @Preview
@@ -105,18 +89,13 @@ fun CorsiScreen() {
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Button(onClick = { viewModel.viewModelScope.launch {
-                                viewModel.creaCorso(
-                                    nomeCorso,
-                                    selectedSala ?: viewModel.saleList.first(),
-                                    selectedFasciaOraria ?: viewModel.fasceOrarieList.first()
-                                )
-                            }
-
-                            }) {
-                                Row {
-                                    Text("Crea corso")
-                                    Icon(Icons.Default.Add, contentDescription = "aggiungi corso")
+                            createButton("Crea corso") {
+                                viewModel.viewModelScope.launch {
+                                    viewModel.creaCorso(
+                                        nomeCorso,
+                                        selectedSala ?: viewModel.saleList.first(),
+                                        selectedFasciaOraria ?: viewModel.fasceOrarieList.first()
+                                    )
                                 }
                             }
                             if (uiState.showCreazioneCorsoEseguita) {
@@ -140,3 +119,4 @@ fun CorsiScreen() {
     }
 
 }
+
