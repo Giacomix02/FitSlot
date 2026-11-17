@@ -1,17 +1,11 @@
 package it.univaq.grr.fitslot.ui.screens.CorsiScreen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
@@ -37,6 +31,7 @@ import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
 import it.univaq.grr.fitslot.ui.components.CustomTextField
 import it.univaq.grr.fitslot.ui.components.DropDownSelector
+import it.univaq.grr.fitslot.ui.components.createButton
 import kotlinx.coroutines.launch
 
 @Preview
@@ -145,21 +140,14 @@ fun CorsiScreen() {
                         ) {
                             val salaDaCreare = selectedSala ?: saleSelezionabili.firstOrNull()
                             val fasciaDaCreare = selectedFasciaOraria ?: fasceSelezionabili.firstOrNull()
-                            Button(
-                                enabled = salaDaCreare != null && fasciaDaCreare != null,
-                                onClick = {
-                                    val sala = salaDaCreare ?: return@Button
-                                    val fascia = fasciaDaCreare ?: return@Button
-                                    viewModel.viewModelScope.launch {
-                                        if (viewModel.creaCorso(nomeCorso, sala, fascia)) {
-                                            resetCampi()
-                                        }
+                            createButton("Crea corso", enabled = salaDaCreare != null && fasciaDaCreare != null) {
+                                val sala = salaDaCreare ?: return@createButton
+                                val fascia = fasciaDaCreare ?: return@createButton
+                                viewModel.viewModelScope.launch {
+
+                                    if (viewModel.creaCorso(nomeCorso, sala, fascia)) {
+                                        resetCampi()
                                     }
-                                }
-                            ) {
-                                Row {
-                                    Text("Crea corso")
-                                    Icon(Icons.Default.Add, contentDescription = "aggiungi corso")
                                 }
                             }
                             if (uiState.showCreazioneCorsoEseguita) {
@@ -183,3 +171,4 @@ fun CorsiScreen() {
     }
 
 }
+
