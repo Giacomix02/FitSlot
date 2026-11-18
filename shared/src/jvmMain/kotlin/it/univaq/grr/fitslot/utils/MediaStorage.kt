@@ -3,9 +3,7 @@ package it.univaq.grr.fitslot.utils
 import it.univaq.grr.fitslot.domain.exceptions.StorageException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.FileNotFoundException
 import java.io.IOException
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
@@ -90,10 +88,24 @@ actual class MediaStorage actual constructor() {
     }
 
     private fun resolveSafePath(path: String): Path {
-        val resolved = defaultDir.resolve(Paths.get(path).fileName).normalize()
+        val requestedPath = Paths.get(path)
+        if (requestedPath.isAbsolute) {
+            throw StorageException.InvalidPath(path)
+        }
+
+        val resolved = defaultDir.resolve(requestedPath).normalize()
         if (!resolved.startsWith(defaultDir)) {
             throw StorageException.InvalidPath(path)
         }
+
+        if (resolved.exists()) {
+            val realBase = defaultDir.toRealPath()
+            val realResolved = resolved.toRealPath()
+            if (!realResolved.startsWith(realBase)) {
+                throw StorageException.InvalidPath(path)
+            }
+        }
+
         return resolved
     }
 }

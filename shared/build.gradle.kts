@@ -30,6 +30,8 @@ kotlin {
             implementation(libs.kotlinx.serialization)
             // Source: https://mvnrepository.com/artifact/androidx.compose.material/material-icons-extended
             implementation("androidx.compose.material:material-icons-extended:1.7.8")
+            implementation("io.github.vinceglb:filekit-dialogs:0.17.1")
+            implementation("io.github.vinceglb:filekit-dialogs-compose:0.17.1")
 
         }
         jvmTest.dependencies {

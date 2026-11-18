@@ -1,11 +1,13 @@
 package it.univaq.grr.fitslot.data.local.dao
 
+import androidx.room3.Dao
 import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Update
 import it.univaq.grr.fitslot.data.local.entity.CertificatoMedicoEntity
 
+@Dao
 interface CertificatoMedicoDAO {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)

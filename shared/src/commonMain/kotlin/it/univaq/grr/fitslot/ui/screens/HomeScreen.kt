@@ -45,6 +45,9 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
+        Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
+            Text("Carica Certificato Medico")
+        }
     }
     AnimatedVisibility(showContent) {
         Column(
