@@ -2,12 +2,6 @@ package it.univaq.grr.fitslot.data.local
 
 import androidx.room3.*
 import androidx.sqlite.SQLiteConnection
-import androidx.room3.ColumnTypeConverters
-import androidx.room3.ConstructedBy
-import androidx.room3.Database
-import androidx.room3.Room
-import androidx.room3.RoomDatabase
-import androidx.room3.RoomDatabaseConstructor
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL
 import it.univaq.grr.fitslot.data.local.converter.Converters
@@ -15,18 +9,6 @@ import it.univaq.grr.fitslot.data.local.dao.*
 import it.univaq.grr.fitslot.data.local.entity.*
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.utils.PasswordSecurity
-import it.univaq.grr.fitslot.data.local.dao.CatalogoDao
-import it.univaq.grr.fitslot.data.local.dao.CorsoDao
-import it.univaq.grr.fitslot.data.local.dao.SalaDao
-import it.univaq.grr.fitslot.data.local.dao.UserDao
-import it.univaq.grr.fitslot.data.local.entity.AbbonamentoEntity
-import it.univaq.grr.fitslot.data.local.entity.CorsoEntity
-import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
-import it.univaq.grr.fitslot.data.local.entity.IscrizioneAbbonamentoEntity
-import it.univaq.grr.fitslot.data.local.entity.IscrizionePianoAPuntiEntity
-import it.univaq.grr.fitslot.data.local.entity.PianoAPuntiEntity
-import it.univaq.grr.fitslot.data.local.entity.SalaEntity
-import it.univaq.grr.fitslot.data.local.entity.UserEntity
 import kotlinx.coroutines.Dispatchers
 
 @Database(
@@ -43,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
+    abstract fun fasciaOrariaDao(): FasciaOrariaDao
 
     companion object {
         private val instance: AppDatabase by lazy {
