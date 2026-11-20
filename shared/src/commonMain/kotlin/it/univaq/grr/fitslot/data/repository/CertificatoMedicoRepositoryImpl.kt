@@ -14,10 +14,8 @@ class CertificatoMedicoRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addCertificatoMedico(certificato: CertificatoMedico) {
+    override suspend fun addCertificatoMedico(certificato: CertificatoMedico): Long =
         certificatoMedicoDAO.insert(certificato.toEntity())
-
-    }
 
     override suspend fun modifyCertificatoMedico(certificato: CertificatoMedico) {
         TODO("Not yet implemented")
