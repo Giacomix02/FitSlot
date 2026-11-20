@@ -1,6 +1,7 @@
 package it.univaq.grr.fitslot.ui.screens.UploadCertificatoMedico
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +22,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -34,8 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -121,6 +125,19 @@ fun UploadCertificatoMedicoScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     DatePicker(
+                        title = { Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp, bottom = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                text = "Seleziona data di scadeza del certificato",
+                                color = MaterialTheme.colorScheme.onPrimaryFixed
+                            )
+                        }},
                         state = datePickerState,
                         dateFormatter = dateFormatter,
                         modifier = Modifier
