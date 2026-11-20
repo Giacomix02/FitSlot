@@ -17,7 +17,6 @@ import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
-import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleScreen
 import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleViewModel
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.RegistrationScreen.RegistrationScreen
@@ -51,8 +50,6 @@ sealed class Screens {
     @Serializable
     data object Registration
 
-    @Serializable
-    data object SaleAbbonamenti
 
 }
 
@@ -81,13 +78,6 @@ fun Navigation(
             RegistrationScreen(navController)
         }
 
-        composable<Screens.SaleAbbonamenti> {
-            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
-                val vm = viewModel { AssociazioneSaleViewModel(catalogoRepository, salaRepository) }
-                AssociazioneSaleScreen(vm) { navController.popBackStack() }
-            }
-        }
-
         composable<Screens.CorsiScreen> {
             CorsiScreen()
         }
@@ -106,7 +96,7 @@ fun Navigation(
         }
         composable<Screens.Abbonamenti> {
             SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
-                DestinazioneCatalogo(TipoCatalogo.ABBONAMENTI, catalogoRepository) { navController.popBackStack() }
+                DestinazioneCatalogo(TipoCatalogo.ABBONAMENTI, catalogoRepository, salaRepository) { navController.popBackStack() }
             }
         }
         composable<Screens.PianiAPunti> {
@@ -119,13 +109,14 @@ fun Navigation(
 }
 
 @Composable
-private fun DestinazioneCatalogo(tipo: TipoCatalogo, repository: CatalogoRepository, onIndietro: () -> Unit) {
+private fun DestinazioneCatalogo(tipo: TipoCatalogo, repository: CatalogoRepository, saleRepository: SalaRepository? = null, onIndietro: () -> Unit) {
     val vm = viewModel(key = tipo.name) { CatalogoViewModel(tipo, repository) }
     val stato by vm.uiState.collectAsStateWithLifecycle()
+    val saleVm = if (saleRepository != null) viewModel { AssociazioneSaleViewModel(repository, saleRepository) } else null
     CatalogoScreen(
         tipo, stato, vm::aggiornaNome, vm::aggiornaPrezzo, vm::aggiornaQuantita,
         vm::salva, vm::nuovo, vm::modifica, vm::richiediEliminazione,
-        vm::confermaEliminazione, vm::annullaEliminazione, onIndietro
+        vm::confermaEliminazione, vm::annullaEliminazione, onIndietro, saleVm
     )
 }
 

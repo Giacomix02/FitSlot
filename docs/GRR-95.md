@@ -4,9 +4,11 @@ Branch indipendente GRR-95, aggiornato con pull di main al commit 92ecd2b il 20 
 
 ## Funzionamento
 
-Il gestore apre “Associa sale agli abbonamenti” dalla Home, seleziona un abbonamento e una sala, poi preme “Associa sala”. Compare la conferma e il riepilogo delle sale incluse. Scegliendo un altro abbonamento viene caricato il suo riepilogo. La stessa coppia non può essere inserita due volte. Le liste vengono caricate quando si apre la pagina; se si creano nuovi elementi in altre gestioni, si torna alla Home e si riapre la pagina.
+Il gestore apre “Gestisci abbonamenti” dalla Home. In alto “Aggiungi abbonamento” apre il popup con nome, prezzo e durata. Anche “Modifica” apre il modulo nel popup; il salvataggio riuscito lo chiude, mentre un errore lascia i campi disponibili per correggerli.
 
-Si riutilizza DropDownSelector del team e si usano proprietà mutableStateOf, if e viewModelScope.launch come negli altri ViewModel. Il nuovo ViewModel viene creato esplicitamente nella destinazione con viewModel { ... }.
+Ogni abbonamento della lista ha “Assegna sale”: apre un popup dedicato all’abbonamento scelto, con selezione della sala e riepilogo delle sale incluse. “Associa sala” aggiorna il riepilogo e mostra la conferma. La stessa coppia non può essere inserita due volte. Le sale vengono ricaricate ad ogni apertura del popup. Non ci sono una pagina separata di associazione o un pulsante dedicato nella Home.
+
+Si riutilizzano DropDownSelector del team, AlertDialog e il CatalogoViewModel esistente senza modificarlo. Il solo ViewModel dell’associazione carica sale e riepilogo quando viene selezionato un abbonamento. I piani a punti mantengono la loro pagina separata e il modulo attuale.
 
 Il perimetro è associazione e riepilogo, come nel criterio della US. Non sono aggiunti rimozione delle associazioni, vendita di abbonamenti, controlli agli ingressi o modifiche ai piani a punti.
 
@@ -22,9 +24,9 @@ Prima di provare l’app su dati personali, conservare una copia del database a 
 
 Root: `/Users/uni/IdeaProjects/FitSlot`. I file Kotlin seguenti sono sotto `shared/src/commonMain/kotlin/it/univaq/grr/fitslot/`.
 
-Nuovi: `data/local/entity/SalaAbbonamentoEntity.kt`, `data/local/MigrazioneSaleAbbonamenti.kt`, `ui/screens/associazioneSale/AssociazioneSaleScreen.kt` e `AssociazioneSaleViewModel.kt`.
+Nuovi: `data/local/entity/SalaAbbonamentoEntity.kt`, `data/local/MigrazioneSaleAbbonamenti.kt`, `ui/screens/associazioneSale/AssociazioneSaleDialog.kt` e `AssociazioneSaleViewModel.kt`.
 
-Modificati: `data/local/AppDatabase.kt`, `data/local/dao/CatalogoDao.kt`, `data/local/dao/SalaDao.kt`, `domain/repository/CatalogoRepository.kt`, `data/repository/CatalogoRepositoryImpl.kt`, `ui/screens/HomeScreen.kt`, `ui/navigator/NavHost.kt`.
+Modificati: `data/local/AppDatabase.kt`, `data/local/dao/CatalogoDao.kt`, `data/local/dao/SalaDao.kt`, `domain/repository/CatalogoRepository.kt`, `data/repository/CatalogoRepositoryImpl.kt`, `ui/screens/HomeScreen.kt`, `ui/navigator/NavHost.kt`, `ui/screens/catalogo/CatalogoScreen.kt`.
 
 I ViewModel precedenti, il login, la registrazione e il codice dei corsi non sono stati modificati.
 
@@ -42,3 +44,5 @@ Verifica ripetuta dopo il pull del 20 novembre: compilazione riuscita; suite con
 Verifica aggiuntiva su database temporaneo: apertura dello schema 1 tramite Room, migrazione alla versione 2, conservazione di sala e abbonamento preesistenti e nuova associazione. Prova desktop isolata: creazione del nuovo ViewModel dentro NavHost, caricamento, selezioni, associazione e aggiornamento del riepilogo. Queste prove temporanee non aggiungono test grafici complessi al repository.
 
 Per provare l’interfaccia usare il gestore già disponibile nel proprio database. Se non ci sono sale o abbonamenti, crearli prima nelle rispettive gestioni.
+
+Aggiornamento interfaccia: compilazione e suite ripetute con esito positivo (27 superati, 1 già saltato). I test verificano la logica e il database; i popup non sono coperti da test grafici automatici.
