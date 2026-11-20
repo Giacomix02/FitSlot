@@ -32,8 +32,8 @@ import kotlinx.coroutines.Dispatchers
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
-    version = 1,
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, SalaAbbonamentoEntity::class],
+    version = 2,
     exportSchema = true
 )
 @ColumnTypeConverters(Converters::class)
@@ -50,6 +50,7 @@ abstract class AppDatabase : RoomDatabase() {
                 name =  "fitslot.db",
                 factory = AppDatabaseConstructor::initialize
             )
+                .addMigrations(MIGRAZIONE_SALE_ABBONAMENTI)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .addCallback(object : RoomDatabase.Callback() {

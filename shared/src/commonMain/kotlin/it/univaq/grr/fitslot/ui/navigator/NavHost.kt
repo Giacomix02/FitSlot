@@ -17,6 +17,8 @@ import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
+import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleScreen
+import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleViewModel
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.RegistrationScreen.RegistrationScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
@@ -49,6 +51,9 @@ sealed class Screens {
     @Serializable
     data object Registration
 
+    @Serializable
+    data object SaleAbbonamenti
+
 }
 
 @Composable
@@ -74,6 +79,13 @@ fun Navigation(
 
         composable<Screens.Registration> {
             RegistrationScreen(navController)
+        }
+
+        composable<Screens.SaleAbbonamenti> {
+            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+                val vm = viewModel { AssociazioneSaleViewModel(catalogoRepository, salaRepository) }
+                AssociazioneSaleScreen(vm) { navController.popBackStack() }
+            }
         }
 
         composable<Screens.CorsiScreen> {

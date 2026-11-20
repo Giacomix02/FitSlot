@@ -42,6 +42,9 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         }
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
+        if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.SaleAbbonamenti) }) {
+            Text("Associa sale agli abbonamenti")
+        }
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
