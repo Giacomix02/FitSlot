@@ -1,12 +1,13 @@
 package it.univaq.grr.fitslot.data.repository
 
 import androidx.sqlite.SQLiteException
-import it.univaq.grr.fitslot.data.local.dao.FakeUserDao
-import it.univaq.grr.fitslot.data.local.entity.UserEntity
-import it.univaq.grr.fitslot.data.mapper.toDomain
+import it.univaq.grr.fitslot.creaDbInMemoria
+import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.domain.models.Ruolo
-import it.univaq.grr.fitslot.utils.PasswordSecurity
+import it.univaq.grr.fitslot.domain.models.User
 import kotlinx.coroutines.test.runTest
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -14,70 +15,92 @@ import kotlin.test.assertNull
 
 class UserRepositoryImplTest {
 
+    var database: AppDatabase? = null
+
+    @BeforeTest
+    fun creaDbPerTesting(){
+        database = creaDbInMemoria()
+    }
+    @AfterTest
+    fun resettaDbPerTesting(){
+        database?.close()
+    }
+
+
     // bisogna usare runTest perchè il codice reale le funzioni sono supended
     // quindi ricrea il contesto di esecuzione asincrono
 
     @Test
     fun `login returns user with valid credentials`() = runTest {
         val password = "Password123!"
-        val user = createUser(password)
-        val repository = UserRepositoryImpl(FakeUserDao(mutableListOf(user)))
+        val user = createUserNew(password)
 
-        val result = repository.userLogin(user.email, password)
+        database?.let{
+            UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            val result = UserRepositoryImpl(it.userDao()).userLogin(user.email, password = user.password)
 
-        assertEquals(user.id, result?.id)
-        assertEquals(user.email, result?.email)
+            assertEquals(1L, result?.id)
+            assertEquals(user.email, result?.email)
+        }
     }
 
     @Test
     fun `login returns null with wrong password`() = runTest {
-        val user = createUser("Password123!")
-        val repository = UserRepositoryImpl(FakeUserDao(mutableListOf(user)))
+        val password = "Password123!"
+        val user = createUserNew(password)
 
-        val result = repository.userLogin(user.email, "WrongPassword!")
-
-        assertNull(result)
+        database?.let{
+            UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            val result = UserRepositoryImpl(it.userDao()).userLogin(user.email, password = "passSbagliata")
+            assertNull(result)
+        }
     }
 
     @Test
     fun `login returns null with unknown email`() = runTest {
-        val user = createUser("Password123!")
-        val repository = UserRepositoryImpl(FakeUserDao(mutableListOf(user)))
+        val password = "Password123!"
+        val user = createUserNew(password)
 
-        val result = repository.userLogin("test@test.com", "Password123!")
-
-        assertNull(result)
+        database?.let{
+            UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            val result = UserRepositoryImpl(it.userDao()).userLogin("mailSbagliata", password = user.password)
+            assertNull(result)
+        }
     }
 
     @Test
-    fun `registration returns 0 (user id) on success`() = runTest {
-        val user = createUser("Password123!")
-        val repository = UserRepositoryImpl(FakeUserDao())
+    fun `registration returns 1 (user id) on success`() = runTest {
+        val password = "Password123!"
+        val user = createUserNew(password)
 
-        val result = repository.userRegistration(user = user.toDomain())
+        database?.let{
+            val result = UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            assertEquals("1", result.toString())
 
-        assertEquals("0", result.toString())
+        }
+
     }
 
     @Test
     fun `registration returns an Exception for duplicate email`() = runTest {
-        val user = createUser("Password123!")
-        val repository = UserRepositoryImpl(FakeUserDao(mutableListOf(user)))
+        val password = "Password123!"
+        val user = createUserNew(password)
 
-
-        assertFailsWith<SQLiteException> {
-            repository.userRegistration(user = user.toDomain())
+        database?.let{
+            UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            assertFailsWith<SQLiteException> {
+                UserRepositoryImpl(it.userDao()).userRegistration(user = user)
+            }
         }
     }
 
-    private fun createUser(password: String): UserEntity {
-        val salt = PasswordSecurity.generateSalt()
 
-        return UserEntity(
+    private fun createUserNew(password: String): User {
+
+        return User(
             id = 0L,
             email = "mario@example.com",
-            password = PasswordSecurity.hashPassword(password, salt),
-            salt = salt,
+            password = password,
             username = "mario",
             nome = "Mario",
             cognome = "Rossi",
