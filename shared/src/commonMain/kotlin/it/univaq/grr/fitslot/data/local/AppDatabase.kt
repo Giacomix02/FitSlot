@@ -1,6 +1,5 @@
 package it.univaq.grr.fitslot.data.local
 
-import androidx.room3.*
 import androidx.sqlite.SQLiteConnection
 import androidx.room3.ColumnTypeConverters
 import androidx.room3.ConstructedBy
@@ -32,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, LogAccessoEntity::class],
     version = 1,
     exportSchema = true
 )
@@ -43,6 +42,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
+
+    abstract fun logAccessoDao(): LogAccessoDao
 
     companion object {
         private val instance: AppDatabase by lazy {

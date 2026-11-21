@@ -13,6 +13,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,10 +34,29 @@ fun <T> DropDownSelector(
     errorMessage: String? = null,
     enabled: Boolean = true,
     dropdownOffset: Dp = 0.dp,
-    customItemContent: (@Composable (T) -> Unit)? = null
+    customItemContent: (@Composable (T) -> Unit)? = null,
+    searchable: Boolean = false,
+    searchFilter: ((item: T, query: String) -> Boolean)? = null,
+    onSearchQueryChanged: (String) -> Unit = {}
 ) {
     var expanded by remember { mutableStateOf(false) }
+    var searchText by remember { mutableStateOf(selectedItem?.let(itemLabel) ?: "") }
     val isError = errorMessage != null
+
+    LaunchedEffect(selectedItem) {
+        searchText = selectedItem?.let(itemLabel) ?: ""
+    }
+
+    val filteredItems = remember(items, searchText, searchFilter) {
+        if (!searchable || searchText.isBlank()) {
+            items
+        } else {
+            items.filter { item ->
+                searchFilter?.invoke(item, searchText)
+                    ?: itemLabel(item).contains(searchText, ignoreCase = true)
+            }
+        }
+    }
 
     ExposedDropdownMenuBox(
         expanded = expanded && enabled,
@@ -44,9 +64,15 @@ fun <T> DropDownSelector(
         modifier = modifier
     ) {
         OutlinedTextField(
-            value = selectedItem?.let(itemLabel) ?: "",
-            onValueChange = {},
-            readOnly = true,
+            value = if (searchable) searchText else selectedItem?.let(itemLabel) ?: "",
+            onValueChange = { query ->
+                if (searchable) {
+                    searchText = query
+                    expanded = true
+                    onSearchQueryChanged(query)
+                }
+            },
+            readOnly = !searchable,
             enabled = enabled,
             label = {
                 Text(if (isRequired) "$label *" else label)
@@ -67,7 +93,13 @@ fun <T> DropDownSelector(
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled)
+                .menuAnchor(
+                    if (searchable)
+                        ExposedDropdownMenuAnchorType.PrimaryEditable
+                    else
+                        ExposedDropdownMenuAnchorType.PrimaryNotEditable,
+                    enabled
+                )
         )
 
         ExposedDropdownMenu(
@@ -75,7 +107,7 @@ fun <T> DropDownSelector(
             onDismissRequest = { expanded = false },
             modifier = Modifier.offset(y = dropdownOffset)
         ) {
-            items.forEach { item ->
+            filteredItems.forEach { item ->
                 DropdownMenuItem(
                     text = {
                         if (customItemContent != null) {
@@ -88,6 +120,9 @@ fun <T> DropDownSelector(
                         }
                     },
                     onClick = {
+                        if (searchable) {
+                            searchText = itemLabel(item)
+                        }
                         onItemSelected(item)
                         expanded = false
                     },

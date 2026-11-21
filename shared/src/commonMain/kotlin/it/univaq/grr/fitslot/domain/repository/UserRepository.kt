@@ -10,4 +10,6 @@ interface UserRepository {
 
     suspend fun userRegistration(user: User): Long
 
+    suspend fun getAllIscritti(): List<User>
+
 }

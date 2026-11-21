@@ -17,6 +17,7 @@ import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
+import it.univaq.grr.fitslot.ui.screens.LogIngresso.LogAccessoScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.RegistrationScreen.RegistrationScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
@@ -46,6 +47,9 @@ sealed class Screens {
     data object Abbonamenti
     @Serializable
     data object PianiAPunti
+
+    @Serializable
+    data object LogAccesso
     @Serializable
     data object Registration
 
@@ -78,6 +82,10 @@ fun Navigation(
 
         composable<Screens.CorsiScreen> {
             CorsiScreen()
+        }
+
+        composable<Screens.LogAccesso> {
+            LogAccessoScreen(navController)
         }
 
         composable<Screens.CreazioneSala> {
