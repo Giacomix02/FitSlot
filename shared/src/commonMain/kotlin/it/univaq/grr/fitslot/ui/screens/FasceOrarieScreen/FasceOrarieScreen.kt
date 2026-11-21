@@ -1,7 +1,17 @@
 package it.univaq.grr.fitslot.ui.screens.FasceOrarieScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -10,12 +20,28 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.setSelectedDate
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,12 +51,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import it.univaq.grr.fitslot.ui.components.FasciaOrariaCard
 import it.univaq.grr.fitslot.ui.components.createButton
 import it.univaq.grr.fitslot.utils.parseCatching
-import it.univaq.grr.fitslot.utils.toggle
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 
 val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -39,22 +66,28 @@ val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 @Preview
 @Composable
 fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieViewModel() }) {
-    val showCreateFasciaOrariaDialog = remember { mutableStateOf(false) }
-    val showEditFasciaOrariaDialog = remember { mutableStateOf(false) }
+
+    var showCreateFasciaOrariaDialog by remember { mutableStateOf(false) }
+
+    var showEditFasciaOrariaDialog by remember { mutableStateOf(false) }
 
     val orarioInizio = rememberTimePickerState()
     val orarioFine = rememberTimePickerState()
 
-    val selectedDate = remember {
+    var selectedDate by remember {
         mutableStateOf(LocalDate.now().format(formatter))
     }
 
     val fasceOrarie by viewModel.fasceOrarie.collectAsStateWithLifecycle()
 
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
     Scaffold (floatingActionButton = {
         FloatingActionButton(
         modifier = Modifier,
-        onClick = { showCreateFasciaOrariaDialog.toggle()
+        onClick = {
+            viewModel.clearErroreFasciaOraria()
+            showCreateFasciaOrariaDialog = true
         },
     )
     { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
@@ -64,17 +97,16 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp, alignment = Alignment.CenterHorizontally)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Seleziona giorno")
-                DatePickerDocked(selectedDate)
-            }
+
+                DatePickerDocked(selectedDate){selectedDate = it}
+
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Fasce Orarie:")
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                     fasceOrarie?.filter { fasciaOraria ->
                         fasciaOraria.orarioInizio.toLocalDate().equals(
-                                parseCatching(selectedDate.value, formatter)
+                                parseCatching(selectedDate, formatter)
                             )
 
                         }
@@ -87,7 +119,8 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
                             FasciaOrariaCard(list[index])
                             Button(onClick = {
                                 viewModel.setSelectedFasciaOraria(orarioInizio, orarioFine, list[index])
-                                showEditFasciaOrariaDialog.toggle()}
+                                viewModel.clearErroreFasciaOraria()
+                                showEditFasciaOrariaDialog = true}
                             ) {
                                 Icon(
                                     Icons.Default.Edit,
@@ -116,32 +149,39 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
         }
 
 
-        if(showCreateFasciaOrariaDialog.value) {
-            FasciaOrariaDialog(Mode.CREATE, onDismissRequest = showCreateFasciaOrariaDialog::toggle,
-                orarioInizio, orarioFine) {
+        if(showCreateFasciaOrariaDialog) {
+            FasciaOrariaDialog(Mode.CREATE, onDismissRequest = {
+                viewModel.clearErroreFasciaOraria()
+                showCreateFasciaOrariaDialog = false
+            },
+                orarioInizio, orarioFine,
+                erroreFasciaOraria = uiState.value.erroreFasciaOraria) {
                 createButton("Crea fascia oraria") {
 
                     viewModel.viewModelScope.launch {
-                        viewModel.creaFasciaOraria(orarioInizio, orarioFine, selectedDate)
-                        showCreateFasciaOrariaDialog.toggle()
+                        val result = viewModel.creaFasciaOraria(orarioInizio, orarioFine, selectedDate)
+                        if (result.isSuccess) showCreateFasciaOrariaDialog = false
+
                     }
                 }
 
             }
         }
-        if (showEditFasciaOrariaDialog.value) {
+        if (showEditFasciaOrariaDialog) {
             FasciaOrariaDialog(Mode.EDIT,
                 onDismissRequest = {
                     viewModel.setDefaultFasciaOrariaState(orarioInizio, orarioFine)
-                    showEditFasciaOrariaDialog.toggle()
+                    viewModel.clearErroreFasciaOraria()
+                    showEditFasciaOrariaDialog = false
                 },
-                orarioInizio, orarioFine
+                orarioInizio, orarioFine,
+                erroreFasciaOraria = uiState.value.erroreFasciaOraria
             ) {
                 createButton("Modifica fascia oraria") {
 
                     viewModel.viewModelScope.launch {
-                        viewModel.modificaFasciaOraria(orarioInizio, orarioFine, selectedDate)
-                        showEditFasciaOrariaDialog.toggle()
+                        val result = viewModel.modificaFasciaOraria(orarioInizio, orarioFine, selectedDate)
+                        if (result.isSuccess) showEditFasciaOrariaDialog = false
                     }
                 }
 
@@ -154,33 +194,49 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
 
 
 @Composable
-fun DatePickerDocked(selectedDate: MutableState<String>) {
+fun DatePickerDocked(selectedDate: String, setSelectedDate: (String) -> Unit) {
     var showDatePicker: Boolean by remember { mutableStateOf(false) }
-    val datePickerState = rememberDatePickerState(initialSelectedDate = parseCatching(selectedDate.value, formatter))
+    var text by remember { mutableStateOf(selectedDate) }
+    var showDateNotValidError by remember { mutableStateOf(parseCatching(selectedDate, formatter) == null) }
 
-    LaunchedEffect(datePickerState.selectedDateMillis) {
-        datePickerState.selectedDateMillis?.let { millis ->
-            selectedDate.value = convertMillisToDate(millis)
+    val datePickerState = rememberDatePickerState(initialSelectedDate = parseCatching(selectedDate, formatter))
+
+    // Keep local text in sync with externally-driven selectedDate changes (guarded).
+    LaunchedEffect(selectedDate) {
+        if (selectedDate != text) {
+            text = selectedDate
         }
+        showDateNotValidError = parseCatching(selectedDate, formatter) == null
+    }
+
+    // Picker selection -> text (guarded to avoid clobbering in-progress typing).
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        val millis = datePickerState.selectedDateMillis ?: return@LaunchedEffect
+        val converted = convertMillisToDate(millis)
+        if (converted != text) {
+            text = converted
+            setSelectedDate(converted)
+        }
+        showDateNotValidError = false
     }
 
     Column(horizontalAlignment =  Alignment.CenterHorizontally,
         modifier = Modifier.wrapContentWidth()
     ) {
         OutlinedTextField(
-
-            value = selectedDate.value,
-            onValueChange = { text ->
-                selectedDate.value = text
-                setDate(selectedDate, formatter, datePickerState)
-//                runCatching {
-//                    val date = LocalDate.parse(text, formatter)
-//                    datePickerState.selectedDateMillis = date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-//                }
+            value = text,
+            label = { Text("Giorno") },
+            onValueChange = { newText ->
+                text = newText
+                setSelectedDate(newText)
+                val date = parseCatching(newText, formatter)
+                if (date != null) {
+                    datePickerState.setSelectedDate(date)
+                    showDateNotValidError = false
+                } else {
+                    showDateNotValidError = true
+                }
             },
-//            label = { Text("dd/mm/yyyy") },
-//            placeholder = { Text("dd/mm/yyyy") },
-//            readOnly = true,
             trailingIcon = {
                 IconButton(onClick = { showDatePicker = !showDatePicker }) {
                     Icon(
@@ -189,24 +245,20 @@ fun DatePickerDocked(selectedDate: MutableState<String>) {
                     )
                 }
             },
+            isError = showDateNotValidError,
+            supportingText = {
+                if (showDateNotValidError) {
+                    Text(text = "Data non valida")
+                }
+            },
             modifier = Modifier
                 .requiredWidth(159.dp)
-                .height(64.dp)
-                .onFocusChanged { focusState ->
-                    if (!focusState.hasFocus)
-                        setDate(selectedDate, formatter, datePickerState)
-                },
-//                .onKeyEvent { event ->
-//                    if (event.key == Key.Enter) {
-//                        setDate(selectedDate, formatter, datePickerState)
-//                        showDatePicker = false
-//                        return@onKeyEvent true
-//                    } else return@onKeyEvent false
-//                },
+                .height(80.dp),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions(
-                onDone = { setDate(selectedDate, formatter, datePickerState)
+                onDone = {
+                    setToDatePicker(text, formatter, datePickerState) { showDateNotValidError = it }
                     showDatePicker = false
                 },
                 onGo = { /* do something */},
@@ -219,10 +271,6 @@ fun DatePickerDocked(selectedDate: MutableState<String>) {
 
 
         if (showDatePicker) {
-//            Popup(
-//                onDismissRequest = { showDatePicker = false },
-//                alignment = Alignment.TopStart
-//            ) {
             Box(
                 modifier = Modifier
                     .requiredWidth(390.dp)
@@ -236,25 +284,28 @@ fun DatePickerDocked(selectedDate: MutableState<String>) {
                     showModeToggle = false,
                 )
             }
-//            }
         }
     }
 }
 
-private fun ColumnScope.setDate(
-    selectedDate: MutableState<String>,
+private fun ColumnScope.setToDatePicker(
+    selectedDate: String,
     formatter: DateTimeFormatter,
-    datePickerState: DatePickerState
+    datePickerState: DatePickerState,
+    setShowDateNotValidError: (Boolean) -> Unit
 ) {
 
-        val date = parseCatching(selectedDate.value, formatter)
-        datePickerState.setSelectedDate(date)
-
+        val date = parseCatching(selectedDate, formatter){setShowDateNotValidError(true)}
+        if (date != null) {
+            datePickerState.setSelectedDate(date)
+            setShowDateNotValidError(false)
+        }
 }
 
 
 fun convertMillisToDate(millis: Long): String {
     val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(Date(millis))
 }
 

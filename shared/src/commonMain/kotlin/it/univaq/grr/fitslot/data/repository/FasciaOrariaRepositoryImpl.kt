@@ -13,7 +13,7 @@ class FasciaOrariaRepositoryImpl(private val fasciaOrariaDao: FasciaOrariaDao) :
         return fasciaOrariaDao.observeFasceOrarie().map { it.map { fasciaOrariaEntity -> fasciaOrariaEntity.toDomain() } }
     }
 
-    override suspend fun createFasciaOraria(fasciaOraria: FasciaOraria) {
+    override suspend fun createFasciaOraria(fasciaOraria: FasciaOraria):Long {
         return fasciaOrariaDao.insertAll(fasciaOraria.toEntity())
     }
 

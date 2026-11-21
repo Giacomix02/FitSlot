@@ -9,7 +9,7 @@ data class FasciaOraria(
     var orarioFine: LocalDateTime = LocalDateTime.now().plusHours(2)
 ) {
     val durata: Int
-        get() = Duration.between(orarioInizio, orarioFine).toHours().toInt()
+        get() = Duration.between(orarioInizio, orarioFine).toMinutes().toInt()
 
     /**
      * Due fasce si sovrappongono quando una inizia prima che l'altra finisca.
@@ -20,7 +20,7 @@ data class FasciaOraria(
 
     init {
         require(durata > 0) { "Orari devono essere cronologicamente sensati" }
-        require(durata < DURATA_MASSIMA_ORE) { "Durata deve essere minore di $DURATA_MASSIMA_ORE" }
+        require(durata < DURATA_MASSIMA_ORE*60) { "Durata deve essere minore di $DURATA_MASSIMA_ORE" }
     }
 
     companion object {

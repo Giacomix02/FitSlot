@@ -5,7 +5,6 @@ import androidx.room3.Relation
 import it.univaq.grr.fitslot.data.local.entity.CorsoEntity
 import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
 import it.univaq.grr.fitslot.data.local.entity.SalaEntity
-import it.univaq.grr.fitslot.domain.models.FasciaOraria
 
 class CorsoWithSalaAndFasciaOraria {
     @Embedded
@@ -15,5 +14,5 @@ class CorsoWithSalaAndFasciaOraria {
     var sala: SalaEntity? = null
 
     @Relation(entity = FasciaOrariaEntity::class, parentColumns = ["id"], entityColumns = ["fasciaOrariaId"])
-    var fasciaOraria: FasciaOraria? = null
+    var fasciaOraria: FasciaOrariaEntity? = null
 }
