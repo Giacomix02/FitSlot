@@ -6,7 +6,7 @@ La schermata mostra immagine e scadenza, avviso entro 20 giorni, avviso di certi
 
 La data salvata dal DatePicker in millisecondi UTC viene convertita da dataScadenza; si accettano anche date ISO. Le letture considerano solo l'utente autenticato, usando LocalStorage esistente. Nessuna modifica al login.
 
-Due test brevi sulla finestra dei 20 giorni e sul certificato assente; la lettura del certificato reale e del rinnovo più recente è verificata in CertificatiReceptionTest.kt. Dettagli di integrazione, migrazioni e risultati: Completamento-US-Roby.md.
+Due test brevi sulla finestra dei 20 giorni e sul certificato assente; la lettura del certificato reale e del rinnovo più recente è verificata in CertificatiReceptionTest.kt. Dettagli di integrazione, ricreazione del database e risultati: Completamento-US-Roby.md.
 
 ```bash
 cd /Users/uni/IdeaProjects/FitSlot

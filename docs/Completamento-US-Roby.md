@@ -13,7 +13,16 @@ Branch locale: completamento-us-roby, da main fb2a850. Push autorizzato da Roby 
 
 Il caricamento del collega è stato adattato per ricevere l'iscritto selezionato, eliminando l'utente fisso con id 1. Mantiene DatePicker, FileKit e MediaStorage. Le eccezioni vengono gestite dentro la coroutine, così un errore di lettura o database è mostrato dalla pagina. Durante il salvataggio non si può inviare una seconda richiesta o chiudere il popup. Il repository certificati implementa la lettura per utente; non viene implementato il TODO relativo alla modifica del certificato, non necessario a queste US.
 
-AppDatabase passa a 3 con migrazioni esplicite 1→3 e 2→3. Creano, se mancanti, certificati e associazioni sale/corsi senza modificare o cancellare i dati preesistenti. Gestiscono sia il vecchio schema senza certificati sia quello integrato mantenuto per errore a versione 1, oltre alla versione 2 della GRR-95. Le vecchie migrazioni storiche restano nel repository ma non vengono registrate nel builder.
+AppDatabase mantiene lo schema versione 3, senza migrazioni registrate e senza cancellazioni automatiche. Per questo progetto con dati di prova, il team ricrea manualmente il database quando cambia lo schema. Room crea tutte le tabelle al successivo accesso; il callback preesistente ricrea il gestore admin/admin. Gli altri utenti e dati devono essere reinseriti. I vecchi file di migrazione già presenti in main restano invariati e non sono usati.
+
+A programma completamente chiuso, spostare nel Cestino `/Users/uni/IdeaProjects/FitSlot/desktopApp/fitslot.db` e gli eventuali file `fitslot.db-wal` e `fitslot.db-shm` nella stessa cartella. Quello è il percorso rilevato per l'avvio desktop attuale. Se si usa una directory di lavoro diversa, verificare dove si trova il file: il builder del team usa il nome relativo fitslot.db. Riavviare con:
+
+```bash
+cd /Users/uni/IdeaProjects/FitSlot
+./gradlew :desktopApp:run
+```
+
+Questa operazione perde i dati locali del database e va fatta soltanto sui dati di prova. Nessun database personale è stato cancellato durante questo aggiornamento.
 
 Home e NavHost espongono solo le pagine del ruolo corretto. Login e registrazione non sono modificati. La schermata certificati resta limitata all'iscritto; l'elenco e il caricamento sono riservati alla reception. È mantenuto il nome Ruolo.RECEPIONIST già usato dal team.
 
@@ -30,7 +39,7 @@ Compilazione riuscita: 38 casi, 37 superati e 1 già disattivato. Test brevi con
 
 Test aggiornati: CertificatoMedicoTest.kt (avvisi sulle date reali), SaleAbbonamentiTest.kt (aggiunte selezione multipla e associazione corsi), nuovo CertificatiReceptionTest.kt (filtri, lettura personale/ultimo rinnovo e permessi).
 
-Prove aggiuntive temporanee, fuori dal repository: tre migrazioni da schema 1, schema 1 integrato e schema 2, con verifica della conservazione di sale, abbonamenti e collegamenti già presenti. Prova desktop dei popup e dei ViewModel, selezione multipla, elenco iscritti, apertura caricamento sulla persona scelta e immagine reale recuperata da MediaStorage. La prova usa Room in memoria e archivio media sotto /private/tmp, non il database personale. Il controllo automatico aveva rifiutato una prima proposta di prova con la factory globale: è stata sostituita dalla prova in memoria.
+Prova desktop temporanea dei popup e dei ViewModel, selezione multipla, elenco iscritti, apertura caricamento sulla persona scelta e immagine reale recuperata da MediaStorage. La prova ha usato Room in memoria e archivio media sotto /private/tmp, non il database personale. Dopo la rimozione delle migrazioni sono stati ripetuti compilazione e test, che creano database nuovi in memoria.
 
 Il selettore di file del sistema e l'apertura esterna del PDF non sono stati azionati automaticamente. Rimane la review del team prima del merge. Gradle mantiene gli avvisi già presenti sulle versioni Compose/Skiko e sulle classi expect/actual.
 

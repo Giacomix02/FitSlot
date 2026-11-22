@@ -52,7 +52,6 @@ abstract class AppDatabase : RoomDatabase() {
                 name =  "fitslot.db",
                 factory = AppDatabaseConstructor::initialize
             )
-                .addMigrations(MIGRAZIONE_COMPLETAMENTO_1_3, MIGRAZIONE_COMPLETAMENTO_2_3)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .addCallback(object : RoomDatabase.Callback() {
