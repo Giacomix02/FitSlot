@@ -86,6 +86,12 @@ abstract class CatalogoDao {
         check(cancellaPianoAPuntiSeLibero(id) == 1) { "Il piano a punti non esiste più. Ricarica l'elenco." }
     }
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun associaSala(associazione: SalaAbbonamentoEntity): Long
+
+    @Query("SELECT sale.* FROM sale INNER JOIN sale_abbonamenti ON sale.id = sale_abbonamenti.salaId WHERE abbonamentoId = :abbonamentoId ORDER BY nome COLLATE NOCASE")
+    abstract suspend fun saleIncluse(abbonamentoId: Long): List<SalaEntity>
+
     // Queste associazioni sono il punto di integrazione con la gestione iscritti.
     @Insert
     abstract suspend fun associaAbbonamento(iscrizione: IscrizioneAbbonamentoEntity)

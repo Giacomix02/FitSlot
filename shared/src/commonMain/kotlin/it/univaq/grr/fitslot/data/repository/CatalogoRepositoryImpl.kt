@@ -6,6 +6,7 @@ import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Abbonamento
 import it.univaq.grr.fitslot.domain.models.PianoAPunti
+import it.univaq.grr.fitslot.data.local.entity.SalaAbbonamentoEntity
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import kotlinx.coroutines.flow.map
 
@@ -38,6 +39,15 @@ class CatalogoRepositoryImpl(
         permessi.richiediGestore()
         dao.eliminaPianoAPunti(id)
     }
+
+    override suspend fun associaSala(abbonamentoId: Long, salaId: Long) {
+        permessi.richiediGestore()
+        val risultato = dao.associaSala(SalaAbbonamentoEntity(abbonamentoId, salaId))
+        check(risultato != -1L) { "La sala è già inclusa in questo abbonamento." }
+    }
+
+    override suspend fun saleIncluse(abbonamentoId: Long) =
+        dao.saleIncluse(abbonamentoId).map { it.toDomain() }
 
     private fun valida(nome: String, prezzo: Long, quantita: Int) {
         require(nome.isNotBlank()) { "Inserisci il nome del piano." }
