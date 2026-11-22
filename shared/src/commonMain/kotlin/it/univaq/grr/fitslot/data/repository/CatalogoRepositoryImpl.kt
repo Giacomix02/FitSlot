@@ -6,6 +6,7 @@ import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Abbonamento
 import it.univaq.grr.fitslot.domain.models.PianoAPunti
+import it.univaq.grr.fitslot.data.local.entity.CorsoAbbonamentoEntity
 import it.univaq.grr.fitslot.data.local.entity.SalaAbbonamentoEntity
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import kotlinx.coroutines.flow.map
@@ -48,6 +49,20 @@ class CatalogoRepositoryImpl(
 
     override suspend fun saleIncluse(abbonamentoId: Long) =
         dao.saleIncluse(abbonamentoId).map { it.toDomain() }
+
+    override suspend fun associaSale(abbonamentoId: Long, saleId: List<Long>) {
+        permessi.richiediGestore()
+        require(saleId.isNotEmpty()) { "Seleziona almeno una sala." }
+        dao.associaSale(saleId.map { SalaAbbonamentoEntity(abbonamentoId, it) })
+    }
+
+    override suspend fun corsi() = dao.corsi()
+    override suspend fun corsiInclusi(abbonamentoId: Long) = dao.corsiInclusi(abbonamentoId)
+    override suspend fun associaCorsi(abbonamentoId: Long, corsiId: List<Long>) {
+        permessi.richiediGestore()
+        require(corsiId.isNotEmpty()) { "Seleziona almeno un corso." }
+        dao.associaCorsi(corsiId.map { CorsoAbbonamentoEntity(abbonamentoId, it) })
+    }
 
     private fun valida(nome: String, prezzo: Long, quantita: Int) {
         require(nome.isNotBlank()) { "Inserisci il nome del piano." }

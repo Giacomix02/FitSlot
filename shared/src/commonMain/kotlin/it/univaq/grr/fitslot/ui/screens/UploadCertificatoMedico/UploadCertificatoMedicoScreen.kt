@@ -65,10 +65,19 @@ private val certificatoViewModelFactory = viewModelFactory {
 
 @Composable
 fun UploadCertificatoMedicoScreen(
-    navController: NavController,
+    navController: NavController? = null,
     viewModel: UploadCertificatoMedicoScreenViewModel = viewModel(factory = certificatoViewModelFactory),
+    utente: it.univaq.grr.fitslot.domain.models.User? = null,
+    apriSubito: Boolean = false,
+    onChiusura: () -> Unit = {},
+    onSalvato: () -> Unit = {},
 ) {
-    var showDialog by remember { mutableStateOf(false) }
+    var showDialog by remember(utente?.id) { mutableStateOf(apriSubito) }
+    LaunchedEffect(utente?.id) { viewModel.selezionaUtente(utente) }
+    if (utente == null) {
+        Text("Seleziona un iscritto dalla gestione certificati.")
+        return
+    }
 
     var certificatoSelezionato by remember { mutableStateOf(false) }
 
@@ -84,6 +93,7 @@ fun UploadCertificatoMedicoScreen(
         certificatoSelezionato = false
         datePickerState.selectedDateMillis = null
         viewModel.resetSelections()
+        onChiusura()
     }
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
@@ -99,11 +109,11 @@ fun UploadCertificatoMedicoScreen(
         type = FileKitType.File("png", "jpg", "pdf"),
         onError = { viewModel.error.value = true },
     ) { file ->
-        certificatoSelezionato = true
+        certificatoSelezionato = file != null
         viewModel.onFileChange(file)
     }
 
-    FloatingActionButton(
+    if (!apriSubito) FloatingActionButton(
         onClick = { showDialog = true }
     ) {
         Icon(Icons.Filled.Add, contentDescription = "Aggiungi certificato")
@@ -111,7 +121,7 @@ fun UploadCertificatoMedicoScreen(
 
     if (showDialog) {
         Dialog(onDismissRequest = {
-            closeDialog()
+            if (!viewModel.inCorso) closeDialog()
         }) {
             Card(
                 modifier = Modifier
@@ -162,13 +172,13 @@ fun UploadCertificatoMedicoScreen(
                         .padding(24.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
                 ) {
-                    TextButton(onClick = {
+                    TextButton(enabled = !viewModel.inCorso, onClick = {
                         closeDialog()
                     }) {
                         Text("Annulla")
                     }
-                    TextButton(onClick = { viewModel.uploadCertificato(
-                        { closeDialog() }
+                    TextButton(enabled = !viewModel.inCorso, onClick = { viewModel.uploadCertificato(
+                        { showDialog = false; viewModel.resetSelections(); onSalvato() }
                     ) }) {
                         Text("Salva")
                     }

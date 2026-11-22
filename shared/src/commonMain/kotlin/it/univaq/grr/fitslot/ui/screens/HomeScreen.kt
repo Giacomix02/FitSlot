@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import it.univaq.grr.fitslot.domain.PermessiReception
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,8 +55,8 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
-        Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
-            Text("Carica Certificato Medico")
+        if (PermessiReception.puoControllare()) Button(onClick = { navController.navigate(Screens.CertificatiReception) }) {
+            Text("Iscritti e certificati medici")
         }
     }
     AnimatedVisibility(showContent) {

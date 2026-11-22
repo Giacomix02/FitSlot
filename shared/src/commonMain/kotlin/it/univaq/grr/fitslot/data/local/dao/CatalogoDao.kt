@@ -92,6 +92,19 @@ abstract class CatalogoDao {
     @Query("SELECT sale.* FROM sale INNER JOIN sale_abbonamenti ON sale.id = sale_abbonamenti.salaId WHERE abbonamentoId = :abbonamentoId ORDER BY nome COLLATE NOCASE")
     abstract suspend fun saleIncluse(abbonamentoId: Long): List<SalaEntity>
 
+    // Room salva la lista in una transazione: nessun salvataggio parziale.
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun associaSale(associazioni: List<SalaAbbonamentoEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun associaCorsi(associazioni: List<CorsoAbbonamentoEntity>)
+
+    @Query("SELECT id, name AS nome FROM corso ORDER BY name COLLATE NOCASE")
+    abstract suspend fun corsi(): List<it.univaq.grr.fitslot.domain.models.CorsoIncluso>
+
+    @Query("SELECT corso.id, corso.name AS nome FROM corso INNER JOIN corsi_abbonamenti ON corso.id = corsi_abbonamenti.corsoId WHERE abbonamentoId = :abbonamentoId ORDER BY name COLLATE NOCASE")
+    abstract suspend fun corsiInclusi(abbonamentoId: Long): List<it.univaq.grr.fitslot.domain.models.CorsoIncluso>
+
     // Queste associazioni sono il punto di integrazione con la gestione iscritti.
     @Insert
     abstract suspend fun associaAbbonamento(iscrizione: IscrizioneAbbonamentoEntity)

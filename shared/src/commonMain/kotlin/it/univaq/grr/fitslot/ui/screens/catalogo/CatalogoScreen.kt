@@ -8,6 +8,8 @@ import androidx.compose.runtime.*
 import it.univaq.grr.fitslot.domain.models.Abbonamento
 import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleDialog
 import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleViewModel
+import it.univaq.grr.fitslot.ui.screens.associazioneCorsi.AssociazioneCorsiDialog
+import it.univaq.grr.fitslot.ui.screens.associazioneCorsi.AssociazioneCorsiViewModel
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import it.univaq.grr.fitslot.utils.formattaPrezzo
@@ -27,11 +29,13 @@ fun CatalogoScreen(
     onConfermaEliminazione: () -> Unit,
     onAnnullaEliminazione: () -> Unit,
     onIndietro: () -> Unit,
-    saleViewModel: AssociazioneSaleViewModel? = null
+    saleViewModel: AssociazioneSaleViewModel? = null,
+    corsiViewModel: AssociazioneCorsiViewModel? = null
 ) {
     val abbonamenti = tipo == TipoCatalogo.ABBONAMENTI
     val abilitato = !stato.operazioneInCorso
     var mostraModulo by remember { mutableStateOf(false) }
+    var mostraCorsi by remember { mutableStateOf(false) }
     var mostraSale by remember { mutableStateOf(false) }
     // Il popup si chiude solo quando il salvataggio è riuscito.
     LaunchedEffect(stato.conferma) {
@@ -88,7 +92,7 @@ fun CatalogoScreen(
                     Text(voce.nome, style = MaterialTheme.typography.titleMedium)
                     Text("${formattaPrezzo(voce.prezzoCentesimi)} €")
                     Text(if (abbonamenti) "${voce.quantita} giorni · ingressi illimitati" else "${voce.quantita} ingressi")
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         TextButton(onClick = { onModifica(voce); if (abbonamenti) mostraModulo = true }, enabled = abilitato) { Text("Modifica") }
                         TextButton(onClick = { onElimina(voce) }, enabled = abilitato) { Text("Elimina") }
                         if (abbonamenti && saleViewModel != null) {
@@ -96,6 +100,12 @@ fun CatalogoScreen(
                                 saleViewModel.scegliAbbonamento(Abbonamento(voce.id, voce.nome, voce.prezzoCentesimi, voce.quantita))
                                 mostraSale = true
                             }) { Text("Assegna sale") }
+                        }
+                        if (abbonamenti && corsiViewModel != null) {
+                            TextButton(onClick = {
+                                corsiViewModel.scegliAbbonamento(Abbonamento(voce.id, voce.nome, voce.prezzoCentesimi, voce.quantita))
+                                mostraCorsi = true
+                            }) { Text("Assegna corsi") }
                         }
                     }
                 }
@@ -120,6 +130,9 @@ fun CatalogoScreen(
     }
     if (mostraSale && saleViewModel != null) {
         AssociazioneSaleDialog(saleViewModel) { mostraSale = false }
+    }
+    if (mostraCorsi && corsiViewModel != null) {
+        AssociazioneCorsiDialog(corsiViewModel) { mostraCorsi = false }
     }
     val voce = stato.daEliminare
     if (voce != null) {

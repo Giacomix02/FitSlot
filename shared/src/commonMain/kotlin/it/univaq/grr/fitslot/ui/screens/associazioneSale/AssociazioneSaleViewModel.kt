@@ -21,7 +21,7 @@ class AssociazioneSaleViewModel(
         private set
     var abbonamentoScelto by mutableStateOf<Abbonamento?>(null)
         private set
-    var salaScelta by mutableStateOf<Sala?>(null)
+    var saleSelezionate by mutableStateOf<Set<Long>>(emptySet())
         private set
     var saleIncluse by mutableStateOf<List<Sala>>(emptyList())
         private set
@@ -33,7 +33,7 @@ class AssociazioneSaleViewModel(
     fun scegliAbbonamento(abbonamento: Abbonamento) {
         if (inCorso) return
         abbonamentoScelto = abbonamento
-        salaScelta = null
+        saleSelezionate = emptySet()
         saleIncluse = emptyList()
         messaggio = ""
         inCorso = true
@@ -51,28 +51,28 @@ class AssociazioneSaleViewModel(
         }
     }
 
-    fun scegliSala(sala: Sala) {
+    fun scegliSala(id: Long) {
         if (inCorso) return
-        salaScelta = sala
+        saleSelezionate = if (id in saleSelezionate) saleSelezionate - id else saleSelezionate + id
         messaggio = ""
     }
 
     fun associa() {
         if (inCorso) return
         val abbonamento = abbonamentoScelto
-        val sala = salaScelta
-        if (abbonamento == null || sala == null) {
-            messaggio = "Seleziona un abbonamento e una sala."
+        val selezionate = saleSelezionate.toList()
+        if (abbonamento == null || selezionate.isEmpty()) {
+            messaggio = "Seleziona almeno una sala."
             return
         }
         inCorso = true
         messaggio = ""
         viewModelScope.launch {
             try {
-                catalogo.associaSala(abbonamento.id, sala.id)
+                catalogo.associaSale(abbonamento.id, selezionate)
                 saleIncluse = catalogo.saleIncluse(abbonamento.id)
-                salaScelta = null
-                messaggio = "Sala associata correttamente."
+                saleSelezionate = emptySet()
+                messaggio = "Sale associate correttamente."
             } catch (e: CancellationException) {
                 throw e
             } catch (e: IllegalStateException) {

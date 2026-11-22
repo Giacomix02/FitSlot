@@ -46,3 +46,9 @@ Verifica aggiuntiva su database temporaneo: apertura dello schema 1 tramite Room
 Per provare l’interfaccia usare il gestore già disponibile nel proprio database. Se non ci sono sale o abbonamenti, crearli prima nelle rispettive gestioni.
 
 Aggiornamento interfaccia: compilazione e suite ripetute con esito positivo (27 superati, 1 già saltato). I test verificano la logica e il database; i popup non sono coperti da test grafici automatici.
+
+## Aggiornamento 22 novembre
+
+Selezione multipla nel dropdown con checkbox: Associa sale salva insieme le sale scelte, lascia intatte quelle già incluse e aggiorna il riepilogo. Le voci già incluse sono disabilitate per evitare duplicati. Aggiunta la GRR-94 con un popup analogo per i corsi nella stessa gestione abbonamenti.
+
+La versione attuale del database è 3: le migrazioni 1→3 e 2→3 superano le incoerenze delle integrazioni precedenti e conservano i dati. Il testo precedente descrive la prima implementazione della PR #12, già integrata; per lo stato aggiornato vedere Completamento-US-Roby.md. Suite attuale: 37 superati, 1 già disattivato.

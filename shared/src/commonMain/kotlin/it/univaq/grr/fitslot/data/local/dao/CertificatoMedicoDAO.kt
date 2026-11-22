@@ -17,7 +17,7 @@ interface CertificatoMedicoDAO {
     suspend fun update(certificatoMedico: CertificatoMedicoEntity)
 
     // get certificatoMedico tramite user ID
-    @Query("SELECT * FROM certificato_medico WHERE user_id = :userId")
+    @Query("SELECT * FROM certificato_medico WHERE user_id = :userId ORDER BY id DESC LIMIT 1")
     suspend fun getByUserId(userId: Long): CertificatoMedicoEntity?
 
     // get certificatoMedico by ID
