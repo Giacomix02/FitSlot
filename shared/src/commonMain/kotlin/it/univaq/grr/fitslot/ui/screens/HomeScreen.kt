@@ -19,6 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import it.univaq.grr.fitslot.domain.PermessiGestione
+import it.univaq.grr.fitslot.data.local.LocalStorage
+import it.univaq.grr.fitslot.domain.models.Ruolo
+import it.univaq.grr.fitslot.domain.models.User
 import fitslot.shared.generated.resources.Res
 import fitslot.shared.generated.resources.compose_multiplatform
 import it.univaq.grr.fitslot.Screens
@@ -27,6 +30,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione) {
     var showContent by remember { mutableStateOf(false) }
+    val utente = LocalStorage.getAll()["user"] as? User
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
@@ -35,6 +39,11 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text("Screen Home")
+        if (utente?.ruolo == Ruolo.ISCRITTO) {
+            Button(onClick = { navController.navigate(Screens.CertificatoMedico) }) {
+                Text("Il mio certificato medico")
+            }
+        }
         Text("Verranno testati tutti gli screen e le relative navigazioni")
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
         Button(onClick = {navController.navigate(Screens.CorsiScreen)}) {
@@ -44,6 +53,9 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
+        }
+        Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
+            Text("Carica Certificato Medico")
         }
     }
     AnimatedVisibility(showContent) {

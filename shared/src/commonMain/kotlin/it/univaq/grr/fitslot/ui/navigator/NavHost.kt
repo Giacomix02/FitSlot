@@ -18,8 +18,10 @@ import it.univaq.grr.fitslot.domain.repository.SalaRepository
 import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleViewModel
+import it.univaq.grr.fitslot.ui.screens.certificatoMedico.CertificatoMedicoScreen
 import it.univaq.grr.fitslot.ui.screens.LoginScreen.LoginScreen
 import it.univaq.grr.fitslot.ui.screens.RegistrationScreen.RegistrationScreen
+import it.univaq.grr.fitslot.ui.screens.UploadCertificatoMedico.UploadCertificatoMedicoScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoViewModel
 import it.univaq.grr.fitslot.ui.screens.catalogo.TipoCatalogo
@@ -50,6 +52,11 @@ sealed class Screens {
     @Serializable
     data object Registration
 
+    @Serializable
+    data object UploadCertificatoMedicoScreen
+  
+    @Serializable
+    data object CertificatoMedico
 
 }
 
@@ -78,8 +85,16 @@ fun Navigation(
             RegistrationScreen(navController)
         }
 
+        composable<Screens.CertificatoMedico> {
+            CertificatoMedicoScreen(navController)
+        }
+
         composable<Screens.CorsiScreen> {
             CorsiScreen()
+        }
+
+        composable<Screens.UploadCertificatoMedicoScreen>{
+            UploadCertificatoMedicoScreen(navController)
         }
 
         composable<Screens.CreazioneSala> {
