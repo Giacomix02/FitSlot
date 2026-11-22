@@ -1,7 +1,5 @@
-package it.univaq.grr.fitslot
+package it.univaq.grr.fitslot.utils
 
-import it.univaq.grr.fitslot.utils.formattaPrezzo
-import it.univaq.grr.fitslot.utils.prezzoInCentesimi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

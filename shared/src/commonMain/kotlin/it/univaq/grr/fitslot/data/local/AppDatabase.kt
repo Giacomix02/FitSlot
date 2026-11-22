@@ -32,7 +32,7 @@ import kotlinx.coroutines.Dispatchers
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class],
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, CertificatoMedicoEntity::class],
     version = 1,
     exportSchema = true
 )
@@ -43,6 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
+    abstract fun certificatoMedicoDao(): CertificatoMedicoDAO
 
     companion object {
         private val instance: AppDatabase by lazy {
