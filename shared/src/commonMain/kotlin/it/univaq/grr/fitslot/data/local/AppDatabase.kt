@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, LogAccessoEntity::class, CertificatoMedicoEntity::class,  SalaAbbonamentoEntity::class]
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, LogAccessoEntity::class, CertificatoMedicoEntity::class,  SalaAbbonamentoEntity::class],
     version = 1,
     exportSchema = true
 )
