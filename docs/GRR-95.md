@@ -4,9 +4,9 @@ Il gestore apre “Gestisci abbonamenti” dalla Home. “Aggiungi abbonamento�
 
 La tabella sale_abbonamenti usa la coppia abbonamentoId/salaId come chiave, senza duplicati. La sala inclusa non può essere eliminata. Eliminare un abbonamento libero rimuove solo i collegamenti alle sale, non le sale stesse. La GRR-94 usa un popup analogo per i corsi, nella stessa gestione abbonamenti. I piani a punti restano separati.
 
-La versione del database è 3. Per scelta del team non sono registrate migrazioni né cancellazioni automatiche: dopo un cambiamento dello schema si ricrea manualmente il database di prova a programma chiuso. Percorso rilevato e istruzioni in Completamento-US-Roby.md. Questa operazione perde i dati locali, da reinserire; il gestore predefinito viene inizializzato dal codice esistente.
+La versione del database è 1, come impostato dal collega. Per scelta del team non sono registrate migrazioni né cancellazioni automatiche: dopo un cambiamento dello schema si ricrea manualmente il database di prova a programma chiuso. Percorso rilevato e istruzioni in Completamento-US-Roby.md. Questa operazione perde i dati locali, da reinserire; il gestore predefinito viene inizializzato dal codice esistente.
 
-Test brevi in /Users/uni/IdeaProjects/FitSlot/shared/src/jvmTest/kotlin/it/univaq/grr/fitslot/SaleAbbonamentiTest.kt: associazione e riepilogo, duplicati, protezione della sala, associazioni multiple e corsi. Suite complessiva: 37 superati, 1 già disattivato.
+Test brevi in /Users/uni/IdeaProjects/FitSlot/shared/src/jvmTest/kotlin/it/univaq/grr/fitslot/SaleAbbonamentiTest.kt: associazione e riepilogo, duplicati, protezione della sala, associazioni multiple e corsi. Suite complessiva: 38 superati, 1 già disattivato.
 
 ```bash
 cd /Users/uni/IdeaProjects/FitSlot

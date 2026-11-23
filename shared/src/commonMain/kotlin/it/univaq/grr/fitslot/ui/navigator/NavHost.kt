@@ -7,8 +7,8 @@ import androidx.compose.material3.TextButton
 import it.univaq.grr.fitslot.ui.screens.associazioneCorsi.AssociazioneCorsiViewModel
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
-import it.univaq.grr.fitslot.data.repository.CertificatiReceptionRepository
-import it.univaq.grr.fitslot.domain.PermessiReception
+import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
+import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.ui.screens.certificatiReception.*
 import androidx.compose.runtime.Composable
 import it.univaq.grr.fitslot.domain.PermessiGestione
@@ -99,10 +99,10 @@ fun Navigation(
         }
 
         composable<Screens.CertificatiReception> {
-            if (PermessiReception.puoControllare()) {
+            if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
                 val vm = viewModel {
                     val db = AppDatabase.create()
-                    CertificatiReceptionViewModel(CertificatiReceptionRepository(db.certificatiReceptionDao(), db.userDao()))
+                    CertificatiReceptionViewModel(CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao()))
                 }
                 CertificatiReceptionScreen(vm, CertificatoMedicoRepositoryImpl(AppDatabase.create().certificatoMedicoDao())) { navController.popBackStack() }
             } else Column {

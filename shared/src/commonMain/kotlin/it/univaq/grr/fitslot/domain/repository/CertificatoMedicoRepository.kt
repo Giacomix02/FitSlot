@@ -11,4 +11,7 @@ interface CertificatoMedicoRepository {
 
     suspend fun modifyCertificatoMedico(certificato: CertificatoMedico)
 
+    suspend fun iscritti(): List<User>
+    suspend fun certificati(scaduti: Boolean? = null, dal: String = "", al: String = "",
+                           oggi: String = it.univaq.grr.fitslot.utils.dataOggi()): List<CertificatoMedico>
 }

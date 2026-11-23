@@ -4,6 +4,8 @@ import it.univaq.grr.fitslot.data.local.dao.CatalogoDao
 import it.univaq.grr.fitslot.domain.PermessiGestione
 import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
+import it.univaq.grr.fitslot.domain.models.Corso
+import it.univaq.grr.fitslot.data.local.entity.CorsoEntity
 import it.univaq.grr.fitslot.domain.models.Abbonamento
 import it.univaq.grr.fitslot.domain.models.PianoAPunti
 import it.univaq.grr.fitslot.data.local.entity.CorsoAbbonamentoEntity
@@ -56,12 +58,18 @@ class CatalogoRepositoryImpl(
         dao.associaSale(saleId.map { SalaAbbonamentoEntity(abbonamentoId, it) })
     }
 
-    override suspend fun corsi() = dao.corsi()
-    override suspend fun corsiInclusi(abbonamentoId: Long) = dao.corsiInclusi(abbonamentoId)
+    override suspend fun corsi() = dao.corsi().map { corsoCompleto(it) }
+    override suspend fun corsiInclusi(abbonamentoId: Long) = dao.corsiInclusi(abbonamentoId).map { corsoCompleto(it) }
     override suspend fun associaCorsi(abbonamentoId: Long, corsiId: List<Long>) {
         permessi.richiediGestore()
         require(corsiId.isNotEmpty()) { "Seleziona almeno un corso." }
         dao.associaCorsi(corsiId.map { CorsoAbbonamentoEntity(abbonamentoId, it) })
+    }
+
+    private suspend fun corsoCompleto(entity: CorsoEntity): Corso {
+        val sala = checkNotNull(dao.salaCorso(entity.salaAssegnataId)) { "Sala del corso non trovata." }
+        val fascia = checkNotNull(dao.fasciaCorso(entity.fasciaOrariaId)) { "Fascia del corso non trovata." }
+        return Corso(entity.id, entity.name, sala.toDomain(), fascia.toDomain())
     }
 
     private fun valida(nome: String, prezzo: Long, quantita: Int) {

@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.domain.models.Abbonamento
-import it.univaq.grr.fitslot.domain.models.CorsoIncluso
+import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -14,13 +14,13 @@ import kotlinx.coroutines.launch
 class AssociazioneCorsiViewModel(
     private val catalogo: CatalogoRepository
 ) : ViewModel() {
-    var corsi by mutableStateOf<List<CorsoIncluso>>(emptyList())
+    var corsi by mutableStateOf<List<Corso>>(emptyList())
         private set
     var abbonamentoScelto by mutableStateOf<Abbonamento?>(null)
         private set
     var corsiSelezionati by mutableStateOf<Set<Long>>(emptySet())
         private set
-    var corsiInclusi by mutableStateOf<List<CorsoIncluso>>(emptyList())
+    var corsiInclusi by mutableStateOf<List<Corso>>(emptyList())
         private set
     var messaggio by mutableStateOf("")
         private set

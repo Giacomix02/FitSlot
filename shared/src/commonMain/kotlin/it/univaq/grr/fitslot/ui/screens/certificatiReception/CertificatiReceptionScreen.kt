@@ -4,7 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import it.univaq.grr.fitslot.utils.dataInMillisecondi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -22,8 +23,8 @@ fun CertificatiReceptionScreen(vm: CertificatiReceptionViewModel, repositoryCert
                 Button(onClick = { vm.cerca(null) }, enabled = !vm.inCorso) { Text("Tutti gli iscritti") }
                 TextButton(onClick = { vm.cerca(true) }, enabled = !vm.inCorso) { Text("Mostra scaduti") }
             }
-            OutlinedTextField(vm.dal, { vm.dal = it }, label = { Text("Dal (AAAA-MM-GG)") }, singleLine = true, enabled = !vm.inCorso)
-            OutlinedTextField(vm.al, { vm.al = it }, label = { Text("Al (AAAA-MM-GG)") }, singleLine = true, enabled = !vm.inCorso)
+            CampoData("Dal", vm.dal, !vm.inCorso) { vm.dal = it }
+            CampoData("Al", vm.al, !vm.inCorso) { vm.al = it }
             Button(onClick = { vm.cerca(false) }, enabled = !vm.inCorso) { Text("Cerca in scadenza") }
             if (vm.inCorso) Text("Caricamento...")
             Text(vm.messaggio)
@@ -33,8 +34,8 @@ fun CertificatiReceptionScreen(vm: CertificatiReceptionViewModel, repositoryCert
                 Column(Modifier.padding(12.dp)) {
                     Text("${iscritto.nome} ${iscritto.cognome}")
                     Text(iscritto.email)
-                    Text("Scadenza: ${dataScadenza(iscritto.scadenza) ?: "certificato assente o data non valida"}")
-                    TextButton(onClick = { vm.scegliIscritto(iscritto.id) }, enabled = !vm.inCorso) { Text("Carica certificato") }
+                    Text("Scadenza: ${dataScadenza(vm.scadenze[iscritto.id]) ?: "certificato assente o data non valida"}")
+                    TextButton(onClick = { vm.scegliIscritto(iscritto) }, enabled = !vm.inCorso) { Text("Carica certificato") }
                 }
             }
         }
@@ -46,5 +47,23 @@ fun CertificatiReceptionScreen(vm: CertificatiReceptionViewModel, repositoryCert
         }
         UploadCertificatoMedicoScreen(viewModel = uploadVm, utente = utente, apriSubito = true,
             onChiusura = vm::chiudiCaricamento, onSalvato = vm::certificatoSalvato)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CampoData(label: String, valore: String, abilitato: Boolean, onData: (String) -> Unit) {
+    var aperto by remember { mutableStateOf(false) }
+    OutlinedButton(onClick = { aperto = true }, enabled = abilitato) { Text("$label: $valore") }
+    if (aperto) {
+        val stato = rememberDatePickerState(initialSelectedDateMillis = dataInMillisecondi(valore))
+        DatePickerDialog(onDismissRequest = { aperto = false },
+            confirmButton = { TextButton(onClick = {
+                dataScadenza(stato.selectedDateMillis?.toString())?.let(onData)
+                aperto = false
+            }, enabled = stato.selectedDateMillis != null) { Text("Conferma") } },
+            dismissButton = { TextButton(onClick = { aperto = false }) { Text("Annulla") } }) {
+            DatePicker(state = stato)
+        }
     }
 }

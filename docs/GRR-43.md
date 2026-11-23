@@ -1,6 +1,6 @@
 # GRR-43 - Il mio certificato medico
 
-Aggiornamento del 22 novembre: sostituiti foto e data mock con l'ultimo certificato dell'iscritto autenticato, letto dalla tabella e da MediaStorage della GRR-19.
+Aggiornamento del 22 novembre: sostituiti foto e data mock con il certificato con la scadenza più recente dell'iscritto autenticato, letto dalla tabella e da MediaStorage della GRR-19.
 
 La schermata mostra immagine e scadenza, avviso entro 20 giorni, avviso di certificato scaduto o messaggio se manca. Sono disponibili Ricarica e Apri documento. I PDF si aprono con l'app del sistema; non viene introdotto un lettore PDF interno.
 

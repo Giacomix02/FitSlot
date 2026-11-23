@@ -43,7 +43,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
-    abstract fun certificatiReceptionDao(): CertificatiReceptionDao
     abstract fun certificatoMedicoDao(): CertificatoMedicoDAO
 
     companion object {

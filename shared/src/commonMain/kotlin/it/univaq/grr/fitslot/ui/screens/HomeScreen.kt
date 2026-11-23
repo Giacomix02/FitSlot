@@ -10,7 +10,8 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import it.univaq.grr.fitslot.domain.PermessiReception
+import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
+import it.univaq.grr.fitslot.domain.models.Ruolo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import it.univaq.grr.fitslot.domain.PermessiGestione
 import it.univaq.grr.fitslot.data.local.LocalStorage
-import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import fitslot.shared.generated.resources.Res
 import fitslot.shared.generated.resources.compose_multiplatform
@@ -55,7 +55,7 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
-        if (PermessiReception.puoControllare()) Button(onClick = { navController.navigate(Screens.CertificatiReception) }) {
+        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) Button(onClick = { navController.navigate(Screens.CertificatiReception) }) {
             Text("Iscritti e certificati medici")
         }
     }

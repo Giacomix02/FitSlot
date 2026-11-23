@@ -9,19 +9,16 @@ import it.univaq.grr.fitslot.utils.MediaStorage
 import it.univaq.grr.fitslot.utils.dataScadenza
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.temporal.ChronoUnit
+import it.univaq.grr.fitslot.utils.dataOggi
+import it.univaq.grr.fitslot.utils.aggiungiGiorni
 
-fun certificatoInScadenza(scadenza: LocalDate?, oggi: LocalDate): Boolean {
-    if (scadenza == null) return false
-    val giorni = ChronoUnit.DAYS.between(oggi, scadenza)
-    return giorni >= 0 && giorni <= 20
-}
+fun certificatoInScadenza(scadenza: String?, oggi: String): Boolean =
+    scadenza != null && scadenza >= oggi && scadenza <= aggiungiGiorni(oggi, 20)
 
 class CertificatoMedicoViewModel(private val repository: CertificatoMedicoRepository) : ViewModel() {
     var presente by mutableStateOf(false)
         private set
-    var scadenza by mutableStateOf<LocalDate?>(null)
+    var scadenza by mutableStateOf<String?>(null)
         private set
     var documento by mutableStateOf<ByteArray?>(null)
         private set
@@ -54,6 +51,11 @@ class CertificatoMedicoViewModel(private val repository: CertificatoMedicoReposi
             } finally {
                 inCorso = false
             }
+        }
+    }
+    fun apriDocumento() {
+        viewModelScope.launch {
+            if (MediaStorage().apriDocumento(percorso).isFailure) messaggio = "Impossibile aprire il documento con l'app predefinita."
         }
     }
 }

@@ -27,7 +27,7 @@ fun AssociazioneCorsiDialog(viewModel: AssociazioneCorsiViewModel, onChiudi: () 
             ) {
                 if (viewModel.inCorso) Text("Caricamento...")
                 if (!viewModel.inCorso && viewModel.corsi.isEmpty()) Text("Crea prima un corso nella gestione corsi.")
-                SelezioneMultipla("Corsi", viewModel.corsi.map { it.id to it.nome },
+                SelezioneMultipla("Corsi", viewModel.corsi.map { it.id to it.name },
                     viewModel.corsiSelezionati, viewModel.corsiInclusi.map { it.id }.toSet(),
                     !viewModel.inCorso, viewModel::scegliCorso)
                 Button(onClick = viewModel::associa, enabled = !viewModel.inCorso && viewModel.corsiSelezionati.isNotEmpty()) { Text("Associa corsi") }
@@ -36,7 +36,7 @@ fun AssociazioneCorsiDialog(viewModel: AssociazioneCorsiViewModel, onChiudi: () 
                     Text("Riepilogo dei corsi inclusi", style = MaterialTheme.typography.titleLarge)
                     if (viewModel.corsiInclusi.isEmpty()) Text("Nessun corso incluso.")
                     for (corso in viewModel.corsiInclusi) {
-                        Text(corso.nome)
+                        Text(corso.name)
                     }
                 }
             }

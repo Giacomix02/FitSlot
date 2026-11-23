@@ -92,7 +92,7 @@ fun CatalogoScreen(
                     Text(voce.nome, style = MaterialTheme.typography.titleMedium)
                     Text("${formattaPrezzo(voce.prezzoCentesimi)} €")
                     Text(if (abbonamenti) "${voce.quantita} giorni · ingressi illimitati" else "${voce.quantita} ingressi")
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         TextButton(onClick = { onModifica(voce); if (abbonamenti) mostraModulo = true }, enabled = abilitato) { Text("Modifica") }
                         TextButton(onClick = { onElimina(voce) }, enabled = abilitato) { Text("Elimina") }
                         if (abbonamenti && saleViewModel != null) {

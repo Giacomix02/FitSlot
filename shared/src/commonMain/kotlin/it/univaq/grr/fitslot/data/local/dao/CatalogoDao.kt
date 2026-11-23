@@ -99,11 +99,16 @@ abstract class CatalogoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun associaCorsi(associazioni: List<CorsoAbbonamentoEntity>)
 
-    @Query("SELECT id, name AS nome FROM corso ORDER BY name COLLATE NOCASE")
-    abstract suspend fun corsi(): List<it.univaq.grr.fitslot.domain.models.CorsoIncluso>
+    @Query("SELECT * FROM corso ORDER BY name COLLATE NOCASE")
+    abstract suspend fun corsi(): List<CorsoEntity>
 
-    @Query("SELECT corso.id, corso.name AS nome FROM corso INNER JOIN corsi_abbonamenti ON corso.id = corsi_abbonamenti.corsoId WHERE abbonamentoId = :abbonamentoId ORDER BY name COLLATE NOCASE")
-    abstract suspend fun corsiInclusi(abbonamentoId: Long): List<it.univaq.grr.fitslot.domain.models.CorsoIncluso>
+    @Query("SELECT corso.* FROM corso INNER JOIN corsi_abbonamenti ON corso.id = corsi_abbonamenti.corsoId WHERE abbonamentoId = :abbonamentoId ORDER BY name COLLATE NOCASE")
+    abstract suspend fun corsiInclusi(abbonamentoId: Long): List<CorsoEntity>
+
+    @Query("SELECT * FROM sale WHERE id = :id")
+    abstract suspend fun salaCorso(id: Long): SalaEntity?
+    @Query("SELECT * FROM fascia_oraria WHERE id = :id")
+    abstract suspend fun fasciaCorso(id: Long): FasciaOrariaEntity?
 
     // Queste associazioni sono il punto di integrazione con la gestione iscritti.
     @Insert

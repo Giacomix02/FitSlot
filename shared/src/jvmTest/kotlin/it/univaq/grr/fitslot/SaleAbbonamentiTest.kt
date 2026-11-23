@@ -73,11 +73,13 @@ class SaleAbbonamentiTest {
 
     @Test
     fun associaCorsiAlPianoScelto() = runBlocking<Unit> {
-        db.corsoDao().insertAll(it.univaq.grr.fitslot.data.local.entity.CorsoEntity(1, "Yoga", 1, 1))
+        val sala = sale.inserisci(Sala(nome = "Sala Yoga", capienza = 10))
+        val fascia = db.corsoDao().insertFasciaOraria(it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity(1, "2027-06-01T08:00", "2027-06-01T10:00"))
+        db.corsoDao().insertAll(it.univaq.grr.fitslot.data.local.entity.CorsoEntity(1, "Yoga", sala, fascia))
         val piano = catalogo.salvaAbbonamento(Abbonamento(nome = "Corsi", prezzoCentesimi = 1000, durataGiorni = 30))
         catalogo.associaCorsi(piano, listOf(1))
         catalogo.associaCorsi(piano, listOf(1))
-        assertEquals("Yoga", catalogo.corsiInclusi(piano).single().nome)
+        assertEquals("Yoga", catalogo.corsiInclusi(piano).single().name)
         catalogo.eliminaAbbonamento(piano)
         assertTrue(catalogo.corsiInclusi(piano).isEmpty())
     }
