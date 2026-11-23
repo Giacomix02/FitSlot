@@ -31,7 +31,7 @@ import kotlinx.coroutines.Dispatchers
 @Database(
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
-        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, LogAccessoEntity::class],
+        AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, LogAccessoEntity::class, CertificatoMedicoEntity::class,  SalaAbbonamentoEntity::class]
     version = 1,
     exportSchema = true
 )
@@ -42,6 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
     abstract fun corsoDao(): CorsoDao
     abstract fun catalogoDao(): CatalogoDao
+    abstract fun certificatoMedicoDao(): CertificatoMedicoDAO
 
     abstract fun logAccessoDao(): LogAccessoDao
 
@@ -51,6 +52,7 @@ abstract class AppDatabase : RoomDatabase() {
                 name =  "fitslot.db",
                 factory = AppDatabaseConstructor::initialize
             )
+                .addMigrations(MIGRAZIONE_SALE_ABBONAMENTI)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .addCallback(object : RoomDatabase.Callback() {
