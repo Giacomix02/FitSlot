@@ -33,7 +33,7 @@ import kotlinx.coroutines.Dispatchers
 
     entities = [SalaEntity::class, UserEntity::class, CorsoEntity::class, FasciaOrariaEntity::class,
         AbbonamentoEntity::class, PianoAPuntiEntity::class, IscrizioneAbbonamentoEntity::class, IscrizionePianoAPuntiEntity::class, CertificatoMedicoEntity::class,  SalaAbbonamentoEntity::class, CorsoAbbonamentoEntity::class],
-    version = 3,
+    version = 1,
     exportSchema = true
 )
 @ColumnTypeConverters(Converters::class)
@@ -58,6 +58,8 @@ abstract class AppDatabase : RoomDatabase() {
                     override suspend fun onOpen(connection: SQLiteConnection) {
                         super.onOpen(connection)
                         connection.seedDefaultAdmin()
+                        connection.seedDefaultReception()
+                        connection.seedDefaultIscritto()
                     }
                 })
                 .build()
@@ -91,6 +93,67 @@ private fun SQLiteConnection.seedDefaultAdmin() {
             'admin',
             'Amministratore',
             'FitSlot',
+            '1990-01-01',
+            '0000000000',
+            'Via Roma 1',
+            'L''Aquila',
+            '$adminEmail',
+            '$ruolo'
+        );
+        """.trimIndent()
+    )
+}
+
+
+private fun SQLiteConnection.seedDefaultReception() {
+    val adminEmail = "reception"
+    val plainPassword = "reception"
+    val salt = PasswordSecurity.generateSalt()
+    val hashedPassword = PasswordSecurity.hashPassword(plainPassword, salt)
+    val ruolo = Ruolo.RECEPIONIST
+
+    execSQL(
+        """
+        INSERT OR IGNORE INTO user (
+            email, password, salt, username, nome, cognome,
+            data_nascita, telefono, indirizzo, citta, email_contatto, ruolo
+        ) VALUES (
+            '$adminEmail',
+            '$hashedPassword',
+            '$salt',
+            'reception',
+            'reception',
+            'reception',
+            '1990-01-01',
+            '0000000000',
+            'Via Roma 1',
+            'L''Aquila',
+            '$adminEmail',
+            '$ruolo'
+        );
+        """.trimIndent()
+    )
+}
+
+private fun SQLiteConnection.seedDefaultIscritto() {
+    val adminEmail = "iscritto"
+    val plainPassword = "iscritto"
+    val salt = PasswordSecurity.generateSalt()
+    val hashedPassword = PasswordSecurity.hashPassword(plainPassword, salt)
+    val ruolo = Ruolo.ISCRITTO
+
+    execSQL(
+        """
+        INSERT OR IGNORE INTO user (
+            email, password, salt, username, nome, cognome,
+            data_nascita, telefono, indirizzo, citta, email_contatto, ruolo
+        ) VALUES (
+            '$adminEmail',
+            '$hashedPassword',
+            '$salt',
+            'Iscritto',
+            'Iscritto',
+            'Iscritto',
             '1990-01-01',
             '0000000000',
             'Via Roma 1',
