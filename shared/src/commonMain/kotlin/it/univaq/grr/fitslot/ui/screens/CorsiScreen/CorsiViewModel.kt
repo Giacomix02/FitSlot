@@ -4,26 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.CorsoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.FasciaOrariaRepositoryImpl
 import it.univaq.grr.fitslot.data.repository.SalaRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
 import it.univaq.grr.fitslot.domain.repository.CorsoRepository
+import it.univaq.grr.fitslot.domain.repository.FasciaOrariaRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
 
-
-val fasceOrarie = listOf(
-    FasciaOraria(1, LocalDateTime.parse("2027-06-01T15:30"),LocalDateTime.parse("2027-06-01T17:30") ),
-    FasciaOraria(2, LocalDateTime.parse("2027-06-01T18:30"),LocalDateTime.parse("2027-06-01T19:30") ),
-    FasciaOraria(3, LocalDateTime.parse("2027-06-02T12:30"),LocalDateTime.parse("2027-06-02T15:00") )
-)
 
 data class CorsiScreenState(
     var showDialog: Boolean = false,
@@ -35,7 +26,8 @@ data class CorsiScreenState(
 
 class CorsiViewModel(
     val corsoRepository: CorsoRepository = CorsoRepositoryImpl(AppDatabase.create().corsoDao()),
-    val salaRepository: SalaRepository = SalaRepositoryImpl(AppDatabase.create().salaDao())
+    salaRepository: SalaRepository = SalaRepositoryImpl(AppDatabase.create().salaDao()),
+    val fasciaOrariaRepository: FasciaOrariaRepository = FasciaOrariaRepositoryImpl(AppDatabase.create().fasciaOrariaDao())
 ) : ViewModel() {
     val uiState: StateFlow<CorsiScreenState> field = MutableStateFlow(CorsiScreenState())
 
@@ -45,13 +37,17 @@ class CorsiViewModel(
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = emptyList()
         )
-    val fasceOrarieList: List<FasciaOraria> field = MutableList(fasceOrarie.size) { index -> fasceOrarie[index] }
+    val fasceOrarie = fasciaOrariaRepository.observeFasceOrarie().stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = emptyList()
+    )
 
     init {
         // Le fasce orarie devono esistere nel database per poter confrontare
         // gli orari dei corsi tramite la query di sovrapposizione.
         viewModelScope.launch {
-            runCatching { corsoRepository.salvaFasceOrarie(fasceOrarie) }
+            runCatching { corsoRepository.salvaFasceOrarie(fasceOrarie.value) }
         }
     }
 
@@ -78,7 +74,7 @@ class CorsiViewModel(
     /** Fasce orarie che non si sovrappongono a corsi già assegnati alla [sala]. */
     suspend fun fasceLibereInSala(sala: Sala): List<FasciaOraria> {
         val fasceOccupate = corsoRepository.fasceOccupate(sala.id)
-        return fasceOrarieList.filter { fascia ->
+        return fasceOrarie.value.filter { fascia ->
             fasceOccupate.none { occupata -> occupata.siSovrapponeCon(fascia) }
         }
     }

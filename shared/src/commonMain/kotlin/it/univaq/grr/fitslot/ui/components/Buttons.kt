@@ -14,9 +14,10 @@ import androidx.compose.ui.tooling.preview.Preview
 @Composable
 public fun createButton(
     text: String = "crea",
+    enabled: Boolean = true,
     createFunction: () -> Unit = {},
 ) {
-    Button(onClick = createFunction) {
+    Button(onClick = createFunction, enabled = enabled) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(text)
             Icon(Icons.Default.Add, contentDescription = text)

@@ -1,5 +1,6 @@
 package it.univaq.grr.fitslot.data.local
 
+import androidx.room3.*
 import androidx.sqlite.SQLiteConnection
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import androidx.sqlite.execSQL

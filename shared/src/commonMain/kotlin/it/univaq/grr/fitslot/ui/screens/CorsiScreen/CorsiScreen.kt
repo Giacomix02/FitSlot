@@ -6,18 +6,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +30,7 @@ fun CorsiScreen() {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     val saleList by viewModel.saleList.collectAsStateWithLifecycle()
+    val fasceList by viewModel.fasceOrarie.collectAsStateWithLifecycle()
 
     var selectedSala by remember { mutableStateOf<Sala?>(null) }
     var selectedFasciaOraria by remember { mutableStateOf<FasciaOraria?>(null) }
@@ -55,7 +44,7 @@ fun CorsiScreen() {
     // Opzioni mostrate nei menu: se è già stata scelta una fascia oraria
     // mostriamo solo le sale libere e viceversa.
     var saleSelezionabili by remember { mutableStateOf<List<Sala>>(emptyList()) }
-    var fasceSelezionabili by remember { mutableStateOf(viewModel.fasceOrarieList) }
+    var fasceSelezionabili by remember { mutableStateOf<List<FasciaOraria>>(emptyList()) }
 
     LaunchedEffect(saleList, selectedFasciaOraria, uiState.showCreazioneCorsoEseguita) {
         saleSelezionabili = selectedFasciaOraria
@@ -65,7 +54,7 @@ fun CorsiScreen() {
     LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita) {
         fasceSelezionabili = selectedSala
             ?.let { sala -> viewModel.fasceLibereInSala(sala) }
-            ?: viewModel.fasceOrarieList
+            ?: fasceList
     }
 
     FloatingActionButton(
