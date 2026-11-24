@@ -54,6 +54,10 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
+
+        Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
+            Text("Pagina registrazione accesso Iscritto")
+        }
         Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
             Text("Carica Certificato Medico")
         }

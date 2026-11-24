@@ -201,6 +201,7 @@ class RegistrationViewModel(
                 if(senderEmail!==null && appPassword!==null) {
                     async{
                         EmailSender.sendWelcomeEmail(
+                            matricola = (user.id + 999).toString(),
                             toEmail = user.emailContatto,
                             usernameWelcome = user.username,
                             senderEmail = senderEmail,

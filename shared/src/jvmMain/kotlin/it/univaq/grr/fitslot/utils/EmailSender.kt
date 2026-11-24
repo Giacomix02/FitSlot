@@ -13,7 +13,7 @@ import java.util.Properties
 
 actual object EmailSender{
 
-    actual suspend fun sendWelcomeEmail(toEmail: String, usernameWelcome: String, senderEmail: String, appPassword: String): Result<Unit> =
+    actual suspend fun sendWelcomeEmail(toEmail: String, usernameWelcome: String, matricola:String, senderEmail: String, appPassword: String): Result<Unit> =
         withContext(Dispatchers.IO) {
             runCatching {
                 val props = Properties().apply {
@@ -42,6 +42,8 @@ actual object EmailSender{
                         Ciao $usernameWelcome,
                         
                         Il tuo account è stato creato con successo all'interno del sistema.
+                        
+                        MATRICOLA: $matricola
                         
                         Cordiali saluti,
                         Il Team di FitSlot

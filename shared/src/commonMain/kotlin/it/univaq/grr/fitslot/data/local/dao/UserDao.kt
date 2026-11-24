@@ -19,4 +19,7 @@ interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertUser(user: UserEntity): Long
+
+    @Query("SELECT * FROM user WHERE ruolo='ISCRITTO'")
+    suspend fun getAllIscritti(): List<UserEntity>
 }
