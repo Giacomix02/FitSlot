@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,16 +19,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import it.univaq.grr.fitslot.domain.PermessiGestione
 import it.univaq.grr.fitslot.data.local.LocalStorage
 import it.univaq.grr.fitslot.domain.models.User
 import fitslot.shared.generated.resources.Res
 import fitslot.shared.generated.resources.compose_multiplatform
 import it.univaq.grr.fitslot.Screens
+import it.univaq.grr.fitslot.utils.GestioneUserLocalStorage
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione) {
+fun HomeScreen(navController: NavController) {
     var showContent by remember { mutableStateOf(false) }
     val utente = LocalStorage.getAll()["user"] as? User
     Column(
@@ -46,7 +45,8 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
             }
         }
         Text("Verranno testati tutti gli screen e le relative navigazioni")
-        if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
+
+        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.GESTORE)) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
         Button(onClick = { navController.navigate(Screens.CorsiScreen) }) {
             Text("Pagina corsi")
         }
@@ -61,7 +61,7 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
-        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
+        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.RECEPIONIST)) {
 
             Button(onClick = {
                 navController.navigate(

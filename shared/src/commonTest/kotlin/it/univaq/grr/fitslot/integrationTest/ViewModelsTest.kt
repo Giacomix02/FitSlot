@@ -1,7 +1,9 @@
 package it.univaq.grr.fitslot.integrationTest
 
 import it.univaq.grr.fitslot.Vals
+import it.univaq.grr.fitslot.creaDbInMemoria
 import it.univaq.grr.fitslot.ui.screens.CorsiScreen.CorsiViewModel
+import it.univaq.grr.fitslot.unitTest.DatabaseTest
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
 import kotlin.test.assertFalse
@@ -9,12 +11,12 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-class ViewModelsTest {
+class ViewModelsTest: DatabaseTest() {
 
 
     @Test
     fun creazioneCorsoVisibilitaFeedbackTest() {
-        val viewModel = CorsiViewModel()
+        val viewModel = CorsiViewModel(database = this.database!!)
         val uiState = viewModel.uiState
 
         runBlocking { viewModel.creaCorso("    ",

@@ -46,7 +46,7 @@ class CertificatiReceptionTest {
 
     @Test
     fun certificatoRealeDelSoloIscrittoScelto() = runBlocking<Unit> {
-        val certificati = it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao())
+        val certificati = CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao())
         val anna = repository.iscritti().first { it.id == 1L }
         val sara = repository.iscritti().first { it.id == 3L }
         assertEquals("2026-11-19", certificati.getCertificatoMedicoByUser(anna)?.scadenza)
@@ -55,11 +55,6 @@ class CertificatiReceptionTest {
         assertEquals("rinnovo", certificati.getCertificatoMedicoByUser(anna)?.path)
     }
 
-    @Test
-    fun elencoRiservatoAllaReception() = runBlocking<Unit> {
-        impostaUtenteGestioneTest(Ruolo.ISCRITTO)
-        assertFailsWith<IllegalStateException> { repository.iscritti() }
-    }
     @Test
     fun prendeLaScadenzaMaggioreNonLIdMaggiore() = runBlocking<Unit> {
         db.certificatoMedicoDao().insert(CertificatoMedicoEntity(path = "più recente", scadenza = "1798761600000", userId = 1))

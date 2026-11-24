@@ -25,9 +25,10 @@ data class CorsiScreenState(
 )
 
 class CorsiViewModel(
-    val corsoRepository: CorsoRepository = CorsoRepositoryImpl(AppDatabase.create().corsoDao()),
-    salaRepository: SalaRepository = SalaRepositoryImpl(AppDatabase.create().salaDao()),
-    val fasciaOrariaRepository: FasciaOrariaRepository = FasciaOrariaRepositoryImpl(AppDatabase.create().fasciaOrariaDao())
+    val database: AppDatabase = AppDatabase.create(),
+    val corsoRepository: CorsoRepository = CorsoRepositoryImpl(database.corsoDao()),
+    salaRepository: SalaRepository = SalaRepositoryImpl(database.salaDao()),
+    val fasciaOrariaRepository: FasciaOrariaRepository = FasciaOrariaRepositoryImpl(database.fasciaOrariaDao())
 ) : ViewModel() {
     val uiState: StateFlow<CorsiScreenState> field = MutableStateFlow(CorsiScreenState())
 

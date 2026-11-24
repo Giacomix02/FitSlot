@@ -7,11 +7,9 @@ import androidx.compose.material3.TextButton
 import it.univaq.grr.fitslot.ui.screens.associazioneCorsi.AssociazioneCorsiViewModel
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
-import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.ui.screens.certificatiReception.*
 import androidx.compose.runtime.Composable
-import it.univaq.grr.fitslot.domain.PermessiGestione
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,6 +33,7 @@ import it.univaq.grr.fitslot.ui.screens.catalogo.TipoCatalogo
 import it.univaq.grr.fitslot.ui.screens.FasceOrarieScreen.FasceOrarieScreen
 import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaScreen
 import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaViewModel
+import it.univaq.grr.fitslot.utils.GestioneUserLocalStorage
 import kotlinx.serialization.Serializable
 
 /**
@@ -82,7 +81,6 @@ sealed class Screens {
 fun Navigation(
     salaRepository: SalaRepository,
     catalogoRepository: CatalogoRepository,
-    permessiGestione: PermessiGestione,
     content: @Composable () -> Unit
 ) {
     val navController = rememberNavController()
@@ -92,7 +90,7 @@ fun Navigation(
         startDestination = Screens.Home
     ) {
         composable<Screens.Home> {
-            HomeScreen(navController, permessiGestione)
+            HomeScreen(navController)
         }
 
         composable<Screens.Login> {
@@ -108,7 +106,7 @@ fun Navigation(
         }
 
         composable<Screens.CertificatiReception> {
-            if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
+            if (GestioneUserLocalStorage.controllaUserRole(Ruolo.RECEPIONIST)) {
                 val vm = viewModel {
                     val db = AppDatabase.create()
                     CertificatiReceptionViewModel(CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao()))
@@ -136,7 +134,7 @@ fun Navigation(
         }
 
         composable<Screens.CreazioneSala> {
-            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+            SoloGestore( { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
                 val vm = viewModel { CreazioneSalaViewModel(salaRepository) }
                 val stato by vm.uiState.collectAsStateWithLifecycle()
                 Column(Modifier.fillMaxSize()) {
@@ -148,12 +146,12 @@ fun Navigation(
             }
         }
         composable<Screens.Abbonamenti> {
-            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+            SoloGestore( { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
                 DestinazioneCatalogo(TipoCatalogo.ABBONAMENTI, catalogoRepository, salaRepository) { navController.popBackStack() }
             }
         }
         composable<Screens.PianiAPunti> {
-            SoloGestore(permessiGestione, { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
+            SoloGestore( { navController.navigate(Screens.Login) }, { navController.popBackStack() }) {
                 DestinazioneCatalogo(TipoCatalogo.PIANI_A_PUNTI, catalogoRepository) { navController.popBackStack() }
             }
         }
@@ -176,9 +174,9 @@ private fun DestinazioneCatalogo(tipo: TipoCatalogo, repository: CatalogoReposit
 
 /** Legge soltanto i permessi della sessione già gestita dal team. */
 @Composable
-private fun SoloGestore(permessi: PermessiGestione, onLogin: () -> Unit,
+private fun SoloGestore( onLogin: () -> Unit,
                         onIndietro: () -> Unit, content: @Composable () -> Unit) {
-    if (permessi.puoGestire()) content()
+    if (GestioneUserLocalStorage.controllaUserRole(Ruolo.GESTORE)) content()
     else Column {
         Text("Accesso riservato al gestore.")
         TextButton(onClick = onLogin) { Text("Accedi") }

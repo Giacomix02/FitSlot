@@ -6,11 +6,11 @@ import androidx.lifecycle.viewModelScope
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
-import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.CertificatoMedico
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
+import it.univaq.grr.fitslot.utils.GestioneUserLocalStorage
 import it.univaq.grr.fitslot.utils.MediaStorage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -37,7 +37,7 @@ class UploadCertificatoMedicoScreenViewModel(private val repository: Certificato
         val iscritto = utente
         val data = scadenza
         val documento = file
-        if (iscritto == null || data == null || documento == null || !PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
+        if (iscritto == null || data == null || documento == null || !GestioneUserLocalStorage.controllaUserRole(Ruolo.RECEPIONIST)) {
             error.value = true
             return
         }

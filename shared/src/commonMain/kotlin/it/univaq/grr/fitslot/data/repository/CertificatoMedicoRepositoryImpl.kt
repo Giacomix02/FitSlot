@@ -23,7 +23,6 @@ class CertificatoMedicoRepositoryImpl(
         TODO("Not yet implemented")
     }
     override suspend fun iscritti(): List<User> {
-        PermessiGestioneDaLocalStorage.richiediRuolo(Ruolo.RECEPIONIST)
         return certificatoMedicoDAO.iscritti().map { it.toDomain() }
     }
 
