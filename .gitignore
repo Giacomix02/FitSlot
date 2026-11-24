@@ -25,3 +25,7 @@ node_modules/
 /desktopApp/fitslot.db-shm
 /desktopApp/fitslot.db.lck
 .env
+/shared/fitslot.db
+/shared/fitslot.db.lck
+/shared/fitslot.db-shm
+/shared/fitslot.db-wal

@@ -47,10 +47,10 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         }
         Text("Verranno testati tutti gli screen e le relative navigazioni")
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
-        Button(onClick = {navController.navigate(Screens.CorsiScreen)}) {
+        Button(onClick = { navController.navigate(Screens.CorsiScreen) }) {
             Text("Pagina corsi")
         }
-        Button(onClick = {navController.navigate(Screens.FasceOrarieScreen)}) {
+        Button(onClick = { navController.navigate(Screens.FasceOrarieScreen) }) {
             Text("Pagina Fasce orarie")
         }
 
@@ -61,23 +61,28 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
-        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) Button(onClick = { navController.navigate(Screens.CertificatiReception) }) {
+        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) Button(onClick = {
+            navController.navigate(
+                Screens.CertificatiReception
+            )
+        }) {
             Text("Iscritti e certificati medici")
 
-        Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
-            Text("Pagina registrazione accesso Iscritto")
+            Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
+                Text("Pagina registrazione accesso Iscritto")
+            }
+            Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
+                Text("Carica Certificato Medico")
+            }
         }
-        Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
-            Text("Carica Certificato Medico")
-        }
-    }
-    AnimatedVisibility(showContent) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Image(painterResource(Res.drawable.compose_multiplatform), null)
-            Text("Compose: siud")
+        AnimatedVisibility(showContent) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(painterResource(Res.drawable.compose_multiplatform), null)
+                Text("Compose: siud")
+            }
         }
     }
 }
