@@ -1,20 +1,22 @@
 package it.univaq.grr.fitslot.unitTest
 
+
 import it.univaq.grr.fitslot.Vals.sala
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
-import it.univaq.grr.fitslot.ui.screens.CorsiScreen.fasceOrarie
-
 import java.time.LocalDateTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 
-
-
 class DomainClassesTest {
+    val fasceOrarie = listOf(
+        FasciaOraria(1, LocalDateTime.parse("2027-06-01T15:30"),LocalDateTime.parse("2027-06-01T17:30") ),
+        FasciaOraria(2, LocalDateTime.parse("2027-06-01T18:30"),LocalDateTime.parse("2027-06-01T19:30") ),
+        FasciaOraria(3, LocalDateTime.parse("2027-06-02T12:30"),LocalDateTime.parse("2027-06-02T15:00") )
+    )
 
     @Test
     fun istanzazioneCorsoTest() {
