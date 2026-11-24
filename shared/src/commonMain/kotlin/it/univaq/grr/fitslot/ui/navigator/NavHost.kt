@@ -15,7 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
 import it.univaq.grr.fitslot.domain.repository.SalaRepository
-import it.univaq.grr.fitslot.ui.screens.CreazioneCorso.CorsiScreen
+import it.univaq.grr.fitslot.ui.screens.CorsiScreen.CorsiScreen
 import it.univaq.grr.fitslot.ui.screens.HomeScreen
 import it.univaq.grr.fitslot.ui.screens.LogIngresso.LogAccessoScreen
 import it.univaq.grr.fitslot.ui.screens.associazioneSale.AssociazioneSaleViewModel
@@ -26,6 +26,7 @@ import it.univaq.grr.fitslot.ui.screens.UploadCertificatoMedico.UploadCertificat
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoScreen
 import it.univaq.grr.fitslot.ui.screens.catalogo.CatalogoViewModel
 import it.univaq.grr.fitslot.ui.screens.catalogo.TipoCatalogo
+import it.univaq.grr.fitslot.ui.screens.FasceOrarieScreen.FasceOrarieScreen
 import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaScreen
 import it.univaq.grr.fitslot.ui.screens.creazioneSala.CreazioneSalaViewModel
 import kotlinx.serialization.Serializable
@@ -46,6 +47,10 @@ sealed class Screens {
 
     @Serializable
     data object CreazioneSala
+    
+    @Serializable
+    data object FasceOrarieScreen
+    
     @Serializable
     data object Abbonamenti
     @Serializable
@@ -95,6 +100,10 @@ fun Navigation(
 
         composable<Screens.CorsiScreen> {
             CorsiScreen()
+        }
+        
+        composable<Screens.FasceOrarieScreen> {
+            FasceOrarieScreen()
         }
 
         composable<Screens.LogAccesso> {
