@@ -50,6 +50,12 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = {navController.navigate(Screens.CorsiScreen)}) {
             Text("Pagina corsi")
         }
+        Button(onClick = {navController.navigate(Screens.FasceOrarieScreen)}) {
+            Text("Pagina Fasce orarie")
+        }
+
+        Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
+        Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
         if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
         Button(onClick = { navController.navigate(Screens.Login) }) {
@@ -57,6 +63,12 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         }
         if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) Button(onClick = { navController.navigate(Screens.CertificatiReception) }) {
             Text("Iscritti e certificati medici")
+
+        Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
+            Text("Pagina registrazione accesso Iscritto")
+        }
+        Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
+            Text("Carica Certificato Medico")
         }
     }
     AnimatedVisibility(showContent) {

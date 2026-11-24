@@ -66,4 +66,14 @@ class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
         return registrationResult
     }
 
+    override suspend fun getAllIscritti(): List<User> {
+        var listUsers = mutableListOf<User>()
+        val listUsersEntity = userDao.getAllIscritti()
+        for(userEntity in listUsersEntity){
+            listUsers.add(userEntity.toDomain())
+        }
+
+        return listUsers
+    }
+
 }
