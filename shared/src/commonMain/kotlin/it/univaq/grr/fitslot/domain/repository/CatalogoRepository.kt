@@ -3,6 +3,7 @@ package it.univaq.grr.fitslot.domain.repository
 import it.univaq.grr.fitslot.domain.models.Abbonamento
 import it.univaq.grr.fitslot.domain.models.PianoAPunti
 import it.univaq.grr.fitslot.domain.models.Sala
+import it.univaq.grr.fitslot.domain.models.Corso
 import kotlinx.coroutines.flow.Flow
 
 /** Operazioni sui piani sottoscrivibili, separate dalle singole iscrizioni. */
@@ -15,4 +16,8 @@ interface CatalogoRepository {
     suspend fun eliminaPianoAPunti(id: Long)
     suspend fun associaSala(abbonamentoId: Long, salaId: Long)
     suspend fun saleIncluse(abbonamentoId: Long): List<Sala>
+    suspend fun associaSale(abbonamentoId: Long, saleId: List<Long>)
+    suspend fun corsi(): List<Corso>
+    suspend fun associaCorsi(abbonamentoId: Long, corsiId: List<Long>)
+    suspend fun corsiInclusi(abbonamentoId: Long): List<Corso>
 }

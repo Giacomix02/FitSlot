@@ -4,6 +4,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import it.univaq.grr.fitslot.ui.screens.associazioneCorsi.AssociazioneCorsiViewModel
+import it.univaq.grr.fitslot.data.local.AppDatabase
+import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
+import it.univaq.grr.fitslot.domain.models.Ruolo
+import it.univaq.grr.fitslot.ui.screens.certificatiReception.*
 import androidx.compose.runtime.Composable
 import it.univaq.grr.fitslot.domain.PermessiGestione
 import androidx.compose.runtime.getValue
@@ -67,6 +73,9 @@ sealed class Screens {
     @Serializable
     data object CertificatoMedico
 
+    @Serializable
+    data object CertificatiReception
+
 }
 
 @Composable
@@ -96,6 +105,19 @@ fun Navigation(
 
         composable<Screens.CertificatoMedico> {
             CertificatoMedicoScreen(navController)
+        }
+
+        composable<Screens.CertificatiReception> {
+            if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
+                val vm = viewModel {
+                    val db = AppDatabase.create()
+                    CertificatiReceptionViewModel(CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao()))
+                }
+                CertificatiReceptionScreen(vm, CertificatoMedicoRepositoryImpl(AppDatabase.create().certificatoMedicoDao())) { navController.popBackStack() }
+            } else Column {
+                Text("Accesso riservato alla reception.")
+                TextButton(onClick = { navController.popBackStack() }) { Text("Torna alla Home") }
+            }
         }
 
         composable<Screens.CorsiScreen> {
@@ -144,10 +166,11 @@ private fun DestinazioneCatalogo(tipo: TipoCatalogo, repository: CatalogoReposit
     val vm = viewModel(key = tipo.name) { CatalogoViewModel(tipo, repository) }
     val stato by vm.uiState.collectAsStateWithLifecycle()
     val saleVm = if (saleRepository != null) viewModel { AssociazioneSaleViewModel(repository, saleRepository) } else null
+    val corsiVm = if (saleRepository != null) viewModel { AssociazioneCorsiViewModel(repository) } else null
     CatalogoScreen(
         tipo, stato, vm::aggiornaNome, vm::aggiornaPrezzo, vm::aggiornaQuantita,
         vm::salva, vm::nuovo, vm::modifica, vm::richiediEliminazione,
-        vm::confermaEliminazione, vm::annullaEliminazione, onIndietro, saleVm
+        vm::confermaEliminazione, vm::annullaEliminazione, onIndietro, saleVm, corsiVm
     )
 }
 

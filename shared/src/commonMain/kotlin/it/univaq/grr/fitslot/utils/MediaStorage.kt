@@ -3,6 +3,8 @@ package it.univaq.grr.fitslot.utils
 // ci sta un po' di doc così almeno sappiamo cosa usare
 
 expect class MediaStorage() {
+    suspend fun apriDocumento(path: String): Result<Unit>
+
     /**
      * Salva l'immagine nel percorso predefinito e restituisce il nome/percorso del file salvato
      */
