@@ -61,20 +61,22 @@ fun HomeScreen(navController: NavController, permessiGestione: PermessiGestione)
         Button(onClick = { navController.navigate(Screens.Login) }) {
             Text("Go to Login screen")
         }
-        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) Button(onClick = {
-            navController.navigate(
-                Screens.CertificatiReception
-            )
-        }) {
-            Text("Iscritti e certificati medici")
+        if (PermessiGestioneDaLocalStorage.puoGestire(Ruolo.RECEPIONIST)) {
+
+            Button(onClick = {
+                navController.navigate(
+                    Screens.CertificatiReception
+                )
+            }) {
+                Text("Iscritti e certificati medici")
+            }
 
             Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
                 Text("Pagina registrazione accesso Iscritto")
             }
-            Button(onClick = { navController.navigate(Screens.UploadCertificatoMedicoScreen) }) {
-                Text("Carica Certificato Medico")
-            }
         }
+
+
         AnimatedVisibility(showContent) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
