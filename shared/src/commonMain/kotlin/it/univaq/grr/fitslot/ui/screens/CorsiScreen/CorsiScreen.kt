@@ -51,7 +51,7 @@ fun CorsiScreen() {
             ?.let { fascia -> viewModel.saleLibereInFascia(fascia) }
             ?: saleList
     }
-    LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita) {
+    LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita, saleList) {
         fasceSelezionabili = selectedSala
             ?.let { sala -> viewModel.fasceLibereInSala(sala) }
             ?: fasceList
