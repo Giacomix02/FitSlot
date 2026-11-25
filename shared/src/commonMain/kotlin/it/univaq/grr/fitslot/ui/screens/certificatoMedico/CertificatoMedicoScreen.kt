@@ -1,9 +1,7 @@
 package it.univaq.grr.fitslot.ui.screens.certificatoMedico
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -15,12 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import fitslot.shared.generated.resources.Res
-import fitslot.shared.generated.resources.certificato_mock
 import it.univaq.grr.fitslot.data.local.LocalStorage
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
-import org.jetbrains.compose.resources.painterResource
+import it.univaq.grr.fitslot.ui.components.VisualizzazioneCertificatoMedico
 
 @Composable
 fun CertificatoMedicoScreen(
@@ -39,16 +35,9 @@ fun CertificatoMedicoScreen(
         } else if (!viewModel.certificatoPresente) {
             Text("Il tuo certificato medico non è presente nel sistema.")
         } else {
-            Image(
-                painter = painterResource(Res.drawable.certificato_mock),
-                contentDescription = "Certificato medico di esempio, dati mock",
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text("Data di scadenza: " + viewModel.dataScadenza)
-            if (viewModel.inScadenza()) {
-                Text("Attenzione: il tuo certificato medico scade entro 20 giorni.")
-            }
-            Text("Documento e scadenza di esempio (mock).")
+            VisualizzazioneCertificatoMedico(null, viewModel.dataScadenza.toString(), viewModel.inScadenza())
         }
     }
 }
+
+
