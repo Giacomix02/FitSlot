@@ -196,12 +196,12 @@ class RegistrationViewModel(
 
         viewModelScope.launch {
             try {
-                userRepository.userRegistration(user)
+                val userId = userRepository.userRegistration(user)
 
                 if(senderEmail!==null && appPassword!==null) {
                     async{
                         EmailSender.sendWelcomeEmail(
-                            matricola = (user.id + 999).toString(),
+                            matricola = (userId + 999).toString(),
                             toEmail = user.emailContatto,
                             usernameWelcome = user.username,
                             senderEmail = senderEmail,
