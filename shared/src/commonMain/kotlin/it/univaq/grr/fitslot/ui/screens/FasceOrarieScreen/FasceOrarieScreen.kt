@@ -23,11 +23,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import it.univaq.grr.fitslot.ui.components.FasciaOrariaCard
 import it.univaq.grr.fitslot.ui.components.createButton
+import it.univaq.grr.fitslot.utils.convertMillisToDate
 import it.univaq.grr.fitslot.utils.parseCatching
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 
 val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -279,10 +278,6 @@ private fun setToDatePicker(
 }
 
 
-fun convertMillisToDate(millis: Long): String {
-    val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-    formatter.timeZone = TimeZone.getTimeZone("UTC")
-    return formatter.format(Date(millis))
-}
+
 
 

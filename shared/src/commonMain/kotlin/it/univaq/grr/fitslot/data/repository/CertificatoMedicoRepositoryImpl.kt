@@ -1,6 +1,8 @@
 package it.univaq.grr.fitslot.data.repository
 
+import it.univaq.grr.fitslot.data.exceptions.CertificatoMedicoNonTrovatoException
 import it.univaq.grr.fitslot.data.local.dao.CertificatoMedicoDAO
+import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.CertificatoMedico
 import it.univaq.grr.fitslot.domain.models.User
@@ -11,7 +13,9 @@ class CertificatoMedicoRepositoryImpl(
 ) : CertificatoMedicoRepository {
 
     override suspend fun getCertificatoMedicoByUser(user: User): CertificatoMedico {
-        TODO("Not yet implemented")
+        val certificato =
+            certificatoMedicoDAO.getByUserId(user.id)?.toDomain(user) ?: throw CertificatoMedicoNonTrovatoException()
+        return certificato
     }
 
     override suspend fun addCertificatoMedico(certificato: CertificatoMedico): Long =
