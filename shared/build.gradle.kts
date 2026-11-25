@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room3)
     kotlin("plugin.serialization") version libs.versions.kotlin.get()
+    jacoco
 }
 
 kotlin {
@@ -57,4 +58,34 @@ dependencies {
 
 room3 {
     schemaDirectory("$projectDir/schemas")
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.withType<Test>().configureEach {
+    configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
+        excludes = listOf("jdk.internal.*")
+    }
+}
+
+val jacocoTestReportTask = tasks.register<JacocoReport>("jacocoTestReport") {
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+        html.required.set(true)
+        html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html"))
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml"))
+    }
+    val mainClasses = fileTree(layout.buildDirectory.dir("classes/kotlin/jvm/main"))
+    val mainSources = files("src/commonMain/kotlin", "src/jvmMain/kotlin")
+    classDirectories.setFrom(mainClasses)
+    sourceDirectories.setFrom(mainSources)
+    executionData.setFrom(fileTree(layout.buildDirectory) { include("jacoco/*.exec") })
+}
+
+tasks.named("jvmTest") {
+    finalizedBy(jacocoTestReportTask)
 }

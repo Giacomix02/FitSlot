@@ -1,0 +1,83 @@
+name: Coverage
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096M -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  coverage:
+    name: Run tests with coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Gradle setup
+        uses: ./.github/actions/gradle-setup
+
+      - name: Install UI test display dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb xauth libgl1 libfontconfig1 libfreetype6
+
+      - name: Run tests and generate coverage
+        run: xvfb-run -a ./gradlew :desktopApp:compileKotlin :shared:jvmTest --continue
+
+      - name: Test Summary in Workflow
+        uses: test-summary/action@v2
+        if: always()
+        with:
+          paths: "**/build/test-results/**/TEST-*.xml"
+
+      - name: Prepare combined GitHub Pages site
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          rm -rf pages
+          mkdir -p pages
+          if [ -d shared/build/reports/tests/jvmTest ]; then
+            mkdir -p pages/test-report
+            cp -a shared/build/reports/tests/jvmTest/. pages/test-report/
+          fi
+          if [ -d shared/build/reports/jacoco/jacocoTestReport/html ]; then
+            mkdir -p pages/coverage
+            cp -a shared/build/reports/jacoco/jacocoTestReport/html/. pages/coverage/
+          fi
+          cp .github/pages/index.html pages/index.html
+
+      - name: Setup Pages
+        if: always() && github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v5
+
+      - name: Upload combined report artifact for Pages
+        if: always() && github.ref == 'refs/heads/main'
+        id: upload-pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "pages"
+
+      - name: Deploy combined reports to GitHub Pages
+        if: always() && github.ref == 'refs/heads/main' && steps.upload-pages.outcome == 'success'
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Upload reports artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: "**/build/reports/"
