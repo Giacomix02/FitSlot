@@ -84,8 +84,8 @@ fun CorsiScreen() {
                                 viewModel.onFieldInteraction()
                             },
                             label = "Nome",
+                            modifier = Modifier.fillMaxWidth(),
                             placeholder = "Inserisci il nome del corso",
-                            modifier = Modifier.fillMaxWidth()
                         )
                         DropDownSelector(
                             items = saleSelezionabili,
