@@ -8,6 +8,7 @@ import it.univaq.grr.fitslot.domain.exceptions.KeyAlreadyExistsException
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.UserRepository
+import it.univaq.grr.fitslot.utils.GestioneUserLocalStorage
 import it.univaq.grr.fitslot.utils.PasswordSecurity
 
 
@@ -36,7 +37,7 @@ class UserRepositoryImpl(private val userDao: UserDao) : UserRepository {
 
         if(isPasswordValid) {
             try {
-                LocalStorage.addLocalStorage("user",userEntity.toDomain())
+                GestioneUserLocalStorage.aggiungiUserToLocalStorage(userEntity.toDomain())
                 return userEntity.toDomain()
             }catch (e : KeyAlreadyExistsException){
                 return null
