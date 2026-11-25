@@ -36,7 +36,7 @@ class UploadCertificatoMedicoScreenViewModel(
 
      fun uploadCertificato(onSuccess: () -> Unit){
 
-         if(scadenzaCertificatoSelected == null || selectedFileName == null || certificatoFileSelected == null){
+         if(scadenzaCertificatoSelected == null || selectedFileName.value == null || certificatoFileSelected == null){
              error.value = true
              return
          }
@@ -53,7 +53,7 @@ class UploadCertificatoMedicoScreenViewModel(
                              CertificatoMedico(
                                  utente = user,
                                  path = path,
-                                 scadenza = scadenzaCertificatoSelected.toString()
+                                 scadenza = scadenzaCertificatoSelected!!
                              )
                          )
                          onSuccess()
@@ -90,7 +90,7 @@ class UploadCertificatoMedicoScreenViewModel(
 
 //TODO togliere l'utente mock
  val user = User(
-    id = 1,
+    id = 16,
     email = "mock",
     password = "mock",
     username = "mock",
