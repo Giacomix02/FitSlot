@@ -63,13 +63,13 @@ fun LogAccessoScreen(
             label = "Seleziona la matricola",
             items = viewModel.iscritti,
             itemLabel = { user ->
-                (user.id + 999).toString() //TODO matricola in get
+                user.matricola.toString()
             },
             customItemContent = { user ->
-                Text(text = "${user.id + 999} - ${user.nome} ${user.cognome}")
+                Text(text = "${user.matricola} - ${user.nome} ${user.cognome}")
             },
             searchFilter = { user, query ->
-                (user.id + 999).toString().contains(query.trim())
+                user.matricola.toString().contains(query.trim())
             },
             onSearchQueryChanged = {
                 viewModel.onMatricolaChanged()
