@@ -12,6 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun CorsiScreen() {
+fun CorsiScreen(onFabChange: ((@Composable () -> Unit)?) -> Unit = {}) {
     var nomeCorso by remember { mutableStateOf("") }
     val viewModel: CorsiViewModel = viewModel<CorsiViewModel> { CorsiViewModel() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -57,11 +58,15 @@ fun CorsiScreen() {
             ?: fasceList
     }
 
-    FloatingActionButton(
-        modifier = Modifier.width(16.dp).height(16.dp).wrapContentSize(),
-        onClick = { viewModel.showDialog() },
-    )
-    { Icon(Icons.Default.Add, contentDescription = "Aggiungi corso") }
+    DisposableEffect(Unit) {
+        onFabChange {
+            FloatingActionButton(onClick = { viewModel.showDialog() }) {
+                Icon(Icons.Default.Add, contentDescription = "Aggiungi corso")
+            }
+        }
+        onDispose { onFabChange(null) }
+    }
+
     if (uiState.showDialog) {
         Dialog(
             onDismissRequest = { viewModel.hideDialog() },
@@ -157,7 +162,6 @@ fun CorsiScreen() {
                 }
             }
         )
-    }
-
+        } // chiude if (uiState.showDialog)
 }
 

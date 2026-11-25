@@ -35,5 +35,20 @@ object GestioneUserLocalStorage{
         }
     }
 
+    fun getCurrentUser(): User? = try {
+        LocalStorage.getLocalStorage("user") as? User
+    } catch (e: KeyNotFoundException) {
+        null
+    }
+
+    fun isLoggedIn(): Boolean = getCurrentUser() != null
+
+    fun logout(): Boolean = try {
+        LocalStorage.deleteFromKey("user")
+        return true
+    } catch (e: KeyNotFoundException) {
+        return false
+    }
+
 
 }

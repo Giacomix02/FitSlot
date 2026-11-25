@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -34,6 +36,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.setSelectedDate
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -65,7 +68,10 @@ val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
 @Preview
 @Composable
-fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieViewModel() }) {
+fun FasceOrarieScreen(
+    viewModel: FasceOrarieViewModel = viewModel { FasceOrarieViewModel() },
+    onFabChange: ((@Composable () -> Unit)?) -> Unit = {}
+) {
 
     var showCreateFasciaOrariaDialog by remember { mutableStateOf(false) }
 
@@ -82,17 +88,20 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold (floatingActionButton = {
-        FloatingActionButton(
-        modifier = Modifier,
-        onClick = {
-            viewModel.clearErroreFasciaOraria()
-            showCreateFasciaOrariaDialog = true
-        },
-    )
-    { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
+    DisposableEffect(Unit) {
+        onFabChange {
+            FloatingActionButton(onClick = {
+                viewModel.clearErroreFasciaOraria()
+                showCreateFasciaOrariaDialog = true
+            }) { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
+        }
+        onDispose { onFabChange(null) }
     }
-    ){
+
+    Scaffold(
+    contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ){ innerPadding ->
+        Box(Modifier.fillMaxSize().padding(innerPadding)) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp, alignment = Alignment.CenterHorizontally)
@@ -188,7 +197,8 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
             }
         }
 
-    }
+        } // chiude Box(Modifier...padding(innerPadding))
+    } // chiude Scaffold content
 }
 
 
