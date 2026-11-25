@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -76,6 +77,7 @@ fun RegistrationScreen(
                     viewModel.onValueChange(field.key, value)
                 },
                 label = field.label,
+                modifier = Modifier.fillMaxWidth(0.6f),
                 isRequired = field.required,
                 errorMessage = viewModel.errorOf(field),
                 visualTransformation = if (field.key == "password") {
@@ -83,7 +85,7 @@ fun RegistrationScreen(
                 } else {
                     VisualTransformation.None
                 },
-                modifier = Modifier.fillMaxWidth(0.6f)
+                keyboardActions = KeyboardActions(onDone = { register(viewModel, navController) })
             )
         }
 
@@ -172,14 +174,21 @@ fun RegistrationScreen(
                 Text("Annulla")
             }
             Button(onClick = {
-                viewModel.onRegisterClick (
-                    onSuccess = {
-                        navController.navigate(Screens.Home)
-                    }
-                )
+                register(viewModel, navController)
             }) {
                 Text("Registrati")
             }
         }
     }
+}
+
+private fun register(
+    viewModel: RegistrationViewModel,
+    navController: NavController
+) {
+    viewModel.onRegisterClick(
+        onSuccess = {
+            navController.navigate(Screens.Home)
+        }
+    )
 }
