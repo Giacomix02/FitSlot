@@ -57,8 +57,6 @@ fun RegistrationScreen(
 
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),

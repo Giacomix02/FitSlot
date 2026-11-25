@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,47 +33,54 @@ fun HomeScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Screen Home")
-        if (utente?.ruolo == Ruolo.ISCRITTO) {
-            Button(onClick = { navController.navigate(Screens.CertificatoMedico) }) {
-                Text("Il mio certificato medico")
-            }
-        }
-        Text("Verranno testati tutti gli screen e le relative navigazioni")
 
-        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.GESTORE)) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
-        Button(onClick = { navController.navigate(Screens.CorsiScreen) }) {
-            Text("Pagina corsi")
-        }
-        Button(onClick = { navController.navigate(Screens.FasceOrarieScreen) }) {
-            Text("Pagina Fasce orarie")
+        if(utente == null) {
+            navController.navigate(Screens.Login)
+        }else{
+            Text("Seleziona una pagina dalla barra laterale")
         }
 
-        Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
-        Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
+
+//        Text("Screen Home")
+//        if (utente?.ruolo == Ruolo.ISCRITTO) {
+//            Button(onClick = { navController.navigate(Screens.CertificatoMedico) }) {
+//                Text("Il mio certificato medico")
+//            }
+//        }
+//        Text("Verranno testati tutti gli screen e le relative navigazioni")
+//
+//        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.GESTORE)) Button(onClick = { navController.navigate(Screens.CreazioneSala) }) { Text("Gestisci sale") }
+//        Button(onClick = { navController.navigate(Screens.CorsiScreen) }) {
+//            Text("Pagina corsi")
+//        }
+//        Button(onClick = { navController.navigate(Screens.FasceOrarieScreen) }) {
+//            Text("Pagina Fasce orarie")
+//        }
+
+//        Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
+//        Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
 //        if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.Abbonamenti) }) { Text("Gestisci abbonamenti") }
 //        if (permessiGestione.puoGestire()) Button(onClick = { navController.navigate(Screens.PianiAPunti) }) { Text("Gestisci piani a punti") }
-        Button(onClick = { navController.navigate(Screens.Login) }) {
-            Text("Go to Login screen")
-        }
-        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.RECEPIONIST)) {
-
-            Button(onClick = {
-                navController.navigate(
-                    Screens.CertificatiReception
-                )
-            }) {
-                Text("Iscritti e certificati medici")
-            }
-
-            Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
-                Text("Pagina registrazione accesso Iscritto")
-            }
-        }
+//        Button(onClick = { navController.navigate(Screens.Login) }) {
+//            Text("Go to Login screen")
+//        }
+//        if (GestioneUserLocalStorage.controllaUserRole(Ruolo.RECEPIONIST)) {
+//
+//            Button(onClick = {
+//                navController.navigate(
+//                    Screens.CertificatiReception
+//                )
+//            }) {
+//                Text("Iscritti e certificati medici")
+//            }
+//
+//            Button(onClick = { navController.navigate(Screens.LogAccesso) }) {
+//                Text("Pagina registrazione accesso Iscritto")
+//            }
+//        }
 
 
         AnimatedVisibility(showContent) {
