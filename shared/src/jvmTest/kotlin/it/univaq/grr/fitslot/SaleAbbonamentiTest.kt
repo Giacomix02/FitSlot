@@ -61,4 +61,26 @@ class SaleAbbonamentiTest {
         assertTrue(catalogo.saleIncluse(pianoId).isEmpty())
         sale.elimina(salaId)
     }
+    @Test
+    fun associaPiuSaleInsiemeSenzaDuplicarle() = runBlocking<Unit> {
+        val prima = sale.inserisci(Sala(nome = "Sala A", capienza = 10))
+        val seconda = sale.inserisci(Sala(nome = "Sala B", capienza = 10))
+        val piano = catalogo.salvaAbbonamento(Abbonamento(nome = "Completo", prezzoCentesimi = 1000, durataGiorni = 30))
+        catalogo.associaSale(piano, listOf(prima, seconda))
+        catalogo.associaSale(piano, listOf(prima))
+        assertEquals(2, catalogo.saleIncluse(piano).size)
+    }
+
+    @Test
+    fun associaCorsiAlPianoScelto() = runBlocking<Unit> {
+        val sala = sale.inserisci(Sala(nome = "Sala Yoga", capienza = 10))
+        val fascia = db.corsoDao().insertFasciaOraria(it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity(1, "2027-06-01T08:00", "2027-06-01T10:00"))
+        db.corsoDao().insertAll(it.univaq.grr.fitslot.data.local.entity.CorsoEntity(1, "Yoga", sala, fascia))
+        val piano = catalogo.salvaAbbonamento(Abbonamento(nome = "Corsi", prezzoCentesimi = 1000, durataGiorni = 30))
+        catalogo.associaCorsi(piano, listOf(1))
+        catalogo.associaCorsi(piano, listOf(1))
+        assertEquals("Yoga", catalogo.corsiInclusi(piano).single().name)
+        catalogo.eliminaAbbonamento(piano)
+        assertTrue(catalogo.corsiInclusi(piano).isEmpty())
+    }
 }

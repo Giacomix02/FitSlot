@@ -49,8 +49,7 @@ fun LogAccessoScreen(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
-            .fillMaxHeight(),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically)
 

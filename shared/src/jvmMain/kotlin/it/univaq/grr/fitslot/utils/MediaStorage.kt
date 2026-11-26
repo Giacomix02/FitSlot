@@ -15,6 +15,13 @@ import kotlin.io.path.readBytes
 import kotlin.io.path.writeBytes
 
 actual class MediaStorage actual constructor() {
+    actual suspend fun apriDocumento(path: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            java.awt.Desktop.getDesktop().open(resolveSafePath(path).toFile())
+            Result.success(Unit)
+        } catch (e: Exception) { Result.failure(e) }
+    }
+
 
     private val defaultDir: Path = Paths.get(System.getProperty("user.home"), ".fitslot", "media")
 

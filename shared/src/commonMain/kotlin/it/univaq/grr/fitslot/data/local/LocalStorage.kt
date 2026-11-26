@@ -1,11 +1,12 @@
 package it.univaq.grr.fitslot.data.local
 
+import androidx.compose.runtime.mutableStateMapOf
 import it.univaq.grr.fitslot.domain.exceptions.KeyAlreadyExistsException
 import it.univaq.grr.fitslot.domain.exceptions.KeyNotFoundException
 
 object LocalStorage {
 
-    private val storage = mutableMapOf<String, Any?>()
+    private val storage = mutableStateMapOf<String, Any?>()
 
     fun addLocalStorage(key: String, unit: Any?){
         if(storage.containsKey(key)) throw KeyAlreadyExistsException(key)

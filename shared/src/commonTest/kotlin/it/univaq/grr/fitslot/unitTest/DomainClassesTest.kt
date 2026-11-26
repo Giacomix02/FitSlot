@@ -20,7 +20,6 @@ class DomainClassesTest {
             val corsoSenzaNome1 = Corso(0, "", sala, fasceOrarie[0])
             val corsosenzaNome2 = Corso(0, "    ", sala, fasceOrarie[0])
         }
-
     }
 
     @Test

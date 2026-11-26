@@ -4,7 +4,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import it.univaq.grr.fitslot.data.local.creaDatabase
 import it.univaq.grr.fitslot.data.repository.CatalogoRepositoryImpl
-import it.univaq.grr.fitslot.data.repository.PermessiGestioneDaLocalStorage
 import it.univaq.grr.fitslot.data.repository.SalaRepositoryImpl
 import kotlinx.coroutines.runBlocking
 
@@ -15,7 +14,7 @@ fun main() {
         val sale = SalaRepositoryImpl(database.salaDao())
         val catalogo = CatalogoRepositoryImpl(database.catalogoDao())
         application {
-            Window(onCloseRequest = ::exitApplication, title = "FitSlot") { App(sale, catalogo, PermessiGestioneDaLocalStorage) }
+            Window(onCloseRequest = ::exitApplication, title = "FitSlot") { App(sale, catalogo) }
         }
     } finally {
         runBlocking { database.close() }

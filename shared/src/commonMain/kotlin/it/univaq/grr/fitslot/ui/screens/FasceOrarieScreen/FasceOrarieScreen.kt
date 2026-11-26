@@ -34,7 +34,10 @@ val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
 @Preview
 @Composable
-fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieViewModel() }) {
+fun FasceOrarieScreen(
+    viewModel: FasceOrarieViewModel = viewModel { FasceOrarieViewModel() },
+    onFabChange: ((@Composable () -> Unit)?) -> Unit = {}
+) {
 
     var showCreateFasciaOrariaDialog by remember { mutableStateOf(false) }
 
@@ -43,37 +46,31 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
     val orarioInizio = rememberTimePickerState()
     val orarioFine = rememberTimePickerState()
 
-
-
+    var selectedDate by remember {
+        mutableStateOf(LocalDate.now().format(formatter))
+    }
 
     val fasceOrarie by viewModel.fasceOrarie.collectAsStateWithLifecycle()
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
 
-
-    Scaffold (floatingActionButton = {
-        FloatingActionButton(
-        modifier = Modifier,
-        onClick = {
-            viewModel.clearErroreFasciaOraria()
-            showCreateFasciaOrariaDialog = true
-        },
-    )
-    { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
+    LaunchedEffect(Unit) {
+        onFabChange {
+            FloatingActionButton(onClick = {
+                viewModel.clearErroreFasciaOraria()
+                showCreateFasciaOrariaDialog = true
+            }) { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
+        }
     }
-    ){
+
+    Box(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp, alignment = Alignment.CenterHorizontally)
         ) {
 
-                DatePickerDocked(
-                    uiState.selectedDate,
-                    showDateNotValidError = uiState.showDateNotValidError,
-                    setSelectedDate = viewModel::setSelectedDate,
-                    setShowDateNotValidError = viewModel::setShowDateNotValidError
-                )
+                DatePickerDocked(selectedDate){selectedDate = it}
 
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -81,7 +78,7 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
                 LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                     fasceOrarie?.filter { fasciaOraria ->
                         fasciaOraria.orarioInizio.toLocalDate().equals(
-                                parseCatching(uiState.selectedDate, formatter)
+                                parseCatching(selectedDate, formatter)
                             )
 
                         }
@@ -134,7 +131,7 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
                 createButton("Crea fascia oraria", enabled = !uiState.showDateNotValidError) {
 
                     viewModel.viewModelScope.launch {
-                        val result = viewModel.creaFasciaOraria(orarioInizio, orarioFine, uiState.selectedDate)
+                        val result = viewModel.creaFasciaOraria(orarioInizio, orarioFine, selectedDate)
                         if (result.isSuccess) showCreateFasciaOrariaDialog = false
 
                     }
@@ -155,7 +152,7 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
                 createButton("Modifica fascia oraria") {
 
                     viewModel.viewModelScope.launch {
-                        val result = viewModel.modificaFasciaOraria(orarioInizio, orarioFine, uiState.selectedDate)
+                        val result = viewModel.modificaFasciaOraria(orarioInizio, orarioFine, selectedDate)
                         if (result.isSuccess) showEditFasciaOrariaDialog = false
                     }
                 }
@@ -163,7 +160,7 @@ fun FasceOrarieScreen(viewModel: FasceOrarieViewModel = viewModel { FasceOrarieV
             }
         }
 
-    }
+    } // chiude Box
 }
 
 
@@ -276,7 +273,6 @@ private fun setToDatePicker(
             setShowDateNotValidError(false)
         }
 }
-
 
 
 

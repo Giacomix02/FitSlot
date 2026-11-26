@@ -40,7 +40,6 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

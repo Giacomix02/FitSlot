@@ -43,9 +43,6 @@ class FasceOrarieViewModel : ViewModel(){
         uiState.update { it.copy(erroreFasciaOraria = "") }
     }
 
-    fun setSelectedDate(date: String) = uiState.update { it.copy(selectedDate = date) }
-    fun setShowDateNotValidError(b : Boolean) = uiState.update { it.copy(showDateNotValidError = b) }
-
 
     fun setSelectedFasciaOraria(orarioInizioState: TimePickerState, orarioFineState: TimePickerState, fasciaOraria: FasciaOraria){
         selectedFasciaOraria.value = fasciaOraria

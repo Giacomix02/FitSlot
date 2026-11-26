@@ -12,7 +12,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import it.univaq.grr.fitslot.ui.components.DropDownSelector
+import it.univaq.grr.fitslot.ui.components.SelezioneMultipla
 
 @Composable
 fun AssociazioneSaleDialog(viewModel: AssociazioneSaleViewModel, onChiudi: () -> Unit) {
@@ -27,13 +27,10 @@ fun AssociazioneSaleDialog(viewModel: AssociazioneSaleViewModel, onChiudi: () ->
             ) {
                 if (viewModel.inCorso) Text("Caricamento...")
                 if (!viewModel.inCorso && viewModel.sale.isEmpty()) Text("Crea prima una sala nella gestione sale.")
-                DropDownSelector(
-                    items = viewModel.sale,
-                    selectedItem = viewModel.salaScelta,
-                    onItemSelected = viewModel::scegliSala,
-                    label = "Sala", itemLabel = { it.nome }, enabled = !viewModel.inCorso
-                )
-                Button(onClick = viewModel::associa, enabled = !viewModel.inCorso) { Text("Associa sala") }
+                SelezioneMultipla("Sale", viewModel.sale.map { it.id to it.nome },
+                    viewModel.saleSelezionate, viewModel.saleIncluse.map { it.id }.toSet(),
+                    !viewModel.inCorso, viewModel::scegliSala)
+                Button(onClick = viewModel::associa, enabled = !viewModel.inCorso && viewModel.saleSelezionate.isNotEmpty()) { Text("Associa sale") }
                 Text(viewModel.messaggio)
                 if (viewModel.abbonamentoScelto != null && !viewModel.inCorso) {
                     Text("Riepilogo delle sale incluse", style = MaterialTheme.typography.titleLarge)

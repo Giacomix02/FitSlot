@@ -58,8 +58,6 @@ fun RegistrationScreen(
 
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primaryContainer)
-            .safeContentPadding()
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
@@ -77,7 +75,6 @@ fun RegistrationScreen(
                     viewModel.onValueChange(field.key, value)
                 },
                 label = field.label,
-                modifier = Modifier.fillMaxWidth(0.6f),
                 isRequired = field.required,
                 errorMessage = viewModel.errorOf(field),
                 visualTransformation = if (field.key == "password") {

@@ -196,7 +196,7 @@ class RegistrationViewModel(
 
         viewModelScope.launch {
             try {
-                userRepository.userRegistration(user)
+                val userId = userRepository.userRegistration(user)
 
                 if(senderEmail!==null && appPassword!==null) {
                     async{

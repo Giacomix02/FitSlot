@@ -12,6 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 
 @Preview
 @Composable
-fun CorsiScreen() {
+fun CorsiScreen(onFabChange: ((@Composable () -> Unit)?) -> Unit = {}) {
     var nomeCorso by remember { mutableStateOf("") }
     val viewModel: CorsiViewModel = viewModel<CorsiViewModel> { CorsiViewModel() }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -51,17 +52,20 @@ fun CorsiScreen() {
             ?.let { fascia -> viewModel.saleLibereInFascia(fascia) }
             ?: saleList
     }
-    LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita) {
+    LaunchedEffect(selectedSala, uiState.showCreazioneCorsoEseguita, saleList) {
         fasceSelezionabili = selectedSala
             ?.let { sala -> viewModel.fasceLibereInSala(sala) }
             ?: fasceList
     }
 
-    FloatingActionButton(
-        modifier = Modifier.width(16.dp).height(16.dp).wrapContentSize(),
-        onClick = { viewModel.showDialog() },
-    )
-    { Icon(Icons.Default.Add, contentDescription = "Aggiungi corso") }
+    LaunchedEffect(Unit) {
+        onFabChange {
+            FloatingActionButton(onClick = { viewModel.showDialog() }) {
+                Icon(Icons.Default.Add, contentDescription = "Aggiungi corso")
+            }
+        }
+    }
+
     if (uiState.showDialog) {
         Dialog(
             onDismissRequest = { viewModel.hideDialog() },
@@ -84,8 +88,8 @@ fun CorsiScreen() {
                                 viewModel.onFieldInteraction()
                             },
                             label = "Nome",
-                            modifier = Modifier.fillMaxWidth(),
                             placeholder = "Inserisci il nome del corso",
+                            modifier = Modifier.fillMaxWidth()
                         )
                         DropDownSelector(
                             items = saleSelezionabili,
@@ -160,4 +164,3 @@ fun CorsiScreen() {
     }
 
 }
-
