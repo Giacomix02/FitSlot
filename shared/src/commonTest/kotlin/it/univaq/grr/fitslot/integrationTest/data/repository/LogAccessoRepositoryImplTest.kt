@@ -1,8 +1,10 @@
-package it.univaq.grr.fitslot.data.repository
+package it.univaq.grr.fitslot.integrationTest.data.repository
 
 import androidx.sqlite.SQLiteException
-import it.univaq.grr.fitslot.creaDbInMemoria
+import it.univaq.grr.fitslot.unitTest.creaDbInMemoria
 import it.univaq.grr.fitslot.data.local.AppDatabase
+import it.univaq.grr.fitslot.data.repository.LogAccessoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.LogAccesso
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User

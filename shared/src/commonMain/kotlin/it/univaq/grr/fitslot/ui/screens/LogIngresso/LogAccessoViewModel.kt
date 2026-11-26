@@ -114,7 +114,7 @@ class LogAccessoViewModel(
         var certificato: CertificatoMedico? = null
         try {
           certificato = certificatoMedicoRepository.getCertificatoMedicoByUser(user)
-        } catch (e: CertificatoMedicoNonTrovatoException) {
+        } catch (_: CertificatoMedicoNonTrovatoException) {
             error = true
             textErrore = "Nessun certificato medico trovato per l'utente selezionato"
             return@launch

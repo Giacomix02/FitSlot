@@ -1,6 +1,6 @@
-package it.univaq.grr.fitslot.integrationTest
+package it.univaq.grr.fitslot.integrationTest.data.repository
 
-import it.univaq.grr.fitslot.creaDbInMemoria
+import it.univaq.grr.fitslot.unitTest.creaDbInMemoria
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
@@ -39,4 +39,7 @@ open class CorsoRepositoryTest {
         }
         //TODO test salvataggio in db e fetch dal db, controllo di uguaglianza dati
     }
+
+//    assertFailsWith<IllegalArgumentException>("corso viene creato con sala già occupata") {  }
+    //TODO test del "Sala assegnata è già occupata", ancora da implementare
 }

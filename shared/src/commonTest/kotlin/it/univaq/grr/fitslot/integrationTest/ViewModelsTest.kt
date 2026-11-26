@@ -1,13 +1,9 @@
 package it.univaq.grr.fitslot.integrationTest
 
-import it.univaq.grr.fitslot.Vals
 import it.univaq.grr.fitslot.ui.screens.CorsiScreen.CorsiViewModel
+import it.univaq.grr.fitslot.unitTest.sala
 import kotlinx.coroutines.runBlocking
-import kotlin.test.Test
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class ViewModelsTest {
 
@@ -18,8 +14,8 @@ class ViewModelsTest {
         val uiState = viewModel.uiState
 
         runBlocking { viewModel.creaCorso("    ",
-            sala = Vals.sala,
-            fasciaOraria = Vals.fasceOrarie[0]
+            sala = sala,
+            fasciaOraria = it.univaq.grr.fitslot.unitTest.fasceOrarie[0]
         ) }
 
         assertNotNull(
@@ -37,8 +33,8 @@ class ViewModelsTest {
         )
 
         runBlocking{ viewModel.creaCorso("T",
-            sala = Vals.sala,
-            fasciaOraria = Vals.fasceOrarie[0]
+            sala = sala,
+            fasciaOraria = it.univaq.grr.fitslot.unitTest.fasceOrarie[0]
         ) }
 
         assertTrue(

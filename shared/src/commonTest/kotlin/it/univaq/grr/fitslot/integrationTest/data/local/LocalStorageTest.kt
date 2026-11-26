@@ -1,8 +1,8 @@
-package it.univaq.grr.fitslot.data.local
+package it.univaq.grr.fitslot.integrationTest.data.local
 
+import it.univaq.grr.fitslot.data.local.LocalStorage
 import it.univaq.grr.fitslot.domain.exceptions.KeyAlreadyExistsException
 import it.univaq.grr.fitslot.domain.exceptions.KeyNotFoundException
-import it.univaq.grr.fitslot.domain.exceptions.LocalStorageException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

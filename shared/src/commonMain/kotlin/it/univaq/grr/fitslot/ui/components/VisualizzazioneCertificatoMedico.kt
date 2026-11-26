@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 
 
@@ -20,7 +19,6 @@ fun VisualizzazioneCertificatoMedico(
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(Modifier.heightIn(max = 240.dp), contentAlignment = Alignment.TopCenter) {
-        val boundedHeight = constraints.maxHeight != Constraints.Infinity
         Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             if (certificatoImage == null) {
                 Text("Nessuna immagine per questo certificato")

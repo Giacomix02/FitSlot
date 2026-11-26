@@ -1,6 +1,5 @@
 package it.univaq.grr.fitslot.unitTest.Dao
 
-import it.univaq.grr.fitslot.Vals
 import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.unitTest.DatabaseTest
@@ -10,7 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-open class FasciaOrariaDaoTestImpl : DatabaseTest() {
+open class FasciaOrariaDaoTest : DatabaseTest() {
 
     val fasciaOrariaDao get() = database?.fasciaOrariaDao()
 
@@ -20,18 +19,19 @@ open class FasciaOrariaDaoTestImpl : DatabaseTest() {
     @Test
     fun testInsert() = runBlocking {
         assertEquals(1L, fasciaOrariaDao?.insertAll(
-            Vals.fasceOrarie[1].toEntity()
+            it.univaq.grr.fitslot.unitTest.fasceOrarie[1].toEntity()
         ), "Inserimento FasciaOraria in db non riuscito")
 
         val fetched = fasciaOrariaDao?.observeFasceOrarie()?.first()
-        assertEquals(Vals.fasceOrarie[1].toEntity(),
+        assertEquals(
+            it.univaq.grr.fitslot.unitTest.fasceOrarie[1].toEntity(),
             fetched?.find { fasciaOrariaEntity -> fasciaOrariaEntity.id == 1L })
     }
 
     @Test
     fun testUpdate() = runBlocking {
         fasciaOrariaDao?.insertAll(
-            Vals.fasceOrarie[1].toEntity()
+            it.univaq.grr.fitslot.unitTest.fasceOrarie[1].toEntity()
         )
 
         val updatedFasciaOraria = FasciaOrariaEntity(1, "2026-12-01T07:00:00", "2026-12-01T09:00:00")
@@ -46,8 +46,8 @@ open class FasciaOrariaDaoTestImpl : DatabaseTest() {
 
     @Test
     fun testDelete() = runBlocking {
-        fasciaOrariaDao?.insertAll(Vals.fasceOrarie[1].toEntity())
-        fasciaOrariaDao?.deleteALl(Vals.fasceOrarie[1].toEntity())
+        fasciaOrariaDao?.insertAll(it.univaq.grr.fitslot.unitTest.fasceOrarie[1].toEntity())
+        fasciaOrariaDao?.deleteALl(it.univaq.grr.fitslot.unitTest.fasceOrarie[1].toEntity())
 
         val fetched = fasciaOrariaDao?.observeFasceOrarie()?.first()
         assertNull(
