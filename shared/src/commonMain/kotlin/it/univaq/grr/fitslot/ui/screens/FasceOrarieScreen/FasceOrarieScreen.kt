@@ -26,6 +26,7 @@ import it.univaq.grr.fitslot.ui.components.createButton
 import it.univaq.grr.fitslot.utils.convertMillisToDate
 import it.univaq.grr.fitslot.utils.parseCatching
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
@@ -70,7 +71,7 @@ fun FasceOrarieScreen(
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp, alignment = Alignment.CenterHorizontally)
         ) {
 
-                DatePickerDocked(selectedDate){selectedDate = it}
+                DatePickerDocked(selectedDate, uiState.showDateNotValidError, setSelectedDate = {selectedDate = it}, setShowDateNotValidError = viewModel::setShowDateNotValidError)
 
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

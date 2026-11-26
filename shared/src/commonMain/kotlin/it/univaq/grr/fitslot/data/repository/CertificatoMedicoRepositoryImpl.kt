@@ -3,13 +3,11 @@ package it.univaq.grr.fitslot.data.repository
 import it.univaq.grr.fitslot.data.exceptions.CertificatoMedicoNonTrovatoException
 import it.univaq.grr.fitslot.data.local.dao.CertificatoMedicoDAO
 import it.univaq.grr.fitslot.data.mapper.toDomain
-import it.univaq.grr.fitslot.domain.models.Ruolo
-import it.univaq.grr.fitslot.utils.dataScadenza
-import it.univaq.grr.fitslot.data.mapper.toDomain
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.CertificatoMedico
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
+import it.univaq.grr.fitslot.utils.dataScadenza
 
 class CertificatoMedicoRepositoryImpl(
     private val certificatoMedicoDAO: CertificatoMedicoDAO
@@ -39,7 +37,7 @@ class CertificatoMedicoRepositoryImpl(
                 risultato.add(certificato)
                 continue
             }
-            val data = dataScadenza(certificato.scadenza) ?: continue
+            val data = dataScadenza(certificato.scadenza.toString()) ?: continue //TODO: Spaghetti, refactor
             if (scaduti && data < oggi) risultato.add(certificato)
             else if (!scaduti && data >= oggi && data >= dal && data <= al) risultato.add(certificato)
         }

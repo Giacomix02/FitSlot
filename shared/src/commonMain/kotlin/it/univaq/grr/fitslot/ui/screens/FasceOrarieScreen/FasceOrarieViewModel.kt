@@ -112,6 +112,9 @@ class FasceOrarieViewModel : ViewModel(){
 
     }
 
+    fun setSelectedDate(date: String) = uiState.update { it.copy(selectedDate = date) }
+    fun setShowDateNotValidError(b : Boolean) = uiState.update { it.copy(showDateNotValidError = b) }
+
     suspend fun deleteFasciaOraria(fasciaOraria: FasciaOraria) {
         fasciaOrariaRepository.deleteFasciaOraria(fasciaOraria)
     }
