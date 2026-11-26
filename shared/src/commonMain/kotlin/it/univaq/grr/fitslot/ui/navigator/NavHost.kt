@@ -21,6 +21,7 @@ import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.ui.screens.certificatiReception.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import it.univaq.grr.fitslot.data.local.LocalStorage
 import it.univaq.grr.fitslot.domain.repository.CatalogoRepository
@@ -107,9 +109,14 @@ fun Navigation(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // FAB hoistato: ogni schermata può registrare il proprio FAB tramite onFabChange
+    // FAB hoistato: ogni schermata può registrare il proprio FAB tramite fab setter
     var fab by remember { mutableStateOf<(@Composable () -> Unit)?>(null) }
-    val onFabChange: ((@Composable () -> Unit)?) -> Unit = { fab = it }
+
+    // Reset FAB ad ogni cambio di destinazione (evita race condition tra dispose/compose)
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(currentBackStackEntry) {
+        fab = null
+    }
 
     // si aggiorna ogni volta che cambnia user (quindi sia login che logout)
     val user = GestioneUserLocalStorage.getCurrentUser()

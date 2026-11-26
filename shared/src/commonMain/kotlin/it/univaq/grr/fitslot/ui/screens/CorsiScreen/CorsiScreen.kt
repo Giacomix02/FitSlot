@@ -58,13 +58,12 @@ fun CorsiScreen(onFabChange: ((@Composable () -> Unit)?) -> Unit = {}) {
             ?: fasceList
     }
 
-    DisposableEffect(Unit) {
+    LaunchedEffect(Unit) {
         onFabChange {
             FloatingActionButton(onClick = { viewModel.showDialog() }) {
                 Icon(Icons.Default.Add, contentDescription = "Aggiungi corso")
             }
         }
-        onDispose { onFabChange(null) }
     }
 
     if (uiState.showDialog) {

@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,13 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.material3.setSelectedDate
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -88,20 +85,16 @@ fun FasceOrarieScreen(
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
-    DisposableEffect(Unit) {
+    LaunchedEffect(Unit) {
         onFabChange {
             FloatingActionButton(onClick = {
                 viewModel.clearErroreFasciaOraria()
                 showCreateFasciaOrariaDialog = true
             }) { Icon(Icons.Default.Add, contentDescription = "Aggiungi fascia oraria") }
         }
-        onDispose { onFabChange(null) }
     }
 
-    Scaffold(
-    contentWindowInsets = WindowInsets(0, 0, 0, 0)
-    ){ innerPadding ->
-        Box(Modifier.fillMaxSize().padding(innerPadding)) {
+    Box(Modifier.fillMaxSize()) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(space = 10.dp, alignment = Alignment.CenterHorizontally)
@@ -197,8 +190,7 @@ fun FasceOrarieScreen(
             }
         }
 
-        } // chiude Box(Modifier...padding(innerPadding))
-    } // chiude Scaffold content
+    } // chiude Box
 }
 
 
