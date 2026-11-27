@@ -1,9 +1,9 @@
 package it.univaq.grr.fitslot.integrationTest
 
-import it.univaq.grr.fitslot.creaDbInMemoria
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.models.Sala
+import it.univaq.grr.fitslot.unitTest.creaDbInMemoria
 import java.time.LocalDateTime
 import kotlin.test.Ignore
 import kotlin.test.Test

@@ -32,7 +32,13 @@ class CertificatoMedicoRepositoryImpl(
     override suspend fun certificati(scaduti: Boolean?, dal: String, al: String, oggi: String): List<CertificatoMedico> {
         val risultato = mutableListOf<CertificatoMedico>()
         for (utente in iscritti()) {
-            val certificato = getCertificatoMedicoByUser(utente) ?: continue
+            var certificato: CertificatoMedico?
+            try {
+                certificato = getCertificatoMedicoByUser(utente)
+            } catch (_: CertificatoMedicoNonTrovatoException) {
+                continue
+            }
+
             if (scaduti == null) {
                 risultato.add(certificato)
                 continue
