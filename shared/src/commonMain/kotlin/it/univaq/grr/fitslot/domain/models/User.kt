@@ -12,5 +12,7 @@ data class User (
     val indirizzo: String,
     val citta: String,
     val emailContatto: String,
-    val ruolo: Ruolo
-)
+    val ruolo: Ruolo,
+) {
+    val matricola get() = this.id + 999
+}

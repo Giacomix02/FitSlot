@@ -17,6 +17,7 @@ import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.utils.immagineCertificato
 import it.univaq.grr.fitslot.utils.dataOggi
+import it.univaq.grr.fitslot.ui.components.VisualizzazioneCertificatoMedico
 
 @Composable
 fun CertificatoMedicoScreen(navController: NavController,
@@ -45,9 +46,9 @@ fun CertificatoMedicoScreen(navController: NavController,
                 Text("Data di scadenza: ${viewModel.scadenza ?: "non valida, contatta la reception"}")
                 if (certificatoInScadenza(viewModel.scadenza, dataOggi())) Text("Attenzione: il tuo certificato medico scade entro 20 giorni.")
                 val scadenza = viewModel.scadenza
-                if (scadenza != null && scadenza < dataOggi()) Text("Il tuo certificato medico è scaduto.")
-                if (immagine != null) Image(immagine, "Il tuo certificato medico", Modifier.fillMaxWidth())
-                if (viewModel.documento != null) Button(onClick = viewModel::apriDocumento) { Text("Apri documento") }
+
+                VisualizzazioneCertificatoMedico(null, scadenza , certificatoInScadenza(viewModel.scadenza, dataOggi()))
+
             }
             TextButton(onClick = { viewModel.carica(utente) }) { Text("Ricarica") }
         }

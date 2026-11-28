@@ -1,9 +1,9 @@
 package it.univaq.grr.fitslot.unitTest.Dao
 
-import it.univaq.grr.fitslot.Vals
 import it.univaq.grr.fitslot.data.local.entity.FasciaOrariaEntity
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.unitTest.DatabaseTest
+import it.univaq.grr.fitslot.unitTest.fasceOrarie
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -20,18 +20,18 @@ open class FasciaOrariaDaoTestImpl : DatabaseTest() {
     @Test
     fun testInsert() = runBlocking {
         assertEquals(1L, fasciaOrariaDao?.insertAll(
-            Vals.fasceOrarie[1].toEntity()
+            fasceOrarie[1].toEntity()
         ), "Inserimento FasciaOraria in db non riuscito")
 
         val fetched = fasciaOrariaDao?.observeFasceOrarie()?.first()
-        assertEquals(Vals.fasceOrarie[1].toEntity(),
+        assertEquals(fasceOrarie[1].toEntity(),
             fetched?.find { fasciaOrariaEntity -> fasciaOrariaEntity.id == 1L })
     }
 
     @Test
     fun testUpdate() = runBlocking {
         fasciaOrariaDao?.insertAll(
-            Vals.fasceOrarie[1].toEntity()
+            fasceOrarie[1].toEntity()
         )
 
         val updatedFasciaOraria = FasciaOrariaEntity(1, "2026-12-01T07:00:00", "2026-12-01T09:00:00")
@@ -46,8 +46,8 @@ open class FasciaOrariaDaoTestImpl : DatabaseTest() {
 
     @Test
     fun testDelete() = runBlocking {
-        fasciaOrariaDao?.insertAll(Vals.fasceOrarie[1].toEntity())
-        fasciaOrariaDao?.deleteALl(Vals.fasceOrarie[1].toEntity())
+        fasciaOrariaDao?.insertAll(fasceOrarie[1].toEntity())
+        fasciaOrariaDao?.deleteALl(fasceOrarie[1].toEntity())
 
         val fetched = fasciaOrariaDao?.observeFasceOrarie()?.first()
         assertNull(

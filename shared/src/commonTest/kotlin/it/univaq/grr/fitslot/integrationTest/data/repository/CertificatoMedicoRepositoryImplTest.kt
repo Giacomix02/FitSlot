@@ -1,22 +1,23 @@
-package it.univaq.grr.fitslot.data.repository
+package it.univaq.grr.fitslot.integrationTest.data.repository
 
 import androidx.sqlite.SQLiteException
-import it.univaq.grr.fitslot.creaDbInMemoria
 import it.univaq.grr.fitslot.data.local.AppDatabase
+import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
+import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.CertificatoMedico
 import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
+import it.univaq.grr.fitslot.unitTest.creaDbInMemoria
+import it.univaq.grr.fitslot.unitTest.scadenzaLontana
+import it.univaq.grr.fitslot.unitTest.utente
 import kotlinx.coroutines.test.runTest
-import java.sql.SQLException
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.test.*
 
 class CertificatoMedicoRepositoryImplTest {
 
     private var database: AppDatabase? = null
+
+    val imageStream : ByteArray = this::class.java.getResourceAsStream("/CertificatoMedicoExample.png")!!.readBytes()
 
     @BeforeTest
     fun creaDbPerTesting(){
@@ -41,7 +42,7 @@ class CertificatoMedicoRepositoryImplTest {
                 .addCertificatoMedico(CertificatoMedico(
                     id = 0,
                     path = "path",
-                    scadenza = "scadenza",
+                    scadenza = scadenzaLontana,
                     utente = getUser()
                 ))
             assertEquals(1L, result)
@@ -60,10 +61,36 @@ class CertificatoMedicoRepositoryImplTest {
                     .addCertificatoMedico(CertificatoMedico(
                         id = 0,
                         path = "path",
-                        scadenza = "scadenza",
+                        scadenza = scadenzaLontana,
                         utente = getUser()
                     ))
             }
+        }
+    }
+
+    @Test
+    fun `get certificato medico da user`() = runTest {
+        database?.let { database ->
+
+            val certificatoMedicoRepository = CertificatoMedicoRepositoryImpl(database.certificatoMedicoDao())
+
+            val userRepository = UserRepositoryImpl(database.userDao())
+
+            val registeredUserId = userRepository.userRegistration(utente)
+            val registeredUser = utente.copy(id = registeredUserId)
+
+            certificatoMedicoRepository.addCertificatoMedico(
+                CertificatoMedico(
+                    id = 0,
+                    path = "./test/",
+                    scadenza = scadenzaLontana,
+                    utente = registeredUser
+                )
+            )
+
+            assertNotNull(certificatoMedicoRepository
+                .getCertificatoMedicoByUser(registeredUser)
+            )
         }
     }
 

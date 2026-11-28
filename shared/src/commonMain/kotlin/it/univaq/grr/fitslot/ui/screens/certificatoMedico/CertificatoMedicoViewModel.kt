@@ -1,16 +1,17 @@
 package it.univaq.grr.fitslot.ui.screens.certificatoMedico
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
 import it.univaq.grr.fitslot.utils.MediaStorage
+import it.univaq.grr.fitslot.utils.aggiungiGiorni
 import it.univaq.grr.fitslot.utils.dataScadenza
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
-import it.univaq.grr.fitslot.utils.dataOggi
-import it.univaq.grr.fitslot.utils.aggiungiGiorni
 
 fun certificatoInScadenza(scadenza: String?, oggi: String): Boolean =
     scadenza != null && scadenza >= oggi && scadenza <= aggiungiGiorni(oggi, 20)
@@ -39,7 +40,7 @@ class CertificatoMedicoViewModel(private val repository: CertificatoMedicoReposi
             try {
                 val certificato = repository.getCertificatoMedicoByUser(utente)
                 presente = certificato != null
-                scadenza = dataScadenza(certificato?.scadenza)
+                scadenza = dataScadenza(certificato.scadenza.toString()) //TODO: spaghetti, refactor
                 percorso = certificato?.path.orEmpty()
                 if (certificato != null) {
                     documento = MediaStorage().retrieveImage(certificato.path).getOrThrow()

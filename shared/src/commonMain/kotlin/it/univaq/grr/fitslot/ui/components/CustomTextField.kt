@@ -1,14 +1,14 @@
 package it.univaq.grr.fitslot.ui.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun CustomTextField(
@@ -19,7 +19,8 @@ fun CustomTextField(
     isRequired: Boolean = false,
     errorMessage: String? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     singleLine: Boolean = true,
     placeholder: String? = null,
 ) {
@@ -43,7 +44,19 @@ fun CustomTextField(
         },
         visualTransformation = visualTransformation,
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         singleLine = singleLine,
+//        keyboardActions = KeyboardActions(
+//            onDone = {
+//                setToDatePicker(text, formatter, datePickerState, setShowDateNotValidError)
+//                showDatePicker = false
+//            },
+//            onGo = { /* do something */},
+//            onNext = { /* do something */},
+//            onPrevious = { /* do something */},
+//            onSearch = { /* do something */},
+//            onSend = { /* do something */}),
+
         modifier = modifier
     )
 }

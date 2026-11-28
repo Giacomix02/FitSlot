@@ -1,13 +1,15 @@
 package it.univaq.grr.fitslot.ui.screens.certificatiReception
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
 import it.univaq.grr.fitslot.domain.models.User
-import it.univaq.grr.fitslot.utils.dataScadenza
-import it.univaq.grr.fitslot.utils.dataOggi
+import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
 import it.univaq.grr.fitslot.utils.aggiungiGiorni
+import it.univaq.grr.fitslot.utils.dataOggi
+import it.univaq.grr.fitslot.utils.dataScadenza
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -45,7 +47,7 @@ class CertificatiReceptionViewModel(private val repository: CertificatoMedicoRep
             try {
                 val oggi = dataOggi()
                 val certificati = repository.certificati(scaduti, inizio ?: oggi, fine ?: oggi, oggi)
-                scadenze = certificati.associate { it.utente.id to it.scadenza }
+                scadenze = certificati.associate { it.utente.id to it.scadenza.toString() }
                 elenco = if (scaduti == null) repository.iscritti() else certificati.map { it.utente }
                 if (elenco.isEmpty()) messaggio = "Nessun iscritto trovato."
             } catch (e: CancellationException) {

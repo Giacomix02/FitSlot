@@ -5,7 +5,7 @@ import it.univaq.grr.fitslot.domain.models.User
 
 interface CertificatoMedicoRepository {
 
-    suspend fun getCertificatoMedicoByUser(user: User) : CertificatoMedico?
+    suspend fun getCertificatoMedicoByUser(user: User): CertificatoMedico
 
     suspend fun addCertificatoMedico(certificato: CertificatoMedico): Long
 

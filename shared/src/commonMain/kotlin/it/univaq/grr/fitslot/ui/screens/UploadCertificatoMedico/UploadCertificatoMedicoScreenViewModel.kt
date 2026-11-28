@@ -1,13 +1,15 @@
 package it.univaq.grr.fitslot.ui.screens.UploadCertificatoMedico
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.readBytes
-import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.CertificatoMedico
+import it.univaq.grr.fitslot.domain.models.Ruolo
 import it.univaq.grr.fitslot.domain.models.User
 import it.univaq.grr.fitslot.domain.repository.CertificatoMedicoRepository
 import it.univaq.grr.fitslot.utils.GestioneUserLocalStorage
@@ -45,7 +47,7 @@ class UploadCertificatoMedicoScreenViewModel(private val repository: Certificato
         viewModelScope.launch {
             try {
                 val percorso = MediaStorage().storeImage(documento.readBytes(), documento.name.substringAfterLast('.')).getOrThrow()
-                repository.addCertificatoMedico(CertificatoMedico(utente = iscritto, path = percorso, scadenza = data.toString()))
+                repository.addCertificatoMedico(CertificatoMedico(utente = iscritto, path = percorso, scadenza = data))
                 onSuccess()
             } catch (e: CancellationException) { throw e
             } catch (e: Exception) { error.value = true

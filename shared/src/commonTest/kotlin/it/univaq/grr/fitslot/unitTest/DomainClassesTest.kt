@@ -1,7 +1,6 @@
 package it.univaq.grr.fitslot.unitTest
 
 
-import it.univaq.grr.fitslot.Vals.sala
 import it.univaq.grr.fitslot.data.mapper.toEntity
 import it.univaq.grr.fitslot.domain.models.Corso
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
@@ -12,11 +11,7 @@ import kotlin.test.assertFailsWith
 
 
 class DomainClassesTest {
-    val fasceOrarie = listOf(
-        FasciaOraria(1, LocalDateTime.parse("2027-06-01T15:30"),LocalDateTime.parse("2027-06-01T17:30") ),
-        FasciaOraria(2, LocalDateTime.parse("2027-06-01T18:30"),LocalDateTime.parse("2027-06-01T19:30") ),
-        FasciaOraria(3, LocalDateTime.parse("2027-06-02T12:30"),LocalDateTime.parse("2027-06-02T15:00") )
-    )
+
 
     @Test
     fun istanzazioneCorsoTest() {
@@ -25,7 +20,6 @@ class DomainClassesTest {
             val corsoSenzaNome1 = Corso(0, "", sala, fasceOrarie[0])
             val corsosenzaNome2 = Corso(0, "    ", sala, fasceOrarie[0])
         }
-        //TODO test del "Sala assegnata è già occupata", ancora da implementare
     }
 
     @Test

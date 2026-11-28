@@ -161,6 +161,6 @@ fun CorsiScreen(onFabChange: ((@Composable () -> Unit)?) -> Unit = {}) {
                 }
             }
         )
-        } // chiude if (uiState.showDialog)
-}
+    }
 
+}

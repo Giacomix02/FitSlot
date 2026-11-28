@@ -9,17 +9,16 @@ import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.FasciaOrariaRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.FasciaOraria
 import it.univaq.grr.fitslot.domain.repository.FasciaOrariaRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import it.univaq.grr.fitslot.utils.parseCatching
+import kotlinx.coroutines.flow.*
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class FasceOrarieScreenState(
-    val erroreFasciaOraria: String = ""
+    val erroreFasciaOraria: String = "",
+    val selectedDate: String = LocalDate.now().format(formatter),
+    val showDateNotValidError: Boolean = parseCatching(selectedDate, formatter) == null,
 )
 
 class FasceOrarieViewModel : ViewModel(){
@@ -89,11 +88,11 @@ class FasceOrarieViewModel : ViewModel(){
         val start = LocalTime.of(orarioInizio.hour, orarioInizio.minute)
         val end = LocalTime.of(orarioFine.hour, orarioFine.minute)
 
-        val fasciaOraria = FasciaOraria(id = selectedFasciaOraria.value.id)
 
         return try {
-            fasciaOraria.orarioInizio = LocalDateTime.of(date, start)
-            fasciaOraria.orarioFine = LocalDateTime.of(date, end)
+        val fasciaOraria = FasciaOraria(id = selectedFasciaOraria.value.id, orarioInizio = LocalDateTime.of(date, start),
+                orarioFine = LocalDateTime.of(date, end))
+
 
             fasciaOrariaRepository.editFasciaOraria(fasciaOraria)
             uiState.update { it.copy(erroreFasciaOraria = "") }
@@ -112,6 +111,9 @@ class FasceOrarieViewModel : ViewModel(){
 
 
     }
+
+    fun setSelectedDate(date: String) = uiState.update { it.copy(selectedDate = date) }
+    fun setShowDateNotValidError(b : Boolean) = uiState.update { it.copy(showDateNotValidError = b) }
 
     suspend fun deleteFasciaOraria(fasciaOraria: FasciaOraria) {
         fasciaOrariaRepository.deleteFasciaOraria(fasciaOraria)

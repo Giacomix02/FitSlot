@@ -1,10 +1,13 @@
 package it.univaq.grr.fitslot
 
+import it.univaq.grr.fitslot.data.exceptions.CertificatoMedicoNonTrovatoException
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.local.entity.CertificatoMedicoEntity
 import it.univaq.grr.fitslot.data.local.entity.UserEntity
 import it.univaq.grr.fitslot.data.repository.CertificatoMedicoRepositoryImpl
 import it.univaq.grr.fitslot.domain.models.Ruolo
+import it.univaq.grr.fitslot.unitTest.creaDbInMemoria
+import it.univaq.grr.fitslot.utils.convertMillisToDate
 import kotlinx.coroutines.runBlocking
 import kotlin.test.*
 
@@ -35,7 +38,7 @@ class CertificatiReceptionTest {
     fun mostraSoloScaduti() = runBlocking<Unit> {
         val elenco = repository.certificati(true, oggi, oggi, oggi)
         assertEquals(listOf("Anna"), elenco.map { it.utente.nome })
-        assertEquals("2026-11-19", elenco[0].scadenza)
+        assertEquals("19/11/2026", convertMillisToDate(elenco[0].scadenza) )
     }
 
     @Test
@@ -49,16 +52,19 @@ class CertificatiReceptionTest {
         val certificati = CertificatoMedicoRepositoryImpl(db.certificatoMedicoDao())
         val anna = repository.iscritti().first { it.id == 1L }
         val sara = repository.iscritti().first { it.id == 3L }
-        assertEquals("2026-11-19", certificati.getCertificatoMedicoByUser(anna)?.scadenza)
-        assertNull(certificati.getCertificatoMedicoByUser(sara))
+
+
+        assertEquals("19/11/2026", convertMillisToDate( certificati.getCertificatoMedicoByUser(anna).scadenza))
+        assertFailsWith<CertificatoMedicoNonTrovatoException> { certificati.getCertificatoMedicoByUser(sara) }
         db.certificatoMedicoDao().insert(CertificatoMedicoEntity(path = "rinnovo", scadenza = "2027-01-01", userId = 1))
-        assertEquals("rinnovo", certificati.getCertificatoMedicoByUser(anna)?.path)
+        assertEquals("rinnovo", certificati.getCertificatoMedicoByUser(anna).path)
+
     }
 
     @Test
     fun prendeLaScadenzaMaggioreNonLIdMaggiore() = runBlocking<Unit> {
         db.certificatoMedicoDao().insert(CertificatoMedicoEntity(path = "più recente", scadenza = "1798761600000", userId = 1))
-        db.certificatoMedicoDao().insert(CertificatoMedicoEntity(path = "vecchio", scadenza = "2026-11-01", userId = 1))
+        db.certificatoMedicoDao().insert(CertificatoMedicoEntity(path = "vecchio", scadenza = "01-11-2026", userId = 1))
         assertEquals("più recente", db.certificatoMedicoDao().getByUserId(1)?.path)
     }
 }

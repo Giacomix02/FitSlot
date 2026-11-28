@@ -1,11 +1,15 @@
 package it.univaq.grr.fitslot.unitTest
 
-import it.univaq.grr.fitslot.creaDbInMemoria
+import androidx.room3.Room
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.assertNotNull
 
+fun creaDbInMemoria(): AppDatabase {
+    return Room.inMemoryDatabaseBuilder<AppDatabase>().setDriver(BundledSQLiteDriver()).build()
+}
 
 open class DatabaseTest {
 

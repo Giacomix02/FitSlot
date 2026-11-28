@@ -1,28 +1,25 @@
 package it.univaq.grr.fitslot.ui.screens.LoginScreen
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.navigation.NavController
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavController
 import it.univaq.grr.fitslot.Screens
 import it.univaq.grr.fitslot.data.local.AppDatabase
 import it.univaq.grr.fitslot.data.repository.UserRepositoryImpl
+import it.univaq.grr.fitslot.ui.components.CustomTextField
 
 private val loginViewModelFactory = viewModelFactory {
     initializer {
@@ -47,26 +44,24 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        OutlinedTextField(
+        CustomTextField(
             value = viewModel.emailInput,
             onValueChange = { viewModel.onEmailInputChange(it) },
-            label = {Text("Email") }
+            label = "Email",
+            keyboardActions = KeyboardActions(onDone = { login(viewModel, navController) })
         )
-        OutlinedTextField(
+        CustomTextField(
             value = viewModel.passwordInput,
             onValueChange = { viewModel.onPasswordInputChange(it) },
-            label = {Text("Password") },
-            visualTransformation = PasswordVisualTransformation()
+            label = "Password",
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardActions = KeyboardActions(onDone = { login(viewModel, navController) })
         )
         if (viewModel.loginError) {
             Text("Email o password non validi")
         }
         Button(onClick = {
-            viewModel.onLoginClick (
-                onSuccess = {
-                    navController.navigate(Screens.Home)
-                }
-            )
+            login(viewModel, navController)
         }) {
            Text("Login")
         }
@@ -84,4 +79,15 @@ fun LoginScreen(
             Text("Oppure Registrati")
         }
     }
+}
+
+private fun login(
+    viewModel: LoginViewModel,
+    navController: NavController
+) {
+    viewModel.onLoginClick(
+        onSuccess = {
+            navController.navigate(Screens.Home)
+        }
+    )
 }
